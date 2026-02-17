@@ -109,33 +109,34 @@ export default function ContactOverlay({ onClose }: { onClose: () => void }) {
 
     return (
         <div
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in pointer-events-auto"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in pointer-events-auto"
             onClick={onClose}
         >
             <div
-                className="bg-white w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col relative"
+                className="w-full max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden flex flex-col relative text-[var(--color-off-white)] shadow-2xl border border-[var(--color-purple-gray)]/50"
+                style={{ backgroundColor: "var(--color-purple-gray)" }}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="flex justify-between items-center p-6 border-b border-gray-100 bg-white sticky top-0 z-10">
-                    <h2 className="text-2xl font-bold text-gray-900">Contact / Reservation</h2>
+                <div className="flex justify-between items-center p-6 border-b border-white/10 bg-white/5 sticky top-0 z-10 backdrop-blur-md">
+                    <h2 className="text-2xl font-bold text-[var(--color-off-white)]">Contact / Reservation</h2>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                        className="p-2 rounded-full hover:bg-white/10 transition-colors"
                     >
-                        <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
 
                 {/* Content - Scrollable */}
-                <div className="overflow-y-auto p-6 md:p-8 space-y-12">
+                <div className="overflow-y-auto p-6 md:p-8 space-y-12 relative z-10">
 
                     {/* Notice Section */}
-                    <section className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                        <h3 className="text-sm font-bold text-red-500 uppercase tracking-widest mb-3">Notice</h3>
-                        <ul className="space-y-2 text-sm text-gray-600 list-disc list-inside leading-relaxed">
+                    <section className="bg-white/5 p-6 rounded-xl border border-white/10">
+                        <h3 className="text-sm font-bold text-red-400 uppercase tracking-widest mb-3">Notice</h3>
+                        <ul className="space-y-2 text-sm text-gray-300 list-disc list-inside leading-relaxed">
                             <li>본 접수는 <strong>대면상담 예약</strong>입니다. 시술 예약이 아닙니다.</li>
                             <li>상담 결과에 따라 시술이 제한되거나 거절될 수 있습니다.</li>
                             <li><strong>만 19세 미만</strong>은 시술이 불가하며, 대면 상담 시 신분증 확인이 필요합니다.</li>
@@ -145,30 +146,30 @@ export default function ContactOverlay({ onClose }: { onClose: () => void }) {
 
                     {/* 1. Basic Info (New) */}
                     <section>
-                        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-black text-white text-xs">1</span>
+                        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white text-black text-xs font-bold">1</span>
                             Basic Info <span className="text-gray-400 text-sm font-normal ml-auto">* Required</span>
                         </h3>
                         <div className="space-y-6">
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Name <span className="text-red-500">*</span></label>
+                                <label className="block text-sm font-bold text-gray-300 mb-2">Name <span className="text-red-400">*</span></label>
                                 <input
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="실명기입"
-                                    className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black transition-all"
+                                    className="w-full p-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder:text-gray-500 transition-all"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">Phone <span className="text-red-500">*</span></label>
+                                <label className="block text-sm font-bold text-gray-300 mb-2">Phone <span className="text-red-400">*</span></label>
                                 <input
                                     type="tel"
                                     value={phone}
                                     onChange={handlePhoneChange}
                                     placeholder="010-0000-0000"
                                     maxLength={13}
-                                    className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black transition-all"
+                                    className="w-full p-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder:text-gray-500 transition-all"
                                 />
                             </div>
                         </div>
@@ -177,8 +178,8 @@ export default function ContactOverlay({ onClose }: { onClose: () => void }) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                         {/* 2. Area */}
                         <section>
-                            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-black text-white text-xs">2</span>
+                            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white text-black text-xs font-bold">2</span>
                                 Area <span className="text-gray-400 text-sm font-normal ml-auto">* Single choice</span>
                             </h3>
                             <div className="flex flex-wrap gap-2">
@@ -187,8 +188,8 @@ export default function ContactOverlay({ onClose }: { onClose: () => void }) {
                                         key={part}
                                         onClick={() => handleSingleSelection(part, selectedPart, setSelectedPart)}
                                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${selectedPart === part
-                                            ? "bg-gray-900 text-white border-gray-900 shadow-md"
-                                            : "bg-white text-gray-500 border-gray-200 hover:border-gray-400 hover:text-gray-900"
+                                            ? "bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                                            : "bg-white/5 text-gray-400 border-white/10 hover:border-white/30 hover:text-white hover:bg-white/10"
                                             }`}
                                     >
                                         {part}
@@ -199,8 +200,8 @@ export default function ContactOverlay({ onClose }: { onClose: () => void }) {
 
                         {/* 3. Genres */}
                         <section>
-                            <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-black text-white text-xs">3</span>
+                            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                                <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white text-black text-xs font-bold">3</span>
                                 Genres <span className="text-gray-400 text-sm font-normal ml-auto">* Single choice</span>
                             </h3>
                             <div className="flex flex-wrap gap-2">
@@ -209,8 +210,8 @@ export default function ContactOverlay({ onClose }: { onClose: () => void }) {
                                         key={genre}
                                         onClick={() => handleSingleSelection(genre, selectedGenre, setSelectedGenre)}
                                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${selectedGenre === genre
-                                            ? "bg-gray-900 text-white border-gray-900 shadow-md"
-                                            : "bg-white text-gray-500 border-gray-200 hover:border-gray-400 hover:text-gray-900"
+                                            ? "bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                                            : "bg-white/5 text-gray-400 border-white/10 hover:border-white/30 hover:text-white hover:bg-white/10"
                                             }`}
                                     >
                                         {genre}
@@ -222,12 +223,12 @@ export default function ContactOverlay({ onClose }: { onClose: () => void }) {
 
                     {/* 4. Reference */}
                     <section>
-                        <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-black text-white text-xs">4</span>
+                        <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white text-black text-xs font-bold">4</span>
                             Reference
                         </h3>
                         <div className="space-y-4">
-                            <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:bg-gray-50 transition-colors relative">
+                            <div className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center hover:bg-white/5 transition-colors relative group">
                                 <input
                                     type="file"
                                     multiple
@@ -235,12 +236,12 @@ export default function ContactOverlay({ onClose }: { onClose: () => void }) {
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                 />
                                 <div className="pointer-events-none">
-                                    <svg className="w-10 h-10 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-10 h-10 text-gray-500 group-hover:text-gray-300 transition-colors mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
-                                    <p className="text-gray-500 text-sm font-medium">Click or Drag images here</p>
+                                    <p className="text-gray-400 text-sm font-medium group-hover:text-gray-200">Click or Drag images here</p>
                                     {files.length > 0 && (
-                                        <p className="text-blue-600 text-sm mt-2">{files.length} filed(s) selected</p>
+                                        <p className="text-blue-400 text-sm mt-2">{files.length} file(s) selected</p>
                                     )}
                                 </div>
                             </div>
@@ -248,16 +249,16 @@ export default function ContactOverlay({ onClose }: { onClose: () => void }) {
                                 placeholder="추가적인 설명이나 요청사항을 자유롭게 적어주세요."
                                 value={referenceText}
                                 onChange={(e) => setReferenceText(e.target.value)}
-                                className="w-full p-4 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all min-h-[120px] resize-y text-gray-900 placeholder:text-gray-400"
+                                className="w-full p-4 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-white/50 text-white placeholder:text-gray-500 transition-all min-h-[120px] resize-y"
                             />
-                            <p className="text-xs text-gray-400 text-right">* 레퍼런스는 참고용 이며, 피부 / 부위에 따라 조정 될 수 있습니다.</p>
+                            <p className="text-xs text-gray-500 text-right">* 레퍼런스는 참고용 이며, 피부 / 부위에 따라 조정 될 수 있습니다.</p>
                         </div>
                     </section>
 
                     {/* 5. Schedule */}
                     <section>
-                        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-black text-white text-xs">5</span>
+                        <h3 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+                            <span className="flex items-center justify-center w-6 h-6 rounded-full bg-white text-black text-xs font-bold">5</span>
                             Schedule <span className="text-gray-400 text-sm font-normal ml-auto">Date Selection (2 weeks)</span>
                         </h3>
 
@@ -265,7 +266,7 @@ export default function ContactOverlay({ onClose }: { onClose: () => void }) {
                         <div className="grid grid-cols-7 gap-2 mb-6">
                             {/* Days Header */}
                             {daysOfWeek.map(day => (
-                                <div key={day} className="text-center text-xs font-bold text-gray-400 py-2">
+                                <div key={day} className="text-center text-xs font-bold text-gray-500 py-2">
                                     {day}
                                 </div>
                             ))}
@@ -288,8 +289,8 @@ export default function ContactOverlay({ onClose }: { onClose: () => void }) {
                                         className={`
                                             flex flex-col items-center justify-center p-3 rounded-lg transition-all
                                             ${isSelected
-                                                ? "bg-gray-900 text-white shadow-md transform scale-[1.05]"
-                                                : "bg-gray-50 text-gray-600 hover:bg-gray-200"
+                                                ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.4)] transform scale-[1.05]"
+                                                : "bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white"
                                             }
                                         `}
                                     >
@@ -305,8 +306,8 @@ export default function ContactOverlay({ onClose }: { onClose: () => void }) {
                         {/* Time Slots (Only show if date selected) */}
                         {selectedDate && (
                             <div className="animate-fade-in">
-                                <h4 className="text-sm font-bold text-gray-900 mb-3">
-                                    Available Time <span className="font-normal text-gray-500">({selectedDate.toLocaleDateString()})</span>
+                                <h4 className="text-sm font-bold text-white mb-3">
+                                    Available Time <span className="font-normal text-gray-400">({selectedDate.toLocaleDateString()})</span>
                                 </h4>
                                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
                                     {timeSlots.filter(time => {
@@ -330,8 +331,8 @@ export default function ContactOverlay({ onClose }: { onClose: () => void }) {
                                             key={time}
                                             onClick={() => setSelectedTime(time)}
                                             className={`py-2 px-1 rounded-md text-sm font-medium transition-colors border ${selectedTime === time
-                                                ? "bg-blue-600 text-white border-blue-600"
-                                                : "bg-white text-gray-600 border-gray-200 hover:border-gray-400 hover:text-gray-900"
+                                                ? "bg-blue-500 text-white border-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                                                : "bg-white/5 text-gray-400 border-white/10 hover:border-white/30 hover:text-white hover:bg-white/10"
                                                 }`}
                                         >
                                             {time}
@@ -345,16 +346,16 @@ export default function ContactOverlay({ onClose }: { onClose: () => void }) {
                 </div>
 
                 {/* Footer / Submit */}
-                <div className="p-6 border-t border-gray-100 bg-white sticky bottom-0 z-10 flex justify-end gap-4">
+                <div className="p-6 border-t border-white/10 bg-white/5 sticky bottom-0 z-10 flex justify-end gap-4 backdrop-blur-md">
                     <button
                         onClick={onClose}
-                        className="px-6 py-3 text-gray-500 font-bold hover:text-gray-800 transition-colors"
+                        className="px-6 py-3 text-gray-400 font-bold hover:text-white transition-colors"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className={`px-8 py-3 bg-black text-white font-bold rounded-lg shadow-lg hover:bg-gray-800 hover:shadow-xl transition-all ${(!name || !phone || !selectedDate || !selectedTime || !selectedPart || !selectedGenre) ? 'opacity-50 cursor-not-allowed' : ''
+                        className={`px-8 py-3 bg-white text-black font-bold rounded-lg shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:bg-gray-200 hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all ${(!name || !phone || !selectedDate || !selectedTime || !selectedPart || !selectedGenre) ? 'opacity-50 cursor-not-allowed' : ''
                             }`}
                     >
                         예약하기

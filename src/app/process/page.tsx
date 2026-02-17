@@ -48,20 +48,20 @@ export default function ProcessPage() {
     ];
 
     return (
-        <main className="pt-[120px] min-h-screen bg-white text-gray-900 pb-20">
+        <main className="pt-[120px] min-h-screen bg-[var(--color-green-900)] text-[var(--color-off-white)] pb-20 selection:bg-[var(--color-gold-500)] selection:text-black">
             {/* 1. Intro */}
             <section className="container mx-auto px-6 mb-20 text-center">
-                <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">잉크의 건축 (The Architecture of Ink)</h1>
-                <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed word-keep-all">
+                <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-[var(--color-off-white)]">잉크의 건축 (The Architecture of Ink)</h1>
+                <p className="text-lg md:text-xl text-white/60 max-w-3xl mx-auto leading-relaxed word-keep-all">
                     단 하나의 마스터피스를 완성하기 위해, 타협 없는 정밀함으로 설계된 비스포크(Bespoke) 여정을 안내합니다.
                 </p>
             </section>
 
             {/* 2. Core Philosophy */}
-            <section className="bg-gray-50 py-16 mb-20">
+            <section className="glass-premium py-16 mb-20">
                 <div className="container mx-auto px-6 text-center max-w-4xl">
-                    <h2 className="text-2xl font-bold mb-6">Core Philosophy</h2>
-                    <p className="text-gray-700 leading-loose text-lg word-keep-all">
+                    <h2 className="text-2xl font-bold mb-6 text-white">Core Philosophy</h2>
+                    <p className="text-gray-300 leading-loose text-lg word-keep-all">
                         우리는 타투를 단순한 소비재가 아닌, 피부 위에 새겨지는 평생의 유산(Heritage)으로 대합니다.
                         고객의 고유한 서사를 독창적인 시각 언어로 번역하는 예술성과, 이를 오차 없이 안전하게 구현하는 기술력의 완벽한 균형을 추구합니다.
                     </p>
@@ -70,18 +70,18 @@ export default function ProcessPage() {
 
             {/* 3. Consultation Flow (Steps) */}
             <section className="container mx-auto px-6 mb-24 max-w-5xl">
-                <h2 className="text-3xl font-bold text-center mb-16">Consultation Flow</h2>
+                <h2 className="text-3xl font-bold text-center mb-16 text-white">Consultation Flow</h2>
                 <div className="space-y-16">
                     {steps.map((item, index) => (
                         <div key={index} className="flex flex-col md:flex-row gap-8 items-start group">
                             <div className="md:w-1/4">
-                                <span className="text-4xl font-bold text-gray-200 group-hover:text-gray-900 transition-colors duration-300">
+                                <span className="text-4xl font-bold text-gray-500 group-hover:text-white transition-colors duration-300">
                                     {item.step}
                                 </span>
                             </div>
                             <div className="md:w-3/4">
-                                <h3 className="text-2xl font-bold mb-4">{item.title}</h3>
-                                <p className="text-gray-600 leading-relaxed whitespace-pre-line word-keep-all">
+                                <h3 className="text-2xl font-bold mb-4 text-white">{item.title}</h3>
+                                <p className="text-gray-400 leading-relaxed whitespace-pre-line word-keep-all">
                                     {item.desc}
                                 </p>
                             </div>
@@ -91,10 +91,10 @@ export default function ProcessPage() {
             </section>
 
             {/* 4. Environment & Protocol */}
-            <section className="bg-gray-900 text-white py-20 mb-20">
+            <section className="glass-premium text-white py-20 mb-20">
                 <div className="container mx-auto px-6 text-center max-w-4xl">
                     <span className="text-gray-400 font-medium tracking-widest uppercase mb-4 block">The Environment & Protocol</span>
-                    <h2 className="text-3xl md:text-4xl font-bold mb-8">무결점의 공간, 철저한 통제</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold mb-8 text-white">무결점의 공간, 철저한 통제</h2>
                     <p className="text-gray-300 leading-loose text-lg word-keep-all">
                         예술적 직관은 가장 안전하고 통제된 환경에서 발현됩니다.
                         본 스튜디오는 교차 감염을 완벽히 차단하는 메디컬 등급의 멸균 시스템을 가동하며,
@@ -106,14 +106,14 @@ export default function ProcessPage() {
 
             {/* 5. Preparation Guide */}
             <section className="container mx-auto px-6 mb-24 max-w-5xl">
-                <h2 className="text-3xl font-bold text-center mb-12">완벽한 작업을 위한 고객 가이드</h2>
-                <p className="text-center text-gray-600 mb-12">최상의 결과물을 위해 작업 전 고객님의 세심한 준비가 필요합니다.</p>
+                <h2 className="text-3xl font-bold text-center mb-12 text-white">완벽한 작업을 위한 고객 가이드</h2>
+                <p className="text-center text-gray-400 mb-12">최상의 결과물을 위해 작업 전 고객님의 세심한 준비가 필요합니다.</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {prepGuides.map((guide, idx) => (
-                        <div key={idx} className="bg-white p-8 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                            <h3 className="text-xl font-bold mb-4 text-gray-900">{guide.title}</h3>
-                            <p className="text-gray-600 text-sm leading-relaxed word-keep-all">
+                        <div key={idx} className="glass-premium p-8 rounded-lg border border-white/10 shadow-sm hover:shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-shadow">
+                            <h3 className="text-xl font-bold mb-4 text-white">{guide.title}</h3>
+                            <p className="text-gray-400 text-sm leading-relaxed word-keep-all">
                                 {guide.desc}
                             </p>
                         </div>
@@ -123,11 +123,11 @@ export default function ProcessPage() {
 
             {/* 6 & 7. CTA Buttons */}
             <section className="container mx-auto px-6 text-center pb-12">
-                <p className="text-xl font-medium text-gray-800 mb-8">당신만의 서사를 시작할 준비가 되셨습니까?</p>
+                <p className="text-xl font-medium text-gray-300 mb-8">당신만의 서사를 시작할 준비가 되셨습니까?</p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                     {/* FAQ Button */}
                     <Link href="/faq">
-                        <button className="px-8 py-4 bg-white border-2 border-gray-900 text-gray-900 font-bold rounded hover:bg-gray-50 transition w-full sm:w-auto min-w-[200px]">
+                        <button className="px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded hover:bg-white hover:text-black transition w-full sm:w-auto min-w-[200px]">
                             FAQ
                         </button>
                     </Link>
@@ -135,7 +135,7 @@ export default function ProcessPage() {
                     {/* Contact Button */}
                     <button
                         onClick={() => setIsContactOpen(true)}
-                        className="px-8 py-4 bg-gray-900 text-white font-bold rounded hover:bg-gray-800 transition w-full sm:w-auto min-w-[200px]"
+                        className="px-8 py-4 bg-white text-black font-bold rounded hover:bg-gray-200 transition w-full sm:w-auto min-w-[200px]"
                     >
                         Contact
                     </button>

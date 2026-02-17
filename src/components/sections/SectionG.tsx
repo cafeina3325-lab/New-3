@@ -19,25 +19,25 @@ export default function SectionG() {
     ];
 
     return (
-        <section className="min-h-screen flex flex-col justify-center py-20 bg-gray-50 w-full">
+        <section className="min-h-screen flex flex-col justify-center py-20 w-full">
             <div className="container mx-auto px-6">
-                <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Consultation Flow</h2>
+                <h2 className="text-3xl font-bold text-center mb-12 text-[var(--color-off-white)]">Consultation Flow</h2>
                 <div className="flex flex-col items-center space-y-8">
                     {steps.map((step, index) => (
-                        <div key={index} className="relative flex items-center w-full max-w-5xl h-24 md:h-44 group transition-transform hover:-translate-y-1 duration-300 drop-shadow-md hover:drop-shadow-xl">
+                        <div key={index} className="relative flex items-center w-full max-w-5xl h-24 md:h-44 group transition-transform hover:-translate-y-1 duration-300 drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]">
 
                             {/* 1. Badge Hexagon (White - Scale h-24 w-[102px] - TITLE)
                                 Mobile: h-24 w-[102px], Title text-xs
                                 Desktop (md+): h-44 w-[204px], Title text-2xl
                             */}
                             <div
-                                className="absolute left-0 z-20 h-24 w-[102px] md:h-44 md:w-[204px] shrink-0 bg-white flex items-center justify-center shadow-lg p-1 md:p-2 text-center"
+                                className="absolute left-0 z-20 h-24 w-[102px] md:h-44 md:w-[204px] shrink-0 glass-premium flex items-center justify-center p-1 md:p-2 text-center transition-colors group-hover:border-[var(--color-gold-500)]/50"
                                 style={{
                                     clipPath: "polygon(0% 50%, 25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%)",
                                     WebkitClipPath: "polygon(0% 50%, 25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%)"
                                 }}
                             >
-                                <span className="text-xs md:text-2xl font-bold text-gray-900 leading-tight break-keep word-keep px-2 md:px-8">
+                                <span className="text-xs md:text-2xl font-bold text-[var(--color-off-white)] leading-tight break-keep word-keep px-2 md:px-8 drop-shadow-md">
                                     {step.title}
                                 </span>
                             </div>
@@ -47,14 +47,14 @@ export default function SectionG() {
                                 Desktop (md+): ml-[100px] pl-[115px] pr-16
                             */}
                             <div
-                                className="ml-[50px] md:ml-[100px] flex-1 h-full bg-gray-200 flex flex-col justify-center items-start text-left pl-[60px] md:pl-[115px] pr-8 md:pr-16 relative z-10"
+                                className="ml-[50px] md:ml-[100px] flex-1 h-full glass-premium flex flex-col justify-center items-start text-left pl-[60px] md:pl-[115px] pr-8 md:pr-16 relative z-10 border border-l-0 border-white/20 transition-colors group-hover:border-[var(--color-gold-500)]/30"
                                 style={{
                                     // Flat Left, Pointy Right (Chevron-like ending)
                                     clipPath: "polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%)",
                                     WebkitClipPath: "polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%)"
                                 }}
                             >
-                                <p className="text-gray-700 whitespace-pre-line leading-snug md:leading-relaxed text-[10px] md:text-base font-medium">
+                                <p className="text-white/70 whitespace-pre-line leading-snug md:leading-relaxed text-[10px] md:text-base font-medium">
                                     {step.desc}
                                 </p>
                             </div>

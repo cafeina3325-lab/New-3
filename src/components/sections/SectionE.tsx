@@ -18,9 +18,9 @@ export default function SectionE() {
     ];
 
     return (
-        <section className="min-h-screen flex flex-col justify-center py-20 bg-white w-full">
+        <section className="min-h-screen flex flex-col justify-center py-20 w-full">
             <div className="container mx-auto px-6">
-                <h2 className="text-3xl font-bold text-center mb-20 text-gray-900">Genres</h2>
+                <h2 className="text-3xl font-bold text-center mb-20 text-white">Genres</h2>
 
                 {/* Grid Layout with Vertical Stagger - 3 Cols (Mobile/Tablet) / 4 Cols (Desktop/Large) 
                     Logic:
@@ -44,11 +44,11 @@ export default function SectionE() {
                         <Link
                             key={genre.id}
                             href={`/genres?genre=${encodeURIComponent(genre.query)}`}
-                            className="group block focus:outline-none filter drop-shadow-lg hover:drop-shadow-2xl transition-all duration-300 relative z-0 hover:z-50"
+                            className="group block focus:outline-none filter drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] hover:drop-shadow-[0_20px_20px_rgba(0,0,0,0.7)] transition-all duration-300 relative z-0 hover:z-50"
                             style={{ width: '120%' }} // Adjusted overlap (130% -> 120%)
                         >
                             <div
-                                className="w-full aspect-[1.1547] bg-gray-100 relative items-center justify-center flex overflow-hidden"
+                                className="w-full aspect-[1.1547] glass-premium relative items-center justify-center flex overflow-hidden"
                                 style={{
                                     // Horizontal Hexagon (Pointy Left/Right)
                                     clipPath: "polygon(0% 50%, 25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%)",
@@ -56,11 +56,11 @@ export default function SectionE() {
                                 }}
                             >
                                 {/* Background/Image Placeholder */}
-                                <div className="absolute inset-0 bg-gray-200 group-hover:bg-gray-800 transition-colors duration-300" />
+                                <div className="absolute inset-0 bg-white/5 group-hover:bg-white/20 transition-colors duration-300" />
 
                                 {/* Centered Title */}
                                 <div className="absolute inset-0 flex items-center justify-center p-4">
-                                    <span className="text-base md:text-lg font-bold text-gray-800 group-hover:text-white z-10 text-center transition-colors duration-300 break-keep leading-tight">
+                                    <span className="text-base md:text-lg font-bold text-white z-10 text-center transition-colors duration-300 break-keep leading-tight drop-shadow-md">
                                         {genre.title}
                                     </span>
                                 </div>

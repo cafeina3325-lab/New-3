@@ -125,11 +125,11 @@ export default function FAQPage() {
     };
 
     return (
-        <main className="pt-[120px] min-h-screen bg-white text-gray-900 pb-20">
+        <main className="pt-[120px] min-h-screen bg-[var(--color-green-900)] text-[var(--color-off-white)] pb-20 selection:bg-[var(--color-gold-500)] selection:text-black">
             {/* 1. Hero */}
             <section className="container mx-auto px-6 mb-16 text-center">
-                <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">명확한 기준, 투명한 원칙 (Clear Protocol)</h1>
-                <p className="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed word-keep-all">
+                <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight text-[var(--color-off-white)]">명확한 기준, 투명한 원칙 (Clear Protocol)</h1>
+                <p className="text-lg md:text-xl text-white/60 max-w-4xl mx-auto leading-relaxed word-keep-all">
                     타협 없는 마스터피스를 피부 위에 안전하게 구현하기 위해, 당소가 엄격하게 준수하고 있는 운영 기준과 작업 과정을 투명하게 안내합니다.
                 </p>
             </section>
@@ -140,7 +140,7 @@ export default function FAQPage() {
                     <input
                         type="text"
                         placeholder="찾으시는 과정이나 특정 규정이 있으십니까? (예: 예약금, 리터치, 커버업)"
-                        className="w-full py-4 px-6 pl-12 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-900 transition-colors text-gray-800 placeholder-gray-400"
+                        className="w-full py-4 px-6 pl-12 glass-premium border border-white/20 rounded-lg focus:outline-none focus:border-white transition-colors text-white placeholder-gray-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -157,15 +157,15 @@ export default function FAQPage() {
             {/* 3. Sticky Category Navigation & FAQ List */}
             <section className="container mx-auto px-6 max-w-5xl flex flex-col md:flex-row gap-12 items-start relative">
                 {/* Sticky Nav */}
-                <aside className="md:w-1/4 md:sticky md:top-32 w-full overflow-x-auto md:overflow-visible z-10 bg-white md:bg-transparent pb-2">
+                <aside className="md:w-1/4 md:sticky md:top-32 w-full overflow-x-auto md:overflow-visible z-10 bg-transparent pb-2">
                     <div className="flex md:flex-col gap-2">
                         {categories.map((cat) => (
                             <button
                                 key={cat}
                                 onClick={() => setActiveCategory(cat)}
                                 className={`px-4 py-2 text-sm font-bold text-left rounded transition-colors whitespace-nowrap ${activeCategory === cat
-                                    ? "bg-gray-900 text-white"
-                                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                                    ? "bg-white text-black shadow-md"
+                                    : "glass-premium text-gray-400 hover:text-white border border-transparent hover:border-white/20"
                                     }`}
                             >
                                 {cat}
@@ -180,21 +180,21 @@ export default function FAQPage() {
                         filteredFAQ.map((item, index) => (
                             <div
                                 key={index}
-                                className={`border border-gray-100 rounded-lg overflow-hidden transition-all duration-300 ${openIndex === index ? 'shadow-md bg-gray-50' : 'bg-white hover:bg-gray-50'}`}
+                                className={`border border-white/10 rounded-lg overflow-hidden transition-all duration-300 ${openIndex === index ? 'shadow-[0_0_20px_rgba(255,255,255,0.05)] glass-premium' : 'glass-premium hover:border-white/30'}`}
                             >
                                 <button
                                     onClick={() => toggleAccordion(index)}
                                     className="w-full text-left p-6 flex items-start justify-between group focus:outline-none"
                                 >
                                     <div className="flex-1 pr-8">
-                                        <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 block">{item.category}</span>
-                                        <h3 className={`text-lg md:text-xl font-bold transition-colors ${openIndex === index ? 'text-gray-900' : 'text-gray-700 group-hover:text-gray-900'}`}>
-                                            <span className="text-gray-300 mr-2">Q.</span>
+                                        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">{item.category}</span>
+                                        <h3 className={`text-lg md:text-xl font-bold transition-colors ${openIndex === index ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
+                                            <span className="text-gray-500 mr-2">Q.</span>
                                             {item.q}
                                         </h3>
                                     </div>
                                     <div className={`mt-1 transition-transform duration-300 ${openIndex === index ? 'rotate-180' : ''}`}>
-                                        <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-6 h-6 text-gray-500 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                         </svg>
                                     </div>
@@ -203,10 +203,10 @@ export default function FAQPage() {
                                 <div
                                     className={`transition-all duration-300 ease-in-out overflow-hidden ${openIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
                                 >
-                                    <div className="p-6 pt-0 border-t border-gray-100/50">
+                                    <div className="p-6 pt-0 border-t border-white/10">
                                         <div className="flex items-start gap-3 mt-4">
                                             <span className="text-gray-400 font-bold shrink-0 mt-1">A.</span>
-                                            <p className="text-gray-600 leading-relaxed whitespace-pre-line word-keep-all">
+                                            <p className="text-gray-300 leading-relaxed whitespace-pre-line word-keep-all">
                                                 {item.a}
                                             </p>
                                         </div>
@@ -215,7 +215,7 @@ export default function FAQPage() {
                             </div>
                         ))
                     ) : (
-                        <div className="text-center py-20 text-gray-400 border border-gray-100 rounded-lg bg-gray-50">
+                        <div className="text-center py-20 text-gray-500 border border-white/10 rounded-lg glass-premium">
                             검색 결과가 없습니다.
                         </div>
                     )}
@@ -223,16 +223,16 @@ export default function FAQPage() {
             </section>
 
             {/* 4. Private Concierge CTA */}
-            <section className="bg-gray-50 border-t border-gray-100 py-20 mt-20">
+            <section className="glass-premium border-t border-white/10 py-20 mt-20">
                 <div className="container mx-auto px-6 text-center max-w-3xl">
-                    <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">당신만의 고유한 서사에 대해 더 깊은 논의가 필요하십니까?</h2>
-                    <p className="text-gray-600 mb-8 leading-relaxed word-keep-all">
+                    <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white">당신만의 고유한 서사에 대해 더 깊은 논의가 필요하십니까?</h2>
+                    <p className="text-gray-400 mb-8 leading-relaxed word-keep-all">
                         세부적인 도안 방향성이나 체질에 따른 특이사항 등, 남겨진 질문이 있다면 전담 디렉터에게 문의해 주십시오.
                         프라이빗하고 심도 있는 상담을 도와드립니다.
                     </p>
                     <button
                         onClick={() => setIsContactOpen(true)}
-                        className="px-8 py-4 bg-gray-900 text-white font-bold rounded hover:bg-black transition shadow-lg hover:shadow-xl"
+                        className="px-8 py-4 bg-white text-black font-bold rounded hover:bg-gray-200 transition shadow-lg hover:shadow-xl"
                     >
                         1:1 프라이빗 컨시어지 연결
                     </button>

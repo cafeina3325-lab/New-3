@@ -37,7 +37,10 @@ export default function Navbar() {
     };
 
     return (
-        <header className="fixed top-0 left-0 w-full z-50 flex items-start pointer-events-none">
+        <header className="fixed top-0 left-0 w-full z-50 flex items-center pointer-events-none h-[80px] md:h-[100px]">
+            {/* Gradient Background Fade - Transparent behind TitleBar, fades in to dark for NavMenu */}
+            <div className="absolute inset-0 w-full h-full bg-[linear-gradient(to_right,transparent_0px,transparent_350px,#0f1a24_600px)] pointer-events-auto" />
+
             <TitleBar />
             <NavMenu isHamburgerMode={isHamburgerMode} />
 

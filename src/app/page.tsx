@@ -8,7 +8,7 @@ import SectionG from "@/components/sections/SectionG";
 
 export default function Home() {
   return (
-    <main>
+    <main className="min-h-screen bg-[var(--color-navy-900)] text-[var(--color-off-white)] selection:bg-[var(--color-gold-500)] selection:text-black">
       <Hero />
       <SectionB />
       <SectionC />

@@ -780,7 +780,7 @@ const GenresContent = () => {
 
     return (
         <div className="container mx-auto px-6 max-w-6xl">
-            <h1 className="text-4xl md:text-5xl font-bold mb-12 text-center text-gray-900">Genres</h1>
+            <h1 className="text-4xl md:text-5xl font-bold mb-12 text-center text-white">Genres</h1>
 
             {/* Main Tabs (Categories) */}
             <div className="flex flex-col items-center mb-10">
@@ -790,8 +790,8 @@ const GenresContent = () => {
                             key={cat}
                             onClick={() => setActiveMainTab(cat)}
                             className={`px-6 py-3 rounded-full text-sm md:text-base font-bold transition-all duration-300 border ${activeMainTab === cat
-                                ? "bg-gray-900 text-white border-gray-900 shadow-md"
-                                : "bg-white text-gray-500 border-gray-200 hover:border-gray-400 hover:text-gray-900"
+                                ? "bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+                                : "glass-premium text-gray-400 border-white/10 hover:border-white/30 hover:text-white"
                                 }`}
                         >
                             {cat}
@@ -799,20 +799,20 @@ const GenresContent = () => {
                     ))}
                 </div>
                 {/* Category Description */}
-                <p className="text-gray-500 text-center max-w-2xl text-sm md:text-base leading-relaxed break-keep">
+                <p className="text-gray-400 text-center max-w-2xl text-sm md:text-base leading-relaxed break-keep">
                     {categoryInfo[activeMainTab]}
                 </p>
             </div>
 
             {/* Sub Tabs (Specific Genres) */}
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-16 border-b border-gray-100 pb-6 px-4">
+            <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 mb-16 border-b border-white/10 pb-6 px-4">
                 {categoryData[activeMainTab].map((sub) => (
                     <button
                         key={sub}
                         onClick={() => setActiveSubTab(sub)}
                         className={`text-base md:text-lg font-medium transition-colors relative pb-2 ${activeSubTab === sub
-                            ? "text-gray-900 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-gray-900"
-                            : "text-gray-400 hover:text-gray-600"
+                            ? "text-white after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-white"
+                            : "text-gray-500 hover:text-gray-300"
                             }`}
                     >
                         {sub}
@@ -821,29 +821,29 @@ const GenresContent = () => {
             </div>
 
             {/* Content Area */}
-            <div className="flex flex-col lg:flex-row gap-12 items-start animation-fade-in bg-gray-50 p-8 md:p-12 rounded-xl border border-gray-100">
+            <div className="flex flex-col lg:flex-row gap-12 items-start animation-fade-in glass-premium p-8 md:p-12 rounded-xl border border-white/10">
                 {/* Left: Main Content & Details */}
                 <div className="lg:w-3/5">
                     <div className="mb-10">
-                        <span className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-2 block">{activeMainTab}</span>
-                        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">{activeSubTab}</h2>
-                        <p className="text-lg text-gray-700 leading-loose word-keep-all mb-8">
+                        <span className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-2 block">{activeMainTab}</span>
+                        <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">{activeSubTab}</h2>
+                        <p className="text-lg text-gray-300 leading-loose word-keep-all mb-8">
                             {currentGenre.desc}
                         </p>
                     </div>
 
                     {/* Detailed Sections (if available) - e.g. for Irezumi */}
                     {currentGenre.details && currentGenre.details.map((section, idx) => (
-                        <div key={idx} className="mb-10 border-t border-gray-200 pt-8 last:mb-0">
-                            <h3 className="text-2xl font-bold text-gray-900 mb-6">{section.title}</h3>
-                            {section.text && <p className="text-gray-700 mb-6 leading-relaxed">{section.text}</p>}
+                        <div key={idx} className="mb-10 border-t border-white/10 pt-8 last:mb-0">
+                            <h3 className="text-2xl font-bold text-white mb-6">{section.title}</h3>
+                            {section.text && <p className="text-gray-300 mb-6 leading-relaxed">{section.text}</p>}
 
                             <div className="space-y-6">
                                 {/* Sub-items (Subtitle + Text) */}
                                 {section.items && section.items.map((item, i) => (
                                     <div key={i}>
-                                        <h4 className="text-lg font-bold text-gray-800 mb-2">{item.subtitle}</h4>
-                                        <p className="text-gray-600 leading-relaxed text-sm md:text-base word-keep-all">
+                                        <h4 className="text-lg font-bold text-gray-200 mb-2">{item.subtitle}</h4>
+                                        <p className="text-gray-400 leading-relaxed text-sm md:text-base word-keep-all">
                                             {item.text}
                                         </p>
                                     </div>
@@ -853,9 +853,9 @@ const GenresContent = () => {
                                 {section.list && (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {section.list.map((li, i) => (
-                                            <div key={i} className="bg-white p-4 rounded border border-gray-100">
-                                                <span className="font-bold text-gray-900 block mb-1">{li.term}</span>
-                                                <span className="text-sm text-gray-600 block">{li.desc}</span>
+                                            <div key={i} className="glass-premium p-4 rounded border border-white/10 bg-white/5">
+                                                <span className="font-bold text-white block mb-1">{li.term}</span>
+                                                <span className="text-sm text-gray-400 block">{li.desc}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -866,12 +866,12 @@ const GenresContent = () => {
                 </div>
 
                 {/* Right: Key Features (Sticky) */}
-                <div className="lg:w-2/5 w-full bg-white p-8 rounded-lg border border-gray-100 shadow-sm lg:sticky lg:top-32">
-                    <h3 className="text-xl font-bold text-gray-900 mb-6 border-b border-gray-100 pb-3">Key Characteristics</h3>
+                <div className="lg:w-2/5 w-full glass-premium p-8 rounded-lg border border-white/10 shadow-sm lg:sticky lg:top-32 bg-white/5">
+                    <h3 className="text-xl font-bold text-white mb-6 border-b border-white/10 pb-3">Key Characteristics</h3>
                     <ul className="space-y-4">
                         {currentGenre.features.map((feature, idx) => (
-                            <li key={idx} className="flex items-start gap-3 text-gray-600">
-                                <span className="mt-1.5 w-1.5 h-1.5 bg-gray-900 rounded-full shrink-0" />
+                            <li key={idx} className="flex items-start gap-3 text-gray-300">
+                                <span className="mt-1.5 w-1.5 h-1.5 bg-white rounded-full shrink-0" />
                                 <span>{feature}</span>
                             </li>
                         ))}
@@ -879,7 +879,7 @@ const GenresContent = () => {
 
                     {/* Additional Info Box for Irezumi context or generic */}
                     {activeSubTab === "Irezumi" && (
-                        <div className="mt-8 pt-6 border-t border-gray-100">
+                        <div className="mt-8 pt-6 border-t border-white/10">
                             <p className="text-xs text-gray-500 leading-relaxed">
                                 * 이레즈미는 단순한 문신을 넘어 일본의 민담, 불교적 세계관, 자연관이 집약된 하나의 종합 예술입니다.
                                 현대에는 전통 방식뿐만 아니라 다양한 파생 장르로 확장되고 있습니다.
@@ -888,13 +888,13 @@ const GenresContent = () => {
                     )}
 
                     {/* View Gallery Button */}
-                    <div className="mt-8 pt-6 border-t border-gray-100">
+                    <div className="mt-8 pt-6 border-t border-white/20">
                         <Link
                             href={`/gallery?tab=Portfolio&filter=Genre&item=${encodeURIComponent(activeSubTab === "ETC." ? "Specialties" : activeSubTab)}`}
-                            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-gray-900 text-white rounded-xl shadow-lg hover:bg-black hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group"
+                            className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white text-black rounded-xl shadow-lg hover:bg-gray-200 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group"
                         >
                             <span className="font-bold text-sm tracking-wide">VIEW {activeSubTab.toUpperCase()} GALLERY</span>
-                            <div className="bg-white/20 p-1.5 rounded-full group-hover:bg-white/30 transition-colors">
+                            <div className="bg-black/10 p-1.5 rounded-full group-hover:bg-black/20 transition-colors">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                 </svg>
@@ -910,7 +910,7 @@ const GenresContent = () => {
 
 export default function GenresPage() {
     return (
-        <main className="pt-[120px] min-h-screen bg-white pb-20">
+        <main className="pt-[120px] min-h-screen bg-[var(--color-green-900)] text-[var(--color-off-white)] pb-20 selection:bg-[var(--color-gold-500)] selection:text-black">
             <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
                 <GenresContent />
             </Suspense>

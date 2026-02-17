@@ -33,9 +33,9 @@ export default function SectionF() {
     ];
 
     return (
-        <section className="min-h-screen flex flex-col justify-center py-20 bg-gray-100 w-full overflow-hidden">
+        <section className="min-h-screen flex flex-col justify-center py-20 w-full overflow-hidden">
             <div className="container mx-auto px-6 mb-12">
-                <h2 className="text-3xl font-bold text-center text-gray-900">Testimonials</h2>
+                <h2 className="text-3xl font-bold text-center text-white">Testimonials</h2>
             </div>
 
             {/* Grid Layout: 2 Rows Scroll on Mobile, 1 Row Scroll on Desktop 
@@ -50,17 +50,17 @@ export default function SectionF() {
                 {testimonials.map((item) => (
                     <div
                         key={item.id}
-                        className="bg-white p-4 shadow-lg transform rotate-1 hover:rotate-0 transition-transform duration-300 snap-center"
+                        className="glass-premium p-4 transform rotate-1 hover:rotate-0 transition-transform duration-300 snap-center rounded-lg"
                     >
                         {/* Polaroid Image Area */}
-                        <div className={`w-full h-[240px] ${item.image} mb-4 flex items-center justify-center text-gray-500`}>
+                        <div className={`w-full h-[240px] bg-white/5 mb-4 flex items-center justify-center text-gray-400 border border-white/10`}>
                             <span className="text-sm">Image</span>
                         </div>
 
                         {/* Polaroid Caption Area */}
                         <div className="text-center">
-                            <p className="text-gray-800 font-handwriting text-lg italic mb-2">&quot;{item.text}&quot;</p>
-                            <p className="text-gray-600 text-sm">- {item.author}</p>
+                            <p className="text-gray-200 font-handwriting text-lg italic mb-2">&quot;{item.text}&quot;</p>
+                            <p className="text-gray-400 text-sm">- {item.author}</p>
                         </div>
                     </div>
                 ))}

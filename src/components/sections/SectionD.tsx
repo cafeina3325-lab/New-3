@@ -19,19 +19,19 @@ export default function SectionD() {
     ];
 
     return (
-        <section className="min-h-screen flex flex-col justify-center py-20 bg-gray-50 w-full">
+        <section className="min-h-screen flex flex-col justify-center py-20 w-full">
             <div className="container mx-auto px-6">
                 <div className="flex flex-col md:flex-row items-center justify-between gap-12 mb-16">
                     {/* Text Content */}
                     <div className="md:w-1/2">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Philosophy</h2>
-                        <h3 className="text-xl font-semibold text-gray-800 mb-4">우리는 피부위에 예술을 새깁니다.</h3>
-                        <p className="text-gray-600 leading-relaxed mb-6 whitespace-pre-line">
+                        <h2 className="text-3xl font-bold text-white mb-6">Our Philosophy</h2>
+                        <h3 className="text-xl font-semibold text-gray-300 mb-4">우리는 피부위에 예술을 새깁니다.</h3>
+                        <p className="text-gray-400 leading-relaxed mb-6 whitespace-pre-line">
                             각 작품은 단순한 그림이 아닌, 당신의 이야기를 담은 영원한 캔버스입니다.
                             정밀함과 창의성의 균형, 그리고 고객과의 깊은 소통을 통해 세상에 단 하나뿐인 작품을 만듭니다.
                         </p>
                         <Link href="/about">
-                            <button className="px-6 py-3 bg-gray-900 text-white rounded hover:bg-gray-800 transition">
+                            <button className="px-6 py-3 bg-white text-black font-bold rounded hover:bg-gray-200 transition shadow-[0_0_15px_rgba(255,255,255,0.2)]">
                                 Detail
                             </button>
                         </Link>
@@ -42,7 +42,7 @@ export default function SectionD() {
                     <div className="md:w-1/2 flex flex-col items-center w-full mt-8 md:mt-0">
                         {/* Top Card (Precision) - Index 0 */}
                         <div
-                            className="relative z-10 bg-white flex flex-col items-center justify-center text-center filter drop-shadow-xl hover:scale-105 transition-transform duration-300 w-[32%] md:w-[43%] lg:w-[32%]"
+                            className="relative z-10 glass-premium flex flex-col items-center justify-center text-center filter drop-shadow-xl hover:scale-105 transition-transform duration-300 w-[32%] md:w-[43%] lg:w-[32%]"
                             style={{
                                 // width: '32%', // Removed: Handled by Tailwind classes for responsiveness
                                 aspectRatio: '1 / 1.1547', // Perfect Regular Hexagon Ratio
@@ -53,8 +53,8 @@ export default function SectionD() {
                             }}
                         >
                             <div className="p-[10%] flex flex-col items-center justify-center h-full">
-                                <h4 className="font-bold text-gray-900 mb-[5cqw] text-[11cqw] leading-tight break-keep">{cards[0].title}</h4>
-                                <p className="text-gray-500 word-keep break-keep text-[6.5cqw] leading-relaxed opacity-80">{cards[0].desc}</p>
+                                <h4 className="font-bold text-white mb-[5cqw] text-[11cqw] leading-tight break-keep">{cards[0].title}</h4>
+                                <p className="text-gray-300 word-keep break-keep text-[6.5cqw] leading-relaxed opacity-90">{cards[0].desc}</p>
                             </div>
                         </div>
 
@@ -68,7 +68,7 @@ export default function SectionD() {
                             {cards.slice(1).map((card, index) => (
                                 <div
                                     key={index + 1}
-                                    className="bg-white flex flex-col items-center justify-center text-center filter drop-shadow-lg hover:scale-105 transition-transform duration-300 w-[32%] md:w-[43%] lg:w-[32%]"
+                                    className="glass-premium flex flex-col items-center justify-center text-center filter drop-shadow-lg hover:scale-105 transition-transform duration-300 w-[32%] md:w-[43%] lg:w-[32%]"
                                     style={{
                                         // width: '32%',
                                         aspectRatio: '1 / 1.1547',
@@ -79,8 +79,8 @@ export default function SectionD() {
                                     }}
                                 >
                                     <div className="p-[10%] flex flex-col items-center justify-center h-full">
-                                        <h4 className="font-bold text-gray-900 mb-[5cqw] text-[11cqw] leading-tight break-keep">{card.title}</h4>
-                                        <p className="text-gray-500 word-keep break-keep text-[6.5cqw] leading-relaxed opacity-80">{card.desc}</p>
+                                        <h4 className="font-bold text-white mb-[5cqw] text-[11cqw] leading-tight break-keep">{card.title}</h4>
+                                        <p className="text-gray-300 word-keep break-keep text-[6.5cqw] leading-relaxed opacity-90">{card.desc}</p>
                                     </div>
                                 </div>
                             ))}
