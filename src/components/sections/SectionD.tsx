@@ -42,9 +42,9 @@ export default function SectionD() {
                     <div className="md:w-1/2 flex flex-col items-center w-full mt-8 md:mt-0">
                         {/* Top Card (Precision) - Index 0 */}
                         <div
-                            className="relative z-10 bg-white flex flex-col items-center justify-center text-center filter drop-shadow-xl hover:scale-105 transition-transform duration-300"
+                            className="relative z-10 bg-white flex flex-col items-center justify-center text-center filter drop-shadow-xl hover:scale-105 transition-transform duration-300 w-[32%] md:w-[43%] lg:w-[32%]"
                             style={{
-                                width: '32%', // Adjust base size relative to container
+                                // width: '32%', // Removed: Handled by Tailwind classes for responsiveness
                                 aspectRatio: '1 / 1.1547', // Perfect Regular Hexagon Ratio
                                 clipPath: "polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)",
                                 WebkitClipPath: "polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)",
@@ -68,9 +68,9 @@ export default function SectionD() {
                             {cards.slice(1).map((card, index) => (
                                 <div
                                     key={index + 1}
-                                    className="bg-white flex flex-col items-center justify-center text-center filter drop-shadow-lg hover:scale-105 transition-transform duration-300"
+                                    className="bg-white flex flex-col items-center justify-center text-center filter drop-shadow-lg hover:scale-105 transition-transform duration-300 w-[32%] md:w-[43%] lg:w-[32%]"
                                     style={{
-                                        width: '32%',
+                                        // width: '32%',
                                         aspectRatio: '1 / 1.1547',
                                         clipPath: "polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)",
                                         WebkitClipPath: "polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)",

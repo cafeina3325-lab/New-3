@@ -5,26 +5,31 @@ import TitleBar from "./TitleBar";
 import NavMenu from "./NavMenu";
 
 export default function Navbar() {
-    const [isHamburgerMode, setIsHamburgerMode] = useState(false);
+    const [isHamburgerMode, setIsHamburgerMode] = useState(true);
 
     useEffect(() => {
         const handleScroll = () => {
+            const isSmallScreen = window.innerWidth < 1024;
             const sectionTarget = document.getElementById("section-b");
             if (sectionTarget) {
                 const rect = sectionTarget.getBoundingClientRect();
-                // Main Page: Switch when Section B's top reaches the header area
-                setIsHamburgerMode(rect.top <= 120);
+                // Main Page: Switch when Section B's top reaches the header area OR if on small screen
+                setIsHamburgerMode(rect.top <= 120 || isSmallScreen);
             } else {
-                // Sub Pages: Switch when scrolled down more than 200px
-                setIsHamburgerMode(window.scrollY > 200);
+                // Sub Pages: Switch when scrolled down more than 200px OR if on small screen
+                setIsHamburgerMode(window.scrollY > 200 || isSmallScreen);
             }
         };
 
         window.addEventListener("scroll", handleScroll);
+        window.addEventListener("resize", handleScroll);
         // Initial check
         handleScroll();
 
-        return () => window.removeEventListener("scroll", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", handleScroll);
+        };
     }, []);
 
     const scrollToTop = () => {

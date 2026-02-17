@@ -5,6 +5,7 @@ import ContactOverlay from "./ContactOverlay";
 export default function NavMenu({ isHamburgerMode }: { isHamburgerMode?: boolean }) {
     const [isContactOpen, setIsContactOpen] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
     const navRef = useRef<HTMLElement>(null);
 
     const menuItems = [
@@ -71,32 +72,71 @@ export default function NavMenu({ isHamburgerMode }: { isHamburgerMode?: boolean
             <nav
                 ref={navRef}
                 className={`
-                    flex-1 transition-all duration-500 ease-in-out pointer-events-auto flex items-center justify-end px-8
-                    ${showNavBar ? 'h-[100px] bg-gray-200 opacity-100' : 'h-0 opacity-0 overflow-hidden'}
+                    transition-all duration-500 ease-in-out pointer-events-auto 
+                    lg:flex-1 lg:flex lg:items-center lg:justify-end lg:px-8 lg:bg-gray-200
+                    fixed lg:relative top-[100px] md:top-[120px] lg:top-0 left-0 h-[calc(100vh-100px)] md:h-[calc(100vh-120px)] lg:h-[100px] w-[280px] lg:w-auto bg-white/95 lg:bg-gray-200/100 backdrop-blur-md lg:backdrop-blur-none shadow-2xl lg:shadow-none z-40 flex flex-col lg:flex-row pt-8 lg:pt-0 pl-8 lg:pl-0
+                    overflow-y-auto lg:overflow-y-visible
+                    ${showNavBar ? '[clip-path:inset(0_0_0_0)] lg:[clip-path:none] opacity-100' : '[clip-path:inset(0_0_100%_0)] opacity-0 lg:h-0 lg:opacity-0 lg:overflow-hidden lg:[clip-path:none]'}
                 `}
             >
                 {/* Navigation Items - Only render/visible when showing nav bar */}
-                <div className={`flex items-center ${showNavBar ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}>
-                    <ul className="flex space-x-8 mr-12">
+                <div className={`flex flex-col lg:flex-row items-start lg:items-center w-full lg:w-auto ${showNavBar ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}>
+                    <ul className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-8 lg:mr-12 w-full lg:w-auto pb-20 lg:pb-0">
                         {menuItems.map((item) => (
-                            <li key={item.name} className="relative group h-full flex items-center">
-                                <Link
-                                    href={item.path}
-                                    className="text-xl font-medium text-gray-800 hover:text-gray-600 transition-colors py-4"
-                                >
-                                    {item.name}
-                                </Link>
+                            <li key={item.name} className="relative group lg:h-full flex flex-col lg:flex-row lg:items-center item-start w-full lg:w-auto">
+                                <div className="flex items-center justify-between w-full lg:w-auto">
+                                    <Link
+                                        href={item.path}
+                                        className="text-xl font-medium text-gray-800 hover:text-gray-600 transition-colors py-2 lg:py-4 block w-full lg:w-auto"
+                                        onClick={(e) => {
+                                            if (isHamburgerMode && item.subItems) {
+                                                e.preventDefault();
+                                                setOpenSubMenu(openSubMenu === item.name ? null : item.name);
+                                            } else if (isHamburgerMode) {
+                                                setIsMenuOpen(false);
+                                            }
+                                        }}
+                                    >
+                                        {item.name}
+                                    </Link>
+                                    {/* Mobile Toggle Chevron */}
+                                    {item.subItems && isHamburgerMode && (
+                                        <button
+                                            className="p-2 lg:hidden outline-none focus:outline-none"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                setOpenSubMenu(openSubMenu === item.name ? null : item.name);
+                                            }}
+                                        >
+                                            <svg
+                                                className={`w-5 h-5 transition-transform duration-300 ${openSubMenu === item.name ? 'rotate-180' : ''}`}
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+                                    )}
+                                </div>
 
                                 {/* Dropdown Menu */}
                                 {item.subItems && (
-                                    <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-out z-50">
-                                        <div className="bg-white rounded-lg shadow-xl overflow-hidden min-w-[180px] border border-gray-100">
+                                    <div className={`
+                                        lg:absolute lg:top-full lg:left-1/2 lg:-translate-x-1/2 lg:pt-2 
+                                        static w-full pl-4 lg:pl-0
+                                        lg:opacity-0 lg:invisible lg:group-hover:opacity-100 lg:group-hover:visible 
+                                        transition-all duration-300 ease-out z-50
+                                        ${openSubMenu === item.name ? 'block' : 'hidden'} lg:block
+                                    `}>
+                                        <div className="bg-transparent lg:bg-white rounded-lg lg:shadow-xl overflow-hidden min-w-[180px] border-l-2 lg:border lg:border-gray-100 border-gray-200">
                                             <ul className="py-2">
                                                 {item.subItems.map((subItem) => (
                                                     <li key={subItem.name}>
                                                         <Link
                                                             href={subItem.path}
-                                                            className="block px-6 py-3 text-sm text-gray-600 hover:bg-gray-50 hover:text-black transition-colors whitespace-nowrap"
+                                                            className="block px-4 lg:px-6 py-2 lg:py-3 text-sm text-gray-600 hover:bg-gray-100 lg:hover:bg-gray-50 hover:text-black transition-colors whitespace-nowrap"
+                                                            onClick={() => isHamburgerMode && setIsMenuOpen(false)}
                                                         >
                                                             {subItem.name}
                                                         </Link>
@@ -110,14 +150,24 @@ export default function NavMenu({ isHamburgerMode }: { isHamburgerMode?: boolean
                         ))}
                     </ul>
 
-                    <button
-                        onClick={handleContactClick}
-                        className="px-6 py-3 bg-gray-800 text-white font-bold rounded hover:bg-gray-700 transition mr-4"
-                    >
-                        Contact
-                    </button>
+                    <div className="mt-8 lg:mt-0 w-full lg:w-auto lg:block">
+                        <button
+                            onClick={handleContactClick}
+                            className="px-6 py-3 bg-gray-800 text-white font-bold rounded hover:bg-gray-700 transition w-full lg:w-auto lg:mr-4"
+                        >
+                            Contact
+                        </button>
+                    </div>
                 </div>
             </nav>
+
+            {/* Backdrop for Mobile */}
+            {isHamburgerMode && isMenuOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden animate-fade-in"
+                    onClick={() => setIsMenuOpen(false)}
+                />
+            )}
 
             {/* Hamburger Button - Visible only when in Hamburger Mode AND Menu is Closed */}
             {isHamburgerMode && !isMenuOpen && (
@@ -126,10 +176,10 @@ export default function NavMenu({ isHamburgerMode }: { isHamburgerMode?: boolean
                         e.stopPropagation(); // Prevent immediate closing due to outside click logic bubbling
                         setIsMenuOpen(true);
                     }}
-                    className="fixed top-8 right-8 z-50 pointer-events-auto p-4 bg-black text-white rounded-full shadow-lg hover:bg-gray-800 transition-all animate-fade-in"
+                    className="fixed top-[100px] md:top-[120px] left-[85px] md:left-[162.5px] -translate-x-1/2 lg:fixed lg:top-8 lg:right-8 lg:left-auto lg:translate-x-0 z-50 pointer-events-auto w-[170px] md:w-[325px] h-7 lg:w-14 lg:h-14 bg-black text-white drop-shadow-md lg:drop-shadow-none lg:shadow-lg lg:rounded-full hover:bg-gray-800 transition-all animate-fade-in flex items-center justify-center [clip-path:polygon(0%_0%,_100%_0%,_100%_70%,_50%_100%,_0%_70%)] lg:[clip-path:none]"
                     aria-label="Open Menu"
                 >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>

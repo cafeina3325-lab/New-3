@@ -70,17 +70,15 @@ export default function Footer() {
                     </div>
 
                     {/* 3. Right Column: Business Info (Spans 2 columns on large screens) */}
-                    <div className="lg:col-span-2 space-y-4 text-sm leading-relaxed">
-                        <h3 className="text-white font-bold mb-4 uppercase text-sm tracking-wider">Information</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
-                            <div>
-                                <p><span className="font-bold text-gray-500 w-24 inline-block">OWNER</span> Hong Gil Dong</p>
-                                <p><span className="font-bold text-gray-500 w-24 inline-block">LICENSE</span> 123-45-67890</p>
-                                <p><span className="font-bold text-gray-500 w-24 inline-block">MANAGER</span> Kim Cheol Su</p>
-                            </div>
-                            <div>
-                                <p><span className="font-bold text-gray-500 w-24 inline-block">ADDRESS</span> Incheon, Namdong-gu, Guwol-dong 1234-5, 2F</p>
-                                <p><span className="font-bold text-gray-500 w-24 inline-block">HOURS</span> 11:00 - 20:00 (Mon - Sat)</p>
+                    <div className="lg:col-span-2 flex flex-col lg:items-end text-sm leading-relaxed">
+                        <div className="text-left">
+                            <h3 className="text-white font-bold mb-4 uppercase text-sm tracking-wider">Information</h3>
+                            <div className="flex flex-col space-y-2 text-gray-400">
+                                <p><span className="font-bold text-gray-600 mr-2">OWNER</span> Hong Gil Dong</p>
+                                <p><span className="font-bold text-gray-600 mr-2">LICENSE</span> 123-45-67890</p>
+                                <p><span className="font-bold text-gray-600 mr-2">MANAGER</span> Kim Cheol Su</p>
+                                <p><span className="font-bold text-gray-600 mr-2">ADDRESS</span> Incheon, Namdong-gu, Guwol-dong 1234-5, 2F</p>
+                                <p><span className="font-bold text-gray-600 mr-2">HOURS</span> 11:00 - 20:00 (Mon - Sat)</p>
                             </div>
                         </div>
                     </div>
