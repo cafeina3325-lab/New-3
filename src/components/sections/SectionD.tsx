@@ -29,7 +29,7 @@ export default function SectionD() {
                         <h2 className="text-3xl font-bold text-white mb-6">Our Philosophy</h2>
                         <h3 className="text-xl font-semibold text-gray-200 mb-4">우리는 피부위에 예술을 새깁니다.</h3>
                         <p className="text-gray-400 leading-relaxed mb-6 whitespace-pre-line">
-                            각 작품은 단순한 그림이 아닌, 당신의 이야기를 담은 영원한 캔버스입니다.
+                            각 작품은 단순한 그림이 아닌, 당신의 이야기를 담은 영원한 캔버스입니다.<br />
                             정밀함과 창의성의 균형, 그리고 고객과의 깊은 소통을 통해 세상에 단 하나뿐인 작품을 만듭니다.
                         </p>
                         <Link href="/about">

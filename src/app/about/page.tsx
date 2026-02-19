@@ -164,7 +164,7 @@ export default function AboutPage() {
                             <div className="glass-panel p-6 rounded-xl border-l-4 border-l-white">
                                 <h3 className="text-lg font-bold mb-2 text-white">B. Reference Policy</h3>
                                 <p className="text-sm text-gray-400">
-                                    레퍼런스는 무드/구성/질감 참고용입니다. 동일한 결과를 보장하지 않으며, 고객의 피부·부위에 맞춰 재해석됩니다.
+                                    레퍼런스는 무드/구성/질감 참고용입니다.<br />동일한 결과를 보장하지 않으며, 고객의 피부·부위에 맞춰 재해석됩니다.
                                 </p>
                             </div>
 
