@@ -80,14 +80,19 @@ export default function NavMenu({ isHamburgerMode }: { isHamburgerMode?: boolean
                     z-40 flex flex-col lg:flex-row pt-8 lg:pt-0
                     overflow-y-auto lg:overflow-y-visible
                     
-                    /* Glass Style Applied Here */
-                    bg-neutral-900/90 backdrop-blur-md border-r border-white/5 lg:border-r-0 lg:border-l lg:border-white/5 lg:bg-gradient-to-l lg:from-neutral-900/70 lg:to-transparent
-                    
                     ${showNavBar ? '[clip-path:inset(0_0_0_0)] lg:[clip-path:none] opacity-100' : '[clip-path:inset(0_0_100%_0)] opacity-0 lg:h-0 lg:opacity-0 lg:overflow-hidden lg:[clip-path:none]'}
                 `}
             >
-                {/* Navigation Items - Only render/visible when showing nav bar */}
-                <div className={`flex flex-col lg:flex-row items-start lg:items-center w-full lg:w-auto ${showNavBar ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}>
+                {/* Independent Background Layer with Fade Mask */}
+                <div className={`
+                    absolute inset-0 z-0 pointer-events-none
+                    bg-neutral-900/90 backdrop-blur-md border-r border-white/5 
+                    lg:border-r-0 lg:bg-neutral-900/[0.38] 
+                    lg:[mask-image:linear-gradient(to_right,transparent_0px,transparent_100px,black_30%,black_100%)]
+                `} />
+
+                {/* Navigation Items - Content Layer (Keep Opaque) */}
+                <div className={`relative z-10 flex flex-col lg:flex-row items-start lg:items-center w-full lg:w-auto ${showNavBar ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}>
                     <ul className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-8 lg:mr-12 w-full lg:w-auto pb-20 lg:pb-0 pl-8 lg:pl-0">
                         {menuItems.map((item) => (
                             <li key={item.name} className="relative group lg:h-full flex flex-col lg:flex-row lg:items-center item-start w-full lg:w-auto">
