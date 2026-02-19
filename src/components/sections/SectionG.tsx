@@ -28,7 +28,7 @@ export default function SectionG() {
 
                             {/* 1. Badge Hexagon (Glass - TITLE) */}
                             <div
-                                className="absolute left-0 z-20 h-24 w-[102px] md:h-44 md:w-[204px] shrink-0 bg-white/10 backdrop-blur-md flex items-center justify-center shadow-lg p-1 md:p-2 text-center"
+                                className="absolute left-0 z-20 h-[116px] w-[134px] md:h-[196px] md:w-[226px] shrink-0 bg-white/10 backdrop-blur-md flex items-center justify-center shadow-lg p-1 md:p-2 text-center top-1/2 -translate-y-1/2"
                                 style={{
                                     clipPath: "polygon(0% 50%, 25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%)",
                                     WebkitClipPath: "polygon(0% 50%, 25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%)"
@@ -42,12 +42,7 @@ export default function SectionG() {
 
                             {/* 2. Content Bar (Glass - DESC) */}
                             <div
-                                className="ml-[50px] md:ml-[100px] flex-1 h-full bg-white/5 backdrop-blur-sm flex flex-col justify-center items-start text-left pl-[60px] md:pl-[115px] pr-8 md:pr-16 relative z-10"
-                                style={{
-                                    // Flat Left, Pointy Right (Chevron-like ending)
-                                    clipPath: "polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%)",
-                                    WebkitClipPath: "polygon(0% 0%, 95% 0%, 100% 50%, 95% 100%, 0% 100%)"
-                                }}
+                                className="ml-[10px] flex-1 h-full bg-white/5 backdrop-blur-sm flex flex-col justify-center items-start text-left pl-[140px] md:pl-[240px] pr-8 md:pr-16 relative z-10 [--indent:28px] md:[--indent:51px] [clip-path:polygon(var(--indent)_0%,calc(100%_-_var(--indent))_0%,100%_50%,calc(100%_-_var(--indent))_100%,var(--indent)_100%,0%_50%)]"
                             >
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/5 pointer-events-none" />
                                 <p className="text-gray-300 whitespace-pre-line leading-snug md:leading-relaxed text-[10px] md:text-base font-medium">
