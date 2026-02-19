@@ -81,7 +81,7 @@ export default function NavMenu({ isHamburgerMode }: { isHamburgerMode?: boolean
                     overflow-y-auto lg:overflow-y-visible
                     
                     /* Glass Style Applied Here */
-                    bg-neutral-900/90 backdrop-blur-md border-r border-white/5 lg:border-r-0 lg:border-l lg:border-white/5 lg:bg-neutral-900/50
+                    bg-neutral-900/90 backdrop-blur-md border-r border-white/5 lg:border-r-0 lg:border-l lg:border-white/5 lg:bg-gradient-to-l lg:from-neutral-900/70 lg:to-transparent
                     
                     ${showNavBar ? '[clip-path:inset(0_0_0_0)] lg:[clip-path:none] opacity-100' : '[clip-path:inset(0_0_100%_0)] opacity-0 lg:h-0 lg:opacity-0 lg:overflow-hidden lg:[clip-path:none]'}
                 `}
