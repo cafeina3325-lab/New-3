@@ -1,0 +1,30 @@
+[
+  {
+    "id": "1772585978355",
+    "reviewId": "RV-67C590",
+    "name": "이아무개",
+    "originalName": "이아무개",
+    "password": "qwer",
+    "rating": 4,
+    "genre": "Black & Grey",
+    "content": "소중한 추억 감사합니다\n",
+    "imageUrl": "/uploads/reviews/review-1772585978354-a6fed1eb.jpeg",
+    "createdAt": "2026-03-04T00:59:38.355Z",
+    "updatedAt": "2026-03-04T02:48:55.877Z",
+    "phone": "010-6549-8732"
+  },
+  {
+    "id": "1772588733884",
+    "reviewId": "RV-2979FE",
+    "name": "최***",
+    "originalName": "최아무개",
+    "password": "qwerqwer",
+    "phone": "010-9876-5432",
+    "rating": 5,
+    "genre": "Irezumi",
+    "content": "완전 맘에듬",
+    "imageUrl": "/uploads/reviews/review-1772589050863-2cfa02f1.jpeg",
+    "createdAt": "2026-03-04T01:45:33.885Z",
+    "updatedAt": "2026-03-04T01:52:46.479Z"
+  }
+]

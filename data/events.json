@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1772533744777",
+    "title": "로고타투",
+    "genre": "Lettering",
+    "price": 50000,
+    "imageUrl": "/uploads/event/event-1772533744776-9d61d117.jpeg",
+    "createdAt": "2026-03-03T10:29:04.777Z"
+  },
+  {
+    "id": "1772595748738",
+    "title": "포세이돈",
+    "genre": "Black & Grey",
+    "price": 300000,
+    "imageUrl": "/uploads/event/event-1772595748736-9a48dafd.webp",
+    "createdAt": "2026-03-04T03:42:28.738Z"
+  }
+]

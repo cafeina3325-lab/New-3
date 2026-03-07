@@ -1,0 +1,86 @@
+// Prisma 스키마 - Supabase PostgreSQL
+// API 라우트의 실제 데이터 계약과 일치하도록 설계
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// 예약 관리
+model Appointment {
+  id                String   @id                // "AP-XXXXXX" 형식 (서버에서 생성)
+  clientName        String
+  gender            String?
+  contact           String
+  part              String
+  genre             String
+  service           String
+  referenceText     String   @default("")
+  referenceReviewId String   @default("")
+  source            String?
+  files             Json     @default("[]")
+  date              String
+  time              String
+  status            String   @default("pending")
+  isDeleted         Boolean  @default(false)
+  isArchived        Boolean  @default(false)
+  createdAt         DateTime @default(now())
+}
+
+// 이벤트
+model Event {
+  id        String   @id @default(cuid())
+  title     String   @default("무제 이벤트")
+  genre     String   @default("ETC.")
+  price     Float    @default(0)
+  imageUrl  String?
+  createdAt DateTime @default(now())
+}
+
+// 갤러리
+model GalleryItem {
+  id        String    @id @default(cuid())
+  title     String    @default("무제")
+  genre     String    @default("기타")
+  part      String    @default("기타")
+  imageUrl  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+// 히어로 영상
+model HeroVideo {
+  id        String   @id @default(cuid())
+  url       String
+  filename  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 방문 기록
+model Pageview {
+  id        String   @id @default(cuid())
+  timestamp DateTime @default(now())
+}
+
+// 리뷰
+model Review {
+  id           String    @id @default(cuid())
+  reviewId     String    @unique              // "RV-XXXXXX" 형식 (서버에서 생성)
+  name         String
+  originalName String?
+  password     String?
+  phone        String    @default("")
+  rating       Int       @default(5)
+  genre        String?
+  content      String
+  imageUrl     String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @updatedAt
+}

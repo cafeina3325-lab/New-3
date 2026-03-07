@@ -1,0 +1,69 @@
+/* 파일 요약: 전체 애플리케이션에 적용되는 테일윈드(Tailwind) 루트 CSS 및 전역 애니메이션 정의 파일입니다. */
+
+@import "tailwindcss";
+
+/* 전역 색상 변수 설정: 기본 테마(주로 Dark 계열) */
+:root {
+  --background: #1C1310; /* 메인 배경색 */
+  --foreground: #F3EBE1; /* 기본 폰트/요소 전경색 */
+}
+
+/* 테일윈드 테마 확장 (커스텀 속성 매핑) */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  
+  /* 6단 반응형 브레이크포인트 재정의 (User Requirements) */
+  --breakpoint-xs: 360px;
+  --breakpoint-sm: 390px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
+/* OS 다크모드 선호 시 기본 변수 동일 유지 (현 디자인은 항상 다크 기반) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1C1310;
+    --foreground: #F3EBE1;
+  }
+}
+
+/* body 요소의 기본 폰트와 배경, 텍스트 컬러 리셋 */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Hide Next.js Dev Tools Indicator (N button) */
+/* 개발 모드에서 하단에 표시되는 넥스트 JS 개발자 도구 위젯 숨김 처리 */
+[data-nextjs-toast],
+[data-nextjs-dev-tools-button],
+nextjs-portal {
+  display: none !important;
+}
+
+  /* Marquee Animations (가로 마키 애니메이션 키프레임 및 클래스 정의) */
+  @keyframes marquee-left {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  @keyframes marquee-right {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0); }
+  }
+
+  /* 왼쪽으로 무한 스크롤되는 애니메이션 클래스 */
+  .animate-marquee-left {
+    animation: marquee-left linear infinite;
+  }
+
+  /* 오른쪽으로 무한 스크롤되는 애니메이션 클래스 */
+  .animate-marquee-right {
+    animation: marquee-right linear infinite;
+  }
