@@ -1,14 +1,8 @@
-/**
- * 관리자 대시보드 전용 좌측 사이드바(Sidebar) 내비게이션
- * 
- * 모든 `/admin/*` 라우트에서 공통으로 출력되며, 메뉴별 이동 아이콘과
- * 현재 활성화된 페이지(active) 상태 스타일에 따른 하이라이팅을 제공합니다.
- */
-
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 // 관리자 대시보드 내 주요 탭 메뉴 목록 정적 데이터
 const MENU_ITEMS = [
@@ -47,6 +41,16 @@ export default function AdminSidebar() {
                     </Link>
                 ))}
             </nav>
+
+            <div className="p-3 md:p-4 border-t border-white/5">
+                <button
+                    onClick={() => signOut({ callbackUrl: "/login" })}
+                    className="w-full flex items-center justify-center md:justify-start md:space-x-3 p-3 rounded-xl text-red-400/80 hover:text-red-400 hover:bg-red-500/10 transition-all group"
+                >
+                    <span className="text-xl shrink-0 group-hover:scale-110 transition-transform">🚪</span>
+                    <span className="font-semibold hidden md:inline text-sm lg:text-base whitespace-nowrap">로그아웃</span>
+                </button>
+            </div>
             <div className="p-4 border-t border-white/5 text-xs text-gray-500 text-center">
                 &copy; 2026 Flying Studio Admin
             </div>
