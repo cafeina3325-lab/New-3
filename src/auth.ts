@@ -11,7 +11,7 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
             async authorize(credentials) {
                 if (!credentials?.username || !credentials?.password) return null;
 
-                const admin = await prisma.admin.findUnique({
+                const admin = await (prisma as any).admin.findUnique({
                     where: { username: credentials.username as string }
                 });
 
@@ -19,10 +19,10 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
 
                 const passwordsMatch = await bcrypt.compare(
                     credentials.password as string,
-                    admin.password
+                    (admin as any).password
                 );
 
-                if (passwordsMatch) return { id: admin.id, name: admin.username };
+                if (passwordsMatch) return { id: (admin as any).id, name: (admin as any).username };
 
                 return null;
             },
