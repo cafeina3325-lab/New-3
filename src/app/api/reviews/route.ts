@@ -12,9 +12,21 @@ import crypto from "crypto";
 import { prisma } from "@/lib/db";
 import { uploadBase64ToBlob } from "@/lib/blob";
 
-// GET: 리뷰 목록 조회 (최신순)
-export async function GET() {
+// GET: 리뷰 목록 조회 또는 특정 리뷰 ID 존재 여부 확인
+export async function GET(req: Request) {
     try {
+        const { searchParams } = new URL(req.url);
+        const reviewId = searchParams.get("reviewId");
+
+        // 만약 reviewId 쿼리가 있다면 해당 리뷰가 존재하는지 확인 (Public)
+        if (reviewId) {
+            const review = await prisma.review.findUnique({
+                where: { reviewId },
+                select: { id: true }
+            });
+            return NextResponse.json({ exists: !!review });
+        }
+
         const reviews = await prisma.review.findMany({
             orderBy: { createdAt: "desc" },
         });

@@ -133,6 +133,19 @@ export default function ContactOverlay({
         setIsSubmitting(true);
 
         try {
+            // 참고 리뷰 ID 입력 시 유효성 검증
+            if (referenceReviewId.trim()) {
+                const checkRes = await fetch(`/api/reviews?reviewId=${referenceReviewId.trim()}`);
+                if (checkRes.ok) {
+                    const checkData = await checkRes.json();
+                    if (!checkData.exists) {
+                        alert("입력하신 '참고 리뷰 ID'가 존재하지 않습니다. 다시 확인해주세요.");
+                        setIsSubmitting(false);
+                        return;
+                    }
+                }
+            }
+
             // 사용자가 첨부한 File 객체들을 Base64 데이터 스트링으로 직렬화하는 헬퍼 함수
             const fileToBase64 = (file: File): Promise<string> => {
                 return new Promise((resolve, reject) => {
@@ -382,8 +395,8 @@ export default function ContactOverlay({
                                     type="text"
                                     placeholder="예: RV-XXXXXX (리뷰 작성 시 부여된 고유 ID)"
                                     value={referenceReviewId}
-                                    onChange={(e) => setReferenceReviewId(e.target.value)}
-                                    className="w-full p-4 bg-[#1C1310] text-[#F3EBE1] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E5D9D2] placeholder:text-gray-500 transition-all font-mono text-sm md:text-base lg:text-lg"
+                                    onChange={(e) => setReferenceReviewId(e.target.value.toUpperCase())}
+                                    className="w-full p-4 bg-[#1C1310] text-[#F3EBE1] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E5D9D2] placeholder:text-gray-500 transition-all font-mono text-sm md:text-base lg:text-lg uppercase"
                                 />
                             </div>
                             <p className="text-xs md:text-sm lg:text-base text-gray-500 text-right word-keep-all">* 레퍼런스는 참고용 이며, 피부 / 부위에 따라 조정 될 수 있습니다.</p>

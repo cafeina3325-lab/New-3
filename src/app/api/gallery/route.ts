@@ -29,6 +29,8 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { title, genre, part, image } = body;
 
+        console.log("[Gallery POST] 요청 수신:", { title, genre, part, hasImage: !!image, imageLength: image?.length });
+
         if (!image) {
             return NextResponse.json({ error: "Image is required" }, { status: 400 });
         }
@@ -36,8 +38,22 @@ export async function POST(req: Request) {
         let imageUrl: string | null = null;
 
         if (image.startsWith("data:image")) {
-            imageUrl = await uploadBase64ToBlob(image, "gallery/");
+            try {
+                imageUrl = await uploadBase64ToBlob(image, "gallery/");
+            } catch (uploadError: any) {
+                console.error("[Gallery POST] Blob 업로드 실패:", uploadError.message);
+                return NextResponse.json(
+                    { error: `이미지 업로드 실패: ${uploadError.message}` },
+                    { status: 500 }
+                );
+            }
+        } else if (image.startsWith("data:")) {
+            // data:video/... 등 이미지가 아닌 형식 처리
+            console.error("[Gallery POST] 지원하지 않는 미디어 형식:", image.substring(0, 50));
+            return NextResponse.json({ error: "이미지 파일만 업로드할 수 있습니다." }, { status: 400 });
         }
+
+        console.log("[Gallery POST] DB 저장 시작:", { title, genre, part, imageUrl });
 
         const newItem = await prisma.galleryItem.create({
             data: {
@@ -48,10 +64,11 @@ export async function POST(req: Request) {
             },
         });
 
+        console.log("[Gallery POST] 등록 완료:", newItem.id);
         return NextResponse.json({ message: "Gallery item created", item: newItem }, { status: 201 });
-    } catch (error) {
-        console.error("Failed to create gallery item:", error);
-        return NextResponse.json({ error: "Failed to save gallery item" }, { status: 500 });
+    } catch (error: any) {
+        console.error("[Gallery POST] 처리 실패:", error.message, error.stack);
+        return NextResponse.json({ error: `Failed to save gallery item: ${error.message}` }, { status: 500 });
     }
 }
 

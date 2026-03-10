@@ -28,30 +28,50 @@ export async function uploadBase64ToBlob(
     dataUrl: string,
     prefix: string
 ): Promise<string> {
-    // 1. 입력된 Data URL에서 MIME 타입과 실제 base64 페이로드 부분 분리
-    const matches = dataUrl.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
-    if (!matches || matches.length !== 3) {
+    // 0. Blob 토큰 유효성 체크
+    if (!BLOB_TOKEN) {
+        console.error("[Blob Upload] BLOB_READ_WRITE_TOKEN / FLYING_READ_WRITE_TOKEN 환경변수가 설정되지 않았습니다.");
+        throw new Error("Blob 스토리지 인증 토큰이 설정되지 않았습니다. 환경변수를 확인하세요.");
+    }
+
+    // 1. Data URL에서 MIME 타입과 base64 페이로드 분리
+    //    정규식 대신 인덱스 기반 파싱을 사용하여 대용량 파일에서도 스택 오버플로우를 방지합니다.
+    const commaIndex = dataUrl.indexOf(",");
+    if (commaIndex === -1 || !dataUrl.startsWith("data:")) {
+        console.error("[Blob Upload] Data URL 파싱 실패. 수신된 데이터 시작부:", dataUrl.substring(0, 80));
         throw new Error("유효하지 않은 base64 data URL 형식입니다.");
     }
 
-    const mimeType = matches[1];
-    const extension = mimeType.split("/")[1] || "bin";
+    const header = dataUrl.substring(5, commaIndex); // "image/png;base64" 부분
+    const base64Data = dataUrl.substring(commaIndex + 1); // 실제 base64 페이로드
 
-    // 2. Base64 페이로드를 서버 시스템이 인식할 수 있는 순수 바이트(Buffer) 형태로 변환
-    const buffer = Buffer.from(matches[2], "base64");
+    const semiIndex = header.indexOf(";");
+    if (semiIndex === -1) {
+        console.error("[Blob Upload] MIME 헤더 파싱 실패:", header);
+        throw new Error("유효하지 않은 data URL 헤더입니다.");
+    }
 
-    // 3. 파일 덮어쓰기 방지 및 보안을 위해 타임스탬프와 무작위 난수를 결합하여 고유 파일명 생성
+    const mimeType = header.substring(0, semiIndex); // "image/png"
+    const extension = mimeType.split("/")[1]?.replace(/\+.*$/, "") || "bin"; // svg+xml → svg
+
+    // 2. Base64 페이로드를 바이트(Buffer) 형태로 변환
+    const buffer = Buffer.from(base64Data, "base64");
+    console.log(`[Blob Upload] 파일 준비 완료: MIME=${mimeType}, 크기=${buffer.length}bytes, prefix=${prefix}`);
+
+    // 3. 고유 파일명 생성
     const uniqueName = `${prefix}${Date.now()}-${crypto.randomBytes(4).toString("hex")}.${extension}`;
 
-    // 4. Vercel Blob SDK를 통해 전송 실행 ('public' 옵션으로 어디서든 이미지 노출 허용)
+    // 4. Vercel Blob SDK를 통해 업로드
     const blob = await put(uniqueName, buffer, {
         access: "public",
         token: BLOB_TOKEN,
         contentType: mimeType,
     });
 
+    console.log(`[Blob Upload] 업로드 성공: ${blob.url}`);
     return blob.url;
 }
+
 
 /**
  * 표준 HTML File 객체(또는 Web API ArrayBuffer)를 Vercel Blob에 파일로 직접 업로드

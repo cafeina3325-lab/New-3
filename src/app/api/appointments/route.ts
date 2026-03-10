@@ -35,6 +35,16 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "필수 항목이 누락되었습니다." }, { status: 400 });
         }
 
+        // 참고 리뷰 ID가 입력된 경우 실존 여부 검증
+        if (referenceReviewId) {
+            const existingReview = await prisma.review.findUnique({
+                where: { reviewId: referenceReviewId }
+            });
+            if (!existingReview) {
+                return NextResponse.json({ error: "입력하신 참고 리뷰 ID가 존재하지 않습니다." }, { status: 400 });
+            }
+        }
+
         const appointmentId = "AP-" + crypto.randomBytes(3).toString("hex").toUpperCase();
 
         const newAppointment = await prisma.appointment.create({
@@ -66,7 +76,7 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
     try {
         const body = await request.json();
-        const { id, status, isDeleted, isArchived } = body;
+        const { id, status, isDeleted, staffHidden, isArchived, assignedTo } = body;
 
         if (!id) {
             return NextResponse.json({ error: "ID를 지정해주세요." }, { status: 400 });
@@ -81,7 +91,9 @@ export async function PATCH(request: Request) {
         const updateData: Record<string, unknown> = {};
         if (status) updateData.status = status;
         if (isDeleted !== undefined) updateData.isDeleted = isDeleted;
+        if (staffHidden !== undefined) updateData.staffHidden = staffHidden;
         if (isArchived !== undefined) updateData.isArchived = isArchived;
+        if (assignedTo !== undefined) updateData.assignedTo = assignedTo;
 
         const updated = await prisma.appointment.update({
             where: { id },

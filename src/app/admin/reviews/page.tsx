@@ -9,10 +9,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ReviewDetailModal from "@/components/admin/ReviewDetailModal";
 
 export default function AdminReviewsPage() {
     const [reviews, setReviews] = useState<any[]>([]);
     const [search, setSearch] = useState("");
+    const [selectedReviewId, setSelectedReviewId] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const fetchReviews = async () => {
         try {
@@ -92,7 +95,7 @@ export default function AdminReviewsPage() {
                             <th className="p-4">연락처</th>
                             <th className="p-4">패스워드(암호화X)</th>
                             <th className="p-4">작성일</th>
-                            <th className="p-4 rounded-tr-lg">작업</th>
+                            <th className="p-4 rounded-tr-lg">관리</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -128,12 +131,23 @@ export default function AdminReviewsPage() {
                                         {new Date(r.createdAt).toLocaleDateString()}
                                     </td>
                                     <td className="p-4">
-                                        <button
-                                            onClick={() => handleDelete(r.id)}
-                                            className="px-4 py-2 bg-red-950/50 hover:bg-red-900 border border-red-900/50 text-white rounded-lg transition-colors text-xs"
-                                        >
-                                            삭제
-                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => {
+                                                    setSelectedReviewId(r.reviewId);
+                                                    setIsModalOpen(true);
+                                                }}
+                                                className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-lg transition-colors text-xs"
+                                            >
+                                                보기
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(r.id)}
+                                                className="px-4 py-2 bg-red-950/50 hover:bg-red-900 border border-red-900/50 text-white rounded-lg transition-colors text-xs"
+                                            >
+                                                삭제
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))
@@ -147,6 +161,16 @@ export default function AdminReviewsPage() {
                     </tbody>
                 </table>
             </div>
+
+            {/* 리뷰 상세 모달 */}
+            <ReviewDetailModal
+                isOpen={isModalOpen}
+                reviewId={selectedReviewId}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setSelectedReviewId(null);
+                }}
+            />
         </div>
     );
 }

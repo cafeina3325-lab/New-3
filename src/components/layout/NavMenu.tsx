@@ -10,6 +10,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import ContactOverlay from "./ContactOverlay";
 import { MENU_ITEMS } from "@/data/constants";
 
@@ -18,6 +19,7 @@ interface NavMenuProps {
 }
 
 export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
+    const { data: session } = useSession();
     // --- State: 모달 제어용 ---
     // Contact Us 상담 예약 팝업 내부의 오픈 상태 및 초기 주입 데이터(이벤트/리뷰 연동용)
     const [isContactOpen, setIsContactOpen] = useState(false);
@@ -222,14 +224,25 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                         ))}
                     </ul>
 
-                    {/* Nav 우측 끝: 독립된 디자인의 Contact 예약 버튼 */}
+                    {/* Nav 우측 끝: 독립된 디자인의 Contact 예약 버튼 (로그인 시 관리자/스태프 페이지로 전환) */}
                     <div className="mt-8 lg:mt-0 w-full lg:w-auto flex justify-center lg:block">
-                        <button
-                            onClick={handleContactClick}
-                            className="px-9 py-3.5 lg:px-6 lg:py-2 bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold rounded-lg transition-all w-auto lg:w-auto lg:mr-4 backdrop-blur-sm"
-                        >
-                            예약하기
-                        </button>
+                        {session?.user ? (
+                            <Link
+                                href={(session.user as any).role === "admin" ? "/admin" : "/staff"}
+                                className="px-9 py-3.5 lg:px-6 lg:py-2 bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/50 text-white font-bold rounded-lg transition-all w-auto lg:w-auto lg:mr-4 backdrop-blur-sm flex items-center gap-2"
+                                onClick={() => isHamburgerMode && setIsMenuOpen(false)}
+                            >
+                                <span>⚙️</span>
+                                {(session.user as any).role === "admin" ? "관리자 페이지" : "스태프 페이지"}
+                            </Link>
+                        ) : (
+                            <button
+                                onClick={handleContactClick}
+                                className="px-9 py-3.5 lg:px-6 lg:py-2 bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold rounded-lg transition-all w-auto lg:w-auto lg:mr-4 backdrop-blur-sm"
+                            >
+                                예약하기
+                            </button>
+                        )}
                     </div>
                 </div>
             </nav>

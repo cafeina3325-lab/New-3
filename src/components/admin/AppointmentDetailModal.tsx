@@ -8,7 +8,8 @@
 
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import ReviewDetailModal from "./ReviewDetailModal";
 
 // 예약 상세 내역 표시 및 상태 업데이트를 관장하는 커스텀 타입
 interface Appointment {
@@ -21,21 +22,24 @@ interface Appointment {
     gender?: 'male' | 'female' | null;
     part?: string;
     genre?: string;
-    referenceReviewId?: string;       // 고객이 참고용으로 기재한 이전 리뷰 ID
-    referenceText?: string;           // 추가적인 요청/참고사항 텍스트 영역
-    source?: string | null;           // 유입 채널(event, gallery 등)
-    files?: string[];                 // 고객이 업로드한 시안 이미지 경로 배열
+    referenceReviewId?: string;
+    referenceText?: string;
+    source?: string | null;
+    files?: string[];
     status: 'pending' | 'confirmed' | 'cancelled';
+    assignedTo?: string | null; // 배정 정보 추가
     createdAt?: string;
 }
 
 interface AppointmentDetailModalProps {
-    isOpen: boolean;                                      // 모달 렌더링 스위치
-    appointment: Appointment | null;                      // 조회 대상이 되는 예약 상세 객체
+    isOpen: boolean;
+    appointment: Appointment | null;
+    isStaffView?: boolean; // 추가
 
     onClose: () => void;
-    onStatusChange?: (id: string, status: 'pending' | 'confirmed' | 'cancelled') => void;
+    onStatusChange?: (id: string, status: 'pending' | 'confirmed' | 'cancelled', assignedTo?: string | null) => void;
     onDelete?: (id: string) => void;
+    onAssign?: (apt: Appointment) => void;
 }
 
 const STATUS_LABELS = {
@@ -44,7 +48,9 @@ const STATUS_LABELS = {
     cancelled: { text: '취소됨', class: 'text-red-500 bg-red-500/10' },
 };
 
-export default function AppointmentDetailModal({ isOpen, appointment, onClose, onStatusChange, onDelete }: AppointmentDetailModalProps) {
+export default function AppointmentDetailModal({ isOpen, appointment, isStaffView = false, onClose, onStatusChange, onDelete, onAssign }: AppointmentDetailModalProps) {
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+
     if (!isOpen || !appointment) return null;
 
 
@@ -77,7 +83,7 @@ export default function AppointmentDetailModal({ isOpen, appointment, onClose, o
 
                 {/* Content */}
                 <div className="p-4 md:p-6 space-y-6 md:space-y-8 max-h-[70vh] overflow-y-auto">
-                    {/* 첫 번째 섹션: 요약 및 상태 */}
+                    {/* 첫 번째 섹션: 요약 및 상태 (UI 통합 반영) */}
                     <div className="flex items-center justify-between pb-3 md:pb-4 border-b border-white/10">
                         <div className="flex items-center gap-4">
                             <div>
@@ -95,7 +101,7 @@ export default function AppointmentDetailModal({ isOpen, appointment, onClose, o
                             </div>
                         </div>
                         <span className={`px-4 py-1.5 rounded-full text-xs font-bold leading-none shrink-0 ml-2 ${STATUS_LABELS[appointment.status].class}`}>
-                            {STATUS_LABELS[appointment.status].text}
+                            {appointment.assignedTo ? `👤 ${appointment.assignedTo}` : STATUS_LABELS[appointment.status].text}
                         </span>
                     </div>
 
@@ -121,9 +127,13 @@ export default function AppointmentDetailModal({ isOpen, appointment, onClose, o
                         <div className="flex flex-col justify-start items-start md:items-end mt-2 md:mt-0">
                             <span className="block text-[10px] md:text-xs text-gray-500 mb-2 uppercase tracking-wider font-bold">참고 리뷰 ID</span>
                             {appointment.referenceReviewId ? (
-                                <span className="inline-block px-3 py-1.5 bg-white/5 rounded-xl border border-white/10 text-gray-300 font-mono text-xs">
+                                <button
+                                    onClick={() => setIsReviewModalOpen(true)}
+                                    className="inline-block px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 text-orange-400 hover:text-orange-300 font-mono text-xs transition-colors group/review"
+                                >
                                     {appointment.referenceReviewId}
-                                </span>
+                                    <span className="ml-1 opacity-0 group-hover/review:opacity-100 transition-opacity">↗</span>
+                                </button>
                             ) : (
                                 <span className="text-gray-600 text-xs italic">없음</span>
                             )}
@@ -200,43 +210,109 @@ export default function AppointmentDetailModal({ isOpen, appointment, onClose, o
 
                 {/* Footer Actions */}
                 <div className="p-4 md:p-6 border-t border-white/10 bg-white/[0.02] flex flex-wrap justify-end gap-3">
-                    {appointment.status === 'pending' && onStatusChange && (
-                        <button
-                            onClick={() => {
-                                onStatusChange(appointment.id, 'confirmed');
-                                onClose();
-                            }}
-                            className="px-6 py-2.5 bg-green-900 border border-green-700/50 text-white rounded-lg hover:bg-green-800 transition-colors text-sm font-medium"
-                        >
-                            예약 확정
-                        </button>
-                    )}
-                    {appointment.status !== 'cancelled' && onStatusChange && (
-                        <button
-                            onClick={() => {
-                                if (window.confirm('예약을 취소하시겠습니까?')) {
-                                    onStatusChange(appointment.id, 'cancelled');
-                                    onClose();
-                                }
-                            }}
-                            className="px-6 py-2.5 bg-red-950/40 border border-red-900/40 text-red-200 rounded-lg hover:bg-red-900 hover:text-white transition-colors text-sm font-medium"
-                        >
-                            예약 취소
-                        </button>
-                    )}
+                    {!isStaffView ? (
+                        /* 관리자 전용 푸터 */
+                        <>
+                            {/* 배정 버튼 (배정되지 않았을 때) */}
+                            {!appointment.assignedTo && onAssign && (
+                                <button
+                                    onClick={() => {
+                                        onAssign(appointment);
+                                        onClose();
+                                    }}
+                                    className="px-6 py-2.5 bg-blue-900 border border-blue-700/50 text-white rounded-lg hover:bg-blue-800 transition-colors text-sm font-medium"
+                                >
+                                    배정
+                                </button>
+                            )}
 
-                    {onDelete && (
-                        <button
-                            onClick={() => {
-                                if (window.confirm('이 예약을 목록에서 삭제하시겠습니까? (통계 데이터는 유지됩니다)')) {
-                                    onDelete(appointment.id);
-                                    onClose();
-                                }
-                            }}
-                            className="px-6 py-2.5 bg-red-900/80 border border-red-700/50 text-white rounded-lg hover:bg-red-800 transition-colors text-sm font-medium ml-2"
-                        >
-                            삭제
-                        </button>
+                            {/* 배정 취소 버튼 (이미 배정되었을 때) */}
+                            {appointment.assignedTo && onStatusChange && (
+                                <button
+                                    onClick={() => {
+                                        if (window.confirm("배정을 취소하시겠습니까? (대기 중 상태로 변경되며 스태프 목록에서 제거됩니다)")) {
+                                            onStatusChange(appointment.id, 'pending', null);
+                                            onClose();
+                                        }
+                                    }}
+                                    className="px-6 py-2.5 bg-yellow-900 border border-yellow-700/50 text-white rounded-lg hover:bg-yellow-800 transition-colors text-sm font-medium"
+                                >
+                                    배정 취소
+                                </button>
+                            )}
+
+                            {/* 취소 버튼 (기존 예약 취소) */}
+                            {appointment.status !== 'cancelled' && onStatusChange && (
+                                <button
+                                    onClick={() => {
+                                        if (window.confirm('예약을 취소하시겠습니까?')) {
+                                            onStatusChange(appointment.id, 'cancelled');
+                                            onClose();
+                                        }
+                                    }}
+                                    className="px-6 py-2.5 bg-red-950/40 border border-red-900/40 text-red-200 rounded-lg hover:bg-red-900 hover:text-white transition-colors text-sm font-medium"
+                                >
+                                    취소
+                                </button>
+                            )}
+
+                            {onDelete && (
+                                <button
+                                    onClick={() => {
+                                        if (window.confirm('이 예약을 목록에서 삭제하시겠습니까? (통계 데이터는 유지됩니다)')) {
+                                            onDelete(appointment.id);
+                                            onClose();
+                                        }
+                                    }}
+                                    className="px-6 py-2.5 bg-red-900/80 border border-red-700/50 text-white rounded-lg hover:bg-red-800 transition-colors text-sm font-medium ml-2"
+                                >
+                                    삭제
+                                </button>
+                            )}
+                        </>
+                    ) : (
+                        /* 스태프 전용 푸터 */
+                        <>
+                            {appointment.status === 'confirmed' && onStatusChange && (
+                                <button
+                                    onClick={() => {
+                                        if (window.confirm("예약 확정을 취소하시겠습니까? (대기 중 상태로 변경됩니다)")) {
+                                            onStatusChange(appointment.id, 'pending');
+                                            onClose();
+                                        }
+                                    }}
+                                    className="px-6 py-2.5 bg-yellow-900 border border-yellow-700/50 text-white rounded-lg hover:bg-yellow-800 transition-colors text-sm font-medium"
+                                >
+                                    확정 취소
+                                </button>
+                            )}
+                            {appointment.status === 'pending' && onStatusChange && (
+                                <button
+                                    onClick={() => {
+                                        if (window.confirm("예약을 확정하시겠습니까?")) {
+                                            onStatusChange(appointment.id, 'confirmed');
+                                            onClose();
+                                        }
+                                    }}
+                                    className="px-6 py-2.5 bg-green-900 border border-green-700/50 text-white rounded-lg hover:bg-green-800 transition-colors text-sm font-medium"
+                                >
+                                    확정
+                                </button>
+                            )}
+                            {appointment.status !== 'cancelled' && onStatusChange && (
+                                <button
+                                    onClick={() => {
+                                        if (window.confirm('예약을 취소하시겠습니까?')) {
+                                            onStatusChange(appointment.id, 'cancelled');
+                                            onClose();
+                                        }
+                                    }}
+                                    className="px-6 py-2.5 bg-red-950/40 border border-red-900/40 text-red-200 rounded-lg hover:bg-red-900 hover:text-white transition-colors text-sm font-medium"
+                                >
+                                    취소
+                                </button>
+                            )}
+                        </>
                     )}
 
                     <button
@@ -247,6 +323,13 @@ export default function AppointmentDetailModal({ isOpen, appointment, onClose, o
                     </button>
                 </div>
             </div>
+
+            {/* 참고 리뷰 상세 모달 연동 */}
+            <ReviewDetailModal
+                isOpen={isReviewModalOpen}
+                reviewId={appointment.referenceReviewId || null}
+                onClose={() => setIsReviewModalOpen(false)}
+            />
         </div>
     );
 }

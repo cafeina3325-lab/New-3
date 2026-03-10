@@ -27,6 +27,7 @@ interface Appointment {
     source?: string | null;
     files?: string[];
     status: 'pending' | 'confirmed' | 'cancelled';
+    assignedTo?: string | null;
     createdAt?: string;
     isDeleted?: boolean;      // 목록에서 숨김 처리 여부 (일시적 뷰어 삭제)
     isArchived?: boolean;     // 완전 초기화(영구 보관) 처리 여부
@@ -35,7 +36,7 @@ interface Appointment {
 export default function AppointmentsPage() {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState<'all' | 'pending' | 'confirmed' | 'cancelled'>('all');
+    const [filter, setFilter] = useState<'all' | 'unassigned' | 'assigned' | 'confirmed' | 'cancelled'>('all');
     const [search, setSearch] = useState("");
 
     // 데이터 로딩
@@ -57,23 +58,33 @@ export default function AppointmentsPage() {
         }
     };
 
-    // 상태 변경 핸들러
-    const handleStatusChange = async (id: string, status: 'pending' | 'confirmed' | 'cancelled') => {
+    // 상태 변경 핸들러 (assignedTo 초기화 지원 추가)
+    const handleStatusChange = async (id: string, status: 'pending' | 'confirmed' | 'cancelled', assignedTo?: string | null) => {
         try {
+            const body: any = { id, status };
+            if (assignedTo !== undefined) body.assignedTo = assignedTo;
+
             const res = await fetch('/api/appointments', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, status }),
+                body: JSON.stringify(body),
             });
 
             if (res.ok) {
                 setAppointments(prev =>
-                    prev.map(apt => apt.id === id ? { ...apt, status } : apt)
+                    prev.map(apt => apt.id === id ? { ...apt, status, ...(assignedTo !== undefined ? { assignedTo } : {}) } : apt)
                 );
             }
         } catch (error) {
             console.error("상태 변경 실패:", error);
         }
+    };
+
+    // 배정 핸들러 (assignedTo 로컬 상태 업데이트)
+    const handleAssign = (id: string, staffName: string) => {
+        setAppointments(prev =>
+            prev.map(apt => apt.id === id ? { ...apt, assignedTo: staffName } : apt)
+        );
     };
 
     // 목록 삭제 핸들러 (isDeleted 반영)
@@ -195,7 +206,15 @@ export default function AppointmentsPage() {
     const filteredAppointments = appointments.filter(apt => {
         if (apt.isDeleted || apt.isArchived) return false;
 
-        const matchesFilter = filter === 'all' || apt.status === filter;
+        let matchesFilter = true;
+        if (filter === 'unassigned') {
+            matchesFilter = apt.status === 'pending' && !apt.assignedTo;
+        } else if (filter === 'assigned') {
+            matchesFilter = apt.status === 'pending' && !!apt.assignedTo;
+        } else if (filter !== 'all') {
+            matchesFilter = apt.status === filter;
+        }
+
         const matchesSearch = !search ||
             apt.clientName.includes(search) ||
             apt.service.includes(search) ||
@@ -213,9 +232,9 @@ export default function AppointmentsPage() {
 
     const stats = [
         { title: "전체 예약", value: String(totalCount), trend: "", icon: "📅" },
-        { title: "확정 대기", value: String(pendingCount), trend: "", icon: "⏳" },
-        { title: "확정됨", value: String(confirmedCount), trend: "", icon: "✅" },
-        { title: "취소됨", value: String(cancelledCount), trend: "", icon: "❌" },
+        { title: "배정 대기", value: String(pendingCount), trend: "", icon: "⏳" },
+        { title: "확정", value: String(confirmedCount), trend: "", icon: "✅" },
+        { title: "취소", value: String(cancelledCount), trend: "", icon: "❌" },
     ];
 
     return (
@@ -247,7 +266,7 @@ export default function AppointmentsPage() {
             {/* Filters & Search & DeleteAll */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex p-1 bg-white/5 rounded-xl border border-white/10 w-full md:w-fit overflow-x-auto scrollbar-hide">
-                    {(['all', 'pending', 'confirmed', 'cancelled'] as const).map((tab) => (
+                    {(['all', 'unassigned', 'assigned', 'confirmed', 'cancelled'] as const).map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setFilter(tab)}
@@ -256,7 +275,7 @@ export default function AppointmentsPage() {
                                 : "text-gray-400 hover:text-white"
                                 }`}
                         >
-                            {tab === 'all' ? '전체' : tab === 'pending' ? '대기 중' : tab === 'confirmed' ? '확정' : '취소'}
+                            {tab === 'all' ? '전체' : tab === 'unassigned' ? '대기 중' : tab === 'assigned' ? '배정' : tab === 'confirmed' ? '확정' : '취소'}
                         </button>
                     ))}
                 </div>
@@ -303,6 +322,7 @@ export default function AppointmentsPage() {
                     appointments={filteredAppointments}
                     onStatusChange={handleStatusChange}
                     onDelete={handleDelete}
+                    onAssign={handleAssign}
                 />
             )}
 

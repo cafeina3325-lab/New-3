@@ -27,7 +27,9 @@ model Appointment {
   date              String
   time              String
   status            String   @default("pending")
+  assignedTo        String?  // 배정된 스태프 이름
   isDeleted         Boolean  @default(false)
+  staffHidden       Boolean  @default(false)  // 스태프 계정에서만 숨김 처리
   isArchived        Boolean  @default(false)
   createdAt         DateTime @default(now())
 }
@@ -90,6 +92,27 @@ model Admin {
   id        String   @id @default(cuid())
   username  String   @unique
   password  String   // 해시화된 비밀번호
+  birthday  String?  // 생일 (YYYY-MM-DD)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// 스태프 계정
+model Staff {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String   // 해시화된 비밀번호
+  birthday  String?  // 생일 (YYYY-MM-DD)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 채팅 메시지
+model ChatMessage {
+  id        String   @id @default(cuid())
+  senderId  String
+  username  String
+  role      String   // "admin" or "staff"
+  content   String
+  createdAt DateTime @default(now())
 }

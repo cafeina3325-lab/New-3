@@ -26,8 +26,9 @@ export default function LoginPage() {
             if (result?.error) {
                 setError("아이디 또는 비밀번호가 올바르지 않습니다.");
             } else {
-                router.push("/admin");
-                router.refresh();
+                // 세션 갱신을 위해 잠시 대기하거나 refresh 유도
+                // 가장 확실한 방법은 window.location.href를 사용해 미들웨어를 거치게 하는 것
+                window.location.href = "/";
             }
         } catch (err) {
             setError("로그인 처리 중 오류가 발생했습니다.");
