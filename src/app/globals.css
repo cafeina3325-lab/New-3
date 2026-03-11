@@ -1,6 +1,38 @@
 /* 파일 요약: 전체 애플리케이션에 적용되는 테일윈드(Tailwind) 루트 CSS 및 전역 애니메이션 정의 파일입니다. */
 
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @import "tailwindcss";
+
+.luxury-title {
+  font-family: 'Playfair Display', serif;
+  text-transform: uppercase;
+  letter-spacing: 0.25em;
+  color: #F5F5F7; /* 오프 화이트 */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  transition: color 0.3s ease;
+  position: relative;
+  display: inline-block;
+}
+
+.luxury-title::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  width: 0;
+  height: 1px;
+  background-color: #D4AF37; /* 골드 */
+  transition: width 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), left 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.luxury-title-container:hover .luxury-title::after {
+  width: 100%;
+  left: 0;
+}
+
+.luxury-title-container:hover .luxury-title {
+  color: #D4AF37;
+}
 
 /* 전역 색상 변수 설정: 기본 테마(주로 Dark 계열) */
 :root {
