@@ -15,7 +15,7 @@ export default function TitleBar() {
         >
             <div className="luxury-title flex flex-col items-start">
                 <span className="text-2xl md:text-3xl font-medium leading-none">Flying</span>
-                <span className="text-2xl md:text-3xl font-medium leading-none">Studio</span>
+                <span className="text-2xl md:text-3xl font-medium leading-none"> Studio</span>
             </div>
         </Link>
     );
