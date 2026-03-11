@@ -26,7 +26,7 @@ interface Appointment {
     referenceText?: string;
     source?: string | null;
     files?: string[];
-    status: 'pending' | 'confirmed' | 'cancelled';
+    status: 'pending' | 'confirmed' | 'cancelled' | 'holiday';
     assignedTo?: string | null;
     createdAt?: string;
     isDeleted?: boolean;      // 목록에서 숨김 처리 여부 (일시적 뷰어 삭제)
@@ -59,7 +59,7 @@ export default function AppointmentsPage() {
     };
 
     // 상태 변경 핸들러 (assignedTo 초기화 지원 추가)
-    const handleStatusChange = async (id: string, status: 'pending' | 'confirmed' | 'cancelled', assignedTo?: string | null) => {
+    const handleStatusChange = async (id: string, status: 'pending' | 'confirmed' | 'cancelled' | 'holiday', assignedTo?: string | null) => {
         try {
             const body: any = { id, status };
             if (assignedTo !== undefined) body.assignedTo = assignedTo;
@@ -204,7 +204,7 @@ export default function AppointmentsPage() {
 
     // 필터링 로직 (소프트 삭제되거나 아카이브된 항목은 리스트에서 제외)
     const filteredAppointments = appointments.filter(apt => {
-        if (apt.isDeleted || apt.isArchived) return false;
+        if (apt.isDeleted || apt.isArchived || apt.status === 'holiday' || apt.contact === '-') return false;
 
         let matchesFilter = true;
         if (filter === 'unassigned') {
@@ -223,18 +223,20 @@ export default function AppointmentsPage() {
         return matchesFilter && matchesSearch;
     });
 
-    // 통계 카드 실시간 계산 (아카이브된 항목 제외)
-    const activeAppointments = appointments.filter(a => !a.isArchived);
+    // 통계 카드 실시간 계산 (삭제 및 아카이브된 항목 제외)
+    const activeAppointments = appointments.filter(a => !a.isArchived && !a.isDeleted && a.status !== 'holiday' && a.contact !== '-');
     const totalCount = activeAppointments.length;
-    const pendingCount = activeAppointments.filter(a => a.status === 'pending').length;
+    const unassignedCount = activeAppointments.filter(a => a.status === 'pending' && !a.assignedTo).length;
+    const assignedCount = activeAppointments.filter(a => a.status === 'pending' && !!a.assignedTo).length;
     const confirmedCount = activeAppointments.filter(a => a.status === 'confirmed').length;
     const cancelledCount = activeAppointments.filter(a => a.status === 'cancelled').length;
 
     const stats = [
-        { title: "전체 예약", value: String(totalCount), trend: "", icon: "📅" },
-        { title: "배정 대기", value: String(pendingCount), trend: "", icon: "⏳" },
-        { title: "확정", value: String(confirmedCount), trend: "", icon: "✅" },
-        { title: "취소", value: String(cancelledCount), trend: "", icon: "❌" },
+        { title: "전체 예약", value: String(totalCount), icon: "📅", filterType: 'all' as const },
+        { title: "대기", value: String(unassignedCount), icon: "⏳", filterType: 'unassigned' as const },
+        { title: "배정", value: String(assignedCount), icon: "👤", filterType: 'assigned' as const },
+        { title: "확정", value: String(confirmedCount), icon: "✅", filterType: 'confirmed' as const },
+        { title: "취소", value: String(cancelledCount), icon: "❌", filterType: 'cancelled' as const },
     ];
 
     return (
@@ -246,9 +248,14 @@ export default function AppointmentsPage() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                 {stats.map((stat) => (
-                    <StatCard key={stat.title} {...stat} />
+                    <StatCard 
+                        key={stat.title} 
+                        {...stat} 
+                        active={filter === stat.filterType}
+                        onClick={() => setFilter(stat.filterType)}
+                    />
                 ))}
             </div>
 
@@ -264,22 +271,7 @@ export default function AppointmentsPage() {
             </div>
 
             {/* Filters & Search & DeleteAll */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div className="flex p-1 bg-white/5 rounded-xl border border-white/10 w-full md:w-fit overflow-x-auto scrollbar-hide">
-                    {(['all', 'unassigned', 'assigned', 'confirmed', 'cancelled'] as const).map((tab) => (
-                        <button
-                            key={tab}
-                            onClick={() => setFilter(tab)}
-                            className={`px-4 sm:px-6 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${filter === tab
-                                ? "bg-white text-black shadow-lg"
-                                : "text-gray-400 hover:text-white"
-                                }`}
-                        >
-                            {tab === 'all' ? '전체' : tab === 'unassigned' ? '대기 중' : tab === 'assigned' ? '배정' : tab === 'confirmed' ? '확정' : '취소'}
-                        </button>
-                    ))}
-                </div>
-
+            <div className="flex flex-col md:flex-row md:items-center justify-start gap-4">
                 <div className="flex items-center gap-4 w-full md:w-auto">
                     <div className="relative group">
                         <input

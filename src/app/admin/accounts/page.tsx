@@ -12,6 +12,8 @@ import { useEffect, useState } from "react";
 interface Account {
     id: string;
     username: string;
+    nickname?: string;
+    phone?: string;
     createdAt: string;
     birthday?: string;
 }
@@ -26,11 +28,13 @@ export default function AdminAccountsPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [showModal, setShowModal] = useState(false);
-    const [editingAccount, setEditingAccount] = useState<{ id: string; username: string; role: string; birthday?: string } | null>(null);
+    const [editingAccount, setEditingAccount] = useState<{ id: string; username: string; nickname?: string; phone?: string; role: string; birthday?: string } | null>(null);
     const [editMode, setEditMode] = useState<"main" | "username" | "password">("main");
     const [currentPassword, setCurrentPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isCurrentPasswordCorrect, setIsCurrentPasswordCorrect] = useState<boolean | null>(null);
+    const [newNickname, setNewNickname] = useState("");
+    const [newPhone, setNewPhone] = useState("");
 
     const fetchAccounts = async () => {
         try {
@@ -166,6 +170,8 @@ export default function AdminAccountsPage() {
                 // main 모드 (스태프 계정 전체 혹은 관리자 기타 정보)
                 body.username = newUsername.trim();
                 body.birthday = newBirthday.trim() || undefined;
+                body.nickname = newNickname.trim() || null;
+                body.phone = newPhone.trim() || null;
 
                 // 스태프 계정인 경우 새 비밀번호가 입력되었다면 포함
                 if (editingAccount.role === "staff" && newPassword.trim()) {
@@ -232,8 +238,11 @@ export default function AdminAccountsPage() {
                 <thead className="bg-[#2A1D18] text-[#F3EBE1]">
                     <tr>
                         <th className="p-4 rounded-tl-lg">아이디</th>
+                        <th className="p-4">닉네임</th>
+                        {role === "admin" && <th className="p-4">휴대폰번호</th>}
                         {role === "admin" && <th className="p-4">생일</th>}
                         {role !== "admin" && <th className="p-4">비밀번호</th>}
+                        {role !== "admin" && <th className="p-4">휴대폰번호</th>}
                         {role !== "admin" && <th className="p-4">생일</th>}
                         <th className="p-4 rounded-tr-lg text-right">관리</th>
                     </tr>
@@ -243,6 +252,12 @@ export default function AdminAccountsPage() {
                         accounts.map((account) => (
                             <tr key={account.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                                 <td className="p-4 font-medium text-white">{account.username}</td>
+                                <td className="p-4 text-gray-400 text-sm">{account.nickname || "-"}</td>
+                                {role === "admin" && (
+                                    <td className="p-4 text-gray-400 text-xs text-nowrap">
+                                        {account.phone || "-"}
+                                    </td>
+                                )}
                                 {role === "admin" && (
                                     <td className="p-4 text-gray-400 text-xs text-nowrap">
                                         {account.birthday || "-"}
@@ -255,15 +270,22 @@ export default function AdminAccountsPage() {
                                 )}
                                 {role !== "admin" && (
                                     <td className="p-4 text-gray-400 text-xs text-nowrap">
+                                        {account.phone || "-"}
+                                    </td>
+                                )}
+                                {role !== "admin" && (
+                                    <td className="p-4 text-gray-400 text-xs text-nowrap">
                                         {account.birthday || "-"}
                                     </td>
                                 )}
                                 <td className="p-4 text-right flex items-center justify-end space-x-2">
                                     <button
                                         onClick={() => {
-                                            setEditingAccount({ id: account.id, username: account.username, role: role, birthday: account.birthday });
+                                        setEditingAccount({ id: account.id, username: account.username, nickname: account.nickname, phone: account.phone, role: role, birthday: account.birthday });
                                             setEditMode("main");
                                             setNewUsername(account.username);
+                                            setNewNickname(account.nickname || "");
+                                            setNewPhone(account.phone || "");
                                             setNewPassword("");
                                             setCurrentPassword("");
                                             setConfirmPassword("");
@@ -286,7 +308,7 @@ export default function AdminAccountsPage() {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan={role === "admin" ? 3 : 4} className="p-12 text-center text-gray-500">
+                            <td colSpan={role === "admin" ? 5 : 6} className="p-12 text-center text-gray-500">
                                 등록된 {label}이 없습니다.
                             </td>
                         </tr>
@@ -396,12 +418,32 @@ export default function AdminAccountsPage() {
                                         />
                                     </div>
                                     <div className="flex flex-col gap-2">
+                                        <label className="text-xs text-gray-400 font-medium">닉네임</label>
+                                        <input
+                                            type="text"
+                                            placeholder="닉네임 입력"
+                                            value={newNickname}
+                                            onChange={(e) => setNewNickname(e.target.value)}
+                                            className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-white/30 transition-all text-sm"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
                                         <label className="text-xs text-gray-400 font-medium">새 비밀번호 (변경 시에만 입력)</label>
                                         <input
                                             type="password"
                                             placeholder="새 비밀번호 입력"
                                             value={newPassword}
                                             onChange={(e) => setNewPassword(e.target.value)}
+                                            className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-white/30 transition-all text-sm"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-xs text-gray-400 font-medium">휴대폰번호</label>
+                                        <input
+                                            type="text"
+                                            placeholder="예: 010-0000-0000"
+                                            value={newPhone}
+                                            onChange={(e) => setNewPhone(e.target.value)}
                                             className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-white/30 transition-all text-sm"
                                         />
                                     </div>
@@ -441,6 +483,16 @@ export default function AdminAccountsPage() {
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-2">
+                                            <label className="text-xs text-gray-400 font-medium">닉네임</label>
+                                            <input
+                                                type="text"
+                                                placeholder="닉네임 입력"
+                                                value={newNickname}
+                                                onChange={(e) => setNewNickname(e.target.value)}
+                                                className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-white/30 transition-all text-sm"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
                                             <label className="text-xs text-gray-400 font-medium">비밀번호</label>
                                             <div className="flex gap-2">
                                                 <div className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-gray-400 text-sm tracking-widest">
@@ -454,6 +506,16 @@ export default function AdminAccountsPage() {
                                                     변경
                                                 </button>
                                             </div>
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-xs text-gray-400 font-medium">휴대폰번호</label>
+                                            <input
+                                                type="text"
+                                                placeholder="예: 010-0000-0000"
+                                                value={newPhone}
+                                                onChange={(e) => setNewPhone(e.target.value)}
+                                                className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-white/30 transition-all text-sm"
+                                            />
                                         </div>
                                         <div className="flex flex-col gap-2">
                                             <label className="text-xs text-gray-400 font-medium">생일 (YYYY-MM-DD)</label>

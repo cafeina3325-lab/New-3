@@ -54,15 +54,11 @@ export default function VisitsPage() {
     const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
-    // 서버 통계
-    const [serverStats, setServerStats] = useState<any>(null);
-
     const fetchData = async () => {
         try {
-            const [pvRes, aptRes, serverRes] = await Promise.all([
+            const [pvRes, aptRes] = await Promise.all([
                 fetch("/api/pageviews"),
-                fetch("/api/appointments"),
-                fetch("/api/admin/server-stats")
+                fetch("/api/appointments")
             ]);
 
             if (pvRes.ok) {
@@ -74,11 +70,6 @@ export default function VisitsPage() {
                 const aptData = await aptRes.json();
                 setAppointments(Array.isArray(aptData) ? aptData : []);
             }
-
-            if (serverRes.ok) {
-                const sData = await serverRes.json();
-                setServerStats(sData);
-            }
         } catch (err) {
             console.error("데이터 로딩 실패:", err);
         } finally {
@@ -87,6 +78,13 @@ export default function VisitsPage() {
     };
 
     useEffect(() => {
+        // 탑 대시보드에서 넘어온 URL query params (tab) 확인 후 상태 동기화 처리
+        const searchParams = new URLSearchParams(window.location.search);
+        const tab = searchParams.get("tab");
+        if (tab === "visit" || tab === "apt") {
+            setActiveTab(tab);
+        }
+
         fetchData();
     }, []);
 
@@ -150,14 +148,6 @@ export default function VisitsPage() {
         const isApt = activeTab === "apt";
 
         const aggregate = (item: any, key: string, isFromAptSource: boolean = false) => {
-            if (activeTab === "server") {
-                // 서버 탭인 경우 traffic 계산 (bytes -> MB)
-                // 예상 트래픽 = 페이지뷰 하나당 평균 에셋 크기
-                const trafficMB = (serverStats?.avgAssetSize || 0) / (1024 * 1024);
-                counts[key] = (counts[key] || 0) + trafficMB;
-                return;
-            }
-
             if (!isFromAptSource) {
                 counts[key] = (counts[key] || 0) + 1;
             } else {
@@ -171,7 +161,7 @@ export default function VisitsPage() {
             }
         };
 
-        const chartSource = activeTab === "server" ? visitLogs : sourceData;
+        const chartSource = sourceData;
 
         if (drillLevel === "year") {
             chartSource.forEach(item => {
@@ -232,9 +222,9 @@ export default function VisitsPage() {
             cancelledValues: isApt ? labels.map(label => cancCounts[label] || 0) : undefined,
             pendingValues: isApt ? labels.map(label => pendCounts[label] || 0) : undefined,
             isApt,
-            title: `${selectedYear ? selectedYear + '년 ' : ''}${selectedMonth !== null ? (selectedMonth + 1) + '월 ' : ''}${selectedDay ? selectedDay + '일 ' : ''}${isApt ? "예약 현황" : activeTab === "server" ? "예상 다운로드 트래픽 (MB)" : "방문자 현황"}`
+            title: `${selectedYear ? selectedYear + '년 ' : ''}${selectedMonth !== null ? (selectedMonth + 1) + '월 ' : ''}${selectedDay ? selectedDay + '일 ' : ''}${isApt ? "예약 현황" : "방문자 현황"}`
         };
-    }, [visitLogs, appointments, activeTab, drillLevel, selectedYear, selectedMonth, selectedDay, serverStats]);
+    }, [visitLogs, appointments, activeTab, drillLevel, selectedYear, selectedMonth, selectedDay]);
 
     // 상세 속성 통계 (장르, 부위)
     const detailedAptStats = useMemo(() => {
@@ -358,22 +348,6 @@ export default function VisitsPage() {
                 }
             },
             active: activeTab === "apt"
-        },
-        {
-            title: "서버",
-            value: serverStats ? (serverStats.totalSizeBytes / (1024 * 1024)).toFixed(1) + " MB" : "0.0 MB",
-            icon: "☁️",
-            onClick: () => {
-                if (activeTab === "server") setActiveTab(null);
-                else {
-                    setActiveTab("server");
-                    setDrillLevel("year");
-                    setSelectedYear(null);
-                    setSelectedMonth(null);
-                    setSelectedDay(null);
-                }
-            },
-            active: activeTab === "server"
         }
     ];
 
@@ -420,33 +394,10 @@ export default function VisitsPage() {
                             confirmedData={mainChartData.confirmedValues}
                             cancelledData={mainChartData.cancelledValues}
                             pendingData={mainChartData.pendingValues}
-                            color={activeTab === "visit" ? "#a855f7" : activeTab === "server" ? "#06b6d4" : "#22c55e"}
+                            color={activeTab === "visit" ? "#a855f7" : "#22c55e"}
                             onBarClick={handleDrillDown}
                         />
 
-                        {/* 서버 상세 통계 (스토리지 점유율) */}
-                        {activeTab === "server" && serverStats && (
-                            <div className="space-y-4 animate-in fade-in duration-700 delay-200">
-                                <h3 className="text-lg sm:text-xl font-bold text-cyan-500 px-1 sm:px-2 flex items-center gap-2">
-                                    <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-cyan-500"></span>
-                                    부문별 스토리지 점유 현황
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                                    {Object.entries(serverStats.breakdown as Record<string, number>).map(([name, bytes]) => (
-                                        <div key={name} className="bg-[#140D0B] border border-white/5 rounded-3xl p-5 flex flex-col gap-2">
-                                            <span className="text-gray-400 text-xs font-medium uppercase tracking-wider">{name.replace("/", "") || "기타"}</span>
-                                            <span className="text-xl font-bold text-white">{(bytes / (1024 * 1024)).toFixed(2)} MB</span>
-                                            <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden mt-2">
-                                                <div
-                                                    className="bg-cyan-500 h-full"
-                                                    style={{ width: `${(bytes / serverStats.totalSizeBytes) * 100}%` }}
-                                                />
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
                         {/* 예약 상세 속성 통계 */}
                         {activeTab === "apt" && detailedAptStats && (
                             <div className="space-y-12 animate-in fade-in duration-700 delay-200">

@@ -22,7 +22,26 @@ export async function GET() {
             orderBy: { createdAt: "asc" },
         });
 
-        return NextResponse.json(messages);
+        // 닉네임 매핑을 위해 모든 계정 조회
+        const [admins, staffs] = await Promise.all([
+            (prisma as any).admin.findMany({ select: { username: true, nickname: true } }),
+            (prisma as any).staff.findMany({ select: { username: true, nickname: true } }),
+        ]);
+
+        const nicknameMap: Record<string, string> = {};
+        for (const a of admins) {
+            if (a.nickname) nicknameMap[a.username] = a.nickname;
+        }
+        for (const s of staffs) {
+            if (s.nickname) nicknameMap[s.username] = s.nickname;
+        }
+
+        const messagesWithNickname = messages.map((msg: any) => ({
+            ...msg,
+            displayName: nicknameMap[msg.username] || msg.username,
+        }));
+
+        return NextResponse.json(messagesWithNickname);
     } catch (error) {
         console.error("채팅 메시지 조회 오류:", error);
         return NextResponse.json({ error: "메시지 조회 실패" }, { status: 500 });

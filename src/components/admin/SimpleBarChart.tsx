@@ -22,6 +22,7 @@ interface BarChartProps {
     confirmedData?: number[];        // [스택모드 전용] 확정(Confirmed) 건수 배열
     cancelledData?: number[];        // [스택모드 전용] 취소(Cancelled) 건수 배열
     pendingData?: number[];          // [스택모드 전용] 대기(Pending) 건수 배열
+    limit?: number;                  // [선택형] 한도 기준선 (단위는 데이터와 동일)
     onBarClick?: (index: number, label: string) => void; // 막대 클릭 시 발생하는 콜백 (날짜값 등 반환)
 }
 
@@ -35,6 +36,7 @@ export default function SimpleBarChart({
     confirmedData,
     cancelledData,
     pendingData,
+    limit,
     onBarClick
 }: BarChartProps) {
     if (data.length === 0) return (
@@ -45,7 +47,7 @@ export default function SimpleBarChart({
 
     const isStacked = !!(confirmedData || cancelledData || pendingData);
     const hasSecondary = !!secondaryData;
-    const maxVal = Math.max(...data, hasSecondary ? Math.max(...secondaryData!, 0) : 0, 1);
+    const maxVal = Math.max(...data, hasSecondary ? Math.max(...secondaryData!, 0) : 0, limit || 0, 1);
 
     const chartHeight = 250;
     const topPadding = 100;

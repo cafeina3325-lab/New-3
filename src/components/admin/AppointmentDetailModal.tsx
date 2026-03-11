@@ -8,8 +8,10 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReviewDetailModal from "./ReviewDetailModal";
+import EventDetailModal from "@/components/modals/EventDetailModal";
+import GalleryDetailModal from "@/components/modals/GalleryDetailModal";
 
 // 예약 상세 내역 표시 및 상태 업데이트를 관장하는 커스텀 타입
 interface Appointment {
@@ -25,8 +27,9 @@ interface Appointment {
     referenceReviewId?: string;
     referenceText?: string;
     source?: string | null;
+    sourceId?: string | null;
     files?: string[];
-    status: 'pending' | 'confirmed' | 'cancelled';
+    status: 'pending' | 'confirmed' | 'cancelled' | 'holiday';
     assignedTo?: string | null; // 배정 정보 추가
     createdAt?: string;
 }
@@ -37,7 +40,7 @@ interface AppointmentDetailModalProps {
     isStaffView?: boolean; // 추가
 
     onClose: () => void;
-    onStatusChange?: (id: string, status: 'pending' | 'confirmed' | 'cancelled', assignedTo?: string | null) => void;
+    onStatusChange?: (id: string, status: 'pending' | 'confirmed' | 'cancelled' | 'holiday', assignedTo?: string | null) => void;
     onDelete?: (id: string) => void;
     onAssign?: (apt: Appointment) => void;
 }
@@ -46,10 +49,75 @@ const STATUS_LABELS = {
     pending: { text: '대기 중', class: 'text-yellow-500 bg-yellow-500/10' },
     confirmed: { text: '확정됨', class: 'text-green-500 bg-green-500/10' },
     cancelled: { text: '취소됨', class: 'text-red-500 bg-red-500/10' },
+    holiday: { text: '정기 휴무', class: 'text-purple-500 bg-purple-500/10' },
 };
 
 export default function AppointmentDetailModal({ isOpen, appointment, isStaffView = false, onClose, onStatusChange, onDelete, onAssign }: AppointmentDetailModalProps) {
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
+    const [selectedGalleryItem, setSelectedGalleryItem] = useState<any | null>(null);
+
+    const [showEventModal, setShowEventModal] = useState(false);
+    const [showGalleryModal, setShowGalleryModal] = useState(false);
+
+    // source가 event 또는 gallery인 경우 → 원본 게시물 클릭 가능 여부
+    const hasSourcePost = appointment?.source === 'event' || appointment?.source === 'gallery';
+
+    // 원본 게시물 데이터를 미리 로드 (sourceId 또는 이미지 URL로 매칭)
+    useEffect(() => {
+        if (!isOpen || !appointment) return;
+        if (appointment.source !== 'event' && appointment.source !== 'gallery') return;
+
+        // 모달이 다시 열릴 때 이전 데이터 초기화
+        setSelectedEvent(null);
+        setSelectedGalleryItem(null);
+        setShowEventModal(false);
+        setShowGalleryModal(false);
+
+        const fetchData = async () => {
+            try {
+                if (appointment.source === 'event') {
+                    const res = await fetch(`/api/event`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        let event = null;
+                        // 1순위: sourceId로 매칭
+                        if (appointment.sourceId) {
+                            event = data.items?.find((item: any) => item.id === appointment.sourceId);
+                        }
+                        // 2순위: 이미지 URL로 매칭 (sourceId가 없는 이전 예약 데이터 대응)
+                        if (!event && appointment.files && appointment.files.length > 0) {
+                            event = data.items?.find((item: any) => 
+                                appointment.files?.some((file: string) => file === item.imageUrl)
+                            );
+                        }
+                        if (event) setSelectedEvent(event);
+                    }
+                } else if (appointment.source === 'gallery') {
+                    const res = await fetch(`/api/gallery`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        let galleryItem = null;
+                        // 1순위: sourceId로 매칭
+                        if (appointment.sourceId) {
+                            galleryItem = data.items?.find((item: any) => item.id === appointment.sourceId);
+                        }
+                        // 2순위: 이미지 URL로 매칭
+                        if (!galleryItem && appointment.files && appointment.files.length > 0) {
+                            galleryItem = data.items?.find((item: any) => 
+                                appointment.files?.some((file: string) => file === item.imageUrl)
+                            );
+                        }
+                        if (galleryItem) setSelectedGalleryItem(galleryItem);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch source data", error);
+            }
+        };
+
+        fetchData();
+    }, [isOpen, appointment]);
 
     if (!isOpen || !appointment) return null;
 
@@ -83,7 +151,7 @@ export default function AppointmentDetailModal({ isOpen, appointment, isStaffVie
 
                 {/* Content */}
                 <div className="p-4 md:p-6 space-y-6 md:space-y-8 max-h-[70vh] overflow-y-auto">
-                    {/* 첫 번째 섹션: 요약 및 상태 (UI 통합 반영) */}
+                    {/* 첫 번째 섹션: 요약, 타입, 참고 리뷰 */}
                     <div className="flex items-center justify-between pb-3 md:pb-4 border-b border-white/10">
                         <div className="flex items-center gap-4">
                             <div>
@@ -99,56 +167,57 @@ export default function AppointmentDetailModal({ isOpen, appointment, isStaffVie
                                     </span>
                                 </div>
                             </div>
+                            <div className="h-6 w-px bg-white/10 mx-2" />
+                            <div>
+                                <span className="text-[10px] md:text-xs text-gray-500 font-mono uppercase tracking-wider block">참고 리뷰</span>
+                                <div className="mt-0.5">
+                                    {appointment.referenceReviewId ? (
+                                        <button
+                                            onClick={() => setIsReviewModalOpen(true)}
+                                            className="inline-block px-2 py-0.5 bg-white/5 hover:bg-white/10 rounded-md border border-white/10 text-orange-400 hover:text-orange-300 font-mono text-xs transition-colors group/review"
+                                        >
+                                            {appointment.referenceReviewId}
+                                            <span className="ml-1 opacity-0 group-hover/review:opacity-100 transition-opacity">↗</span>
+                                        </button>
+                                    ) : (
+                                        <span className="text-gray-600 text-xs italic">없음</span>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                         <span className={`px-4 py-1.5 rounded-full text-xs font-bold leading-none shrink-0 ml-2 ${STATUS_LABELS[appointment.status].class}`}>
                             {appointment.assignedTo ? `👤 ${appointment.assignedTo}` : STATUS_LABELS[appointment.status].text}
                         </span>
                     </div>
 
-                    {/* 두 번째 섹션: 고객 및 연결 정보 */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-                        <div className="space-y-4">
-                            <div className="flex items-end gap-3">
-                                <div>
-                                    <span className="block text-[10px] md:text-xs text-gray-500 mb-1 uppercase tracking-wider font-bold">고객명</span>
-                                    <span className="text-white font-bold text-lg leading-none">{appointment.clientName}</span>
-                                </div>
-                                <div className="mb-[2px]">
-                                    <span className="px-2 py-0.5 rounded-md bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-[10px] font-bold">
-                                        {appointment.gender === 'male' ? "남성" : appointment.gender === 'female' ? "여성" : "미지정"}
-                                    </span>
-                                </div>
-                            </div>
+                    {/* 두 번째 섹션: 고객 정보 */}
+                    <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+                        <div className="flex items-end gap-3">
                             <div>
-                                <span className="block text-[10px] md:text-xs text-gray-500 mb-1 uppercase tracking-wider font-bold">연락처</span>
-                                <span className="text-[#D4C4BD] font-medium text-sm md:text-base">{appointment.contact}</span>
+                                <span className="block text-[10px] md:text-xs text-gray-500 mb-1 uppercase tracking-wider font-bold">고객명</span>
+                                <span className="text-white font-bold text-lg leading-none">{appointment.clientName}</span>
+                            </div>
+                            <div className="mb-[2px]">
+                                <span className="px-2 py-0.5 rounded-md bg-[#22c55e]/10 border border-[#22c55e]/20 text-[#22c55e] text-[10px] font-bold">
+                                    {appointment.gender === 'male' ? "남성" : appointment.gender === 'female' ? "여성" : "미지정"}
+                                </span>
                             </div>
                         </div>
-                        <div className="flex flex-col justify-start items-start md:items-end mt-2 md:mt-0">
-                            <span className="block text-[10px] md:text-xs text-gray-500 mb-2 uppercase tracking-wider font-bold">참고 리뷰 ID</span>
-                            {appointment.referenceReviewId ? (
-                                <button
-                                    onClick={() => setIsReviewModalOpen(true)}
-                                    className="inline-block px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-xl border border-white/10 text-orange-400 hover:text-orange-300 font-mono text-xs transition-colors group/review"
-                                >
-                                    {appointment.referenceReviewId}
-                                    <span className="ml-1 opacity-0 group-hover/review:opacity-100 transition-opacity">↗</span>
-                                </button>
-                            ) : (
-                                <span className="text-gray-600 text-xs italic">없음</span>
-                            )}
+                        <div>
+                            <span className="block text-[10px] md:text-xs text-gray-500 mb-1 uppercase tracking-wider font-bold">연락처</span>
+                            <span className="text-[#D4C4BD] font-medium text-sm md:text-base">{appointment.contact}</span>
                         </div>
-
-                        {/* 예약 시간 정보 (중요 정보로 추가 유지) */}
-                        <div className="col-span-1 md:col-span-2 grid grid-cols-2 gap-6 pt-2">
-                            <div>
-                                <span className="block text-[10px] md:text-xs text-gray-500 mb-1 uppercase tracking-wider font-bold">예약 일자</span>
-                                <span className="text-white font-medium text-sm md:text-base">{appointment.date}</span>
-                            </div>
-                            <div>
-                                <span className="block text-[10px] md:text-xs text-gray-500 mb-1 uppercase tracking-wider font-bold">예약 시간</span>
-                                <span className="text-white font-medium text-sm md:text-base">{appointment.time}</span>
-                            </div>
+                        <div>
+                            <span className="block text-[10px] md:text-xs text-gray-500 mb-1 uppercase tracking-wider font-bold">장르</span>
+                            <span className="text-white font-bold text-sm">{appointment.genre || "-"}</span>
+                        </div>
+                        <div>
+                            <span className="block text-[10px] md:text-xs text-gray-500 mb-1 uppercase tracking-wider font-bold">부위</span>
+                            <span className="text-white font-bold text-sm">{appointment.part || "-"}</span>
+                        </div>
+                        <div>
+                            <span className="block text-[10px] md:text-xs text-gray-500 mb-1 uppercase tracking-wider font-bold">상담희망 일시</span>
+                            <span className="text-white font-bold text-sm">{appointment.date} {appointment.time}</span>
                         </div>
                     </div>
 
@@ -156,16 +225,38 @@ export default function AppointmentDetailModal({ isOpen, appointment, isStaffVie
                     <div className="space-y-6 pt-4 border-t border-white/5">
                         {/* 첨부 이미지 */}
                         <div>
-                            <span className="block text-[10px] text-gray-500 mb-3 uppercase tracking-wider font-bold">첨부 이미지</span>
+                            <div className="flex justify-between items-center mb-3">
+                                <span className="block text-[10px] text-gray-500 uppercase tracking-wider font-bold">첨부 이미지</span>
+                                {hasSourcePost && (
+                                    <span className="text-[10px] text-orange-400 font-bold animate-pulse">
+                                        💡 이미지를 클릭하면 원본 게시물을 확인합니다
+                                    </span>
+                                )}
+                            </div>
                             {appointment.files && appointment.files.length > 0 ? (
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                     {appointment.files.map((file, index) => (
-                                        <div key={index} className="relative aspect-square rounded-xl overflow-hidden border border-white/10 bg-black/50 group">
+                                        <div 
+                                            key={index} 
+                                            className={`relative aspect-square rounded-xl overflow-hidden border border-white/10 bg-black/50 group ${hasSourcePost ? 'cursor-pointer' : ''}`}
+                                            onClick={() => {
+                                                if (appointment.source === 'event') {
+                                                    setShowEventModal(true);
+                                                } else if (appointment.source === 'gallery') {
+                                                    setShowGalleryModal(true);
+                                                }
+                                            }}
+                                        >
                                             <img
                                                 src={file}
                                                 alt={`첨부 이미지 ${index + 1}`}
                                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                                             />
+                                            {hasSourcePost && (
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <span className="text-white text-[10px] font-bold px-2 py-1 bg-white/20 rounded-full backdrop-blur-sm">원본 보기</span>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
@@ -176,17 +267,7 @@ export default function AppointmentDetailModal({ isOpen, appointment, isStaffVie
                             )}
                         </div>
 
-                        {/* 장르 및 부위 */}
-                        <div className="grid grid-cols-2 gap-6 bg-white/[0.02] p-4 rounded-2xl border border-white/5">
-                            <div>
-                                <span className="block text-[10px] text-gray-500 mb-1 uppercase tracking-wider font-bold">장르</span>
-                                <span className="text-white font-bold text-sm">{appointment.genre || "-"}</span>
-                            </div>
-                            <div>
-                                <span className="block text-[10px] text-gray-500 mb-1 uppercase tracking-wider font-bold">부위</span>
-                                <span className="text-white font-bold text-sm">{appointment.part || "-"}</span>
-                            </div>
-                        </div>
+
 
                         {/* 참고 내용 (추가 유지) */}
                         {appointment.referenceText && (
@@ -330,6 +411,32 @@ export default function AppointmentDetailModal({ isOpen, appointment, isStaffVie
                 reviewId={appointment.referenceReviewId || null}
                 onClose={() => setIsReviewModalOpen(false)}
             />
+
+            {/* 원본 이벤트 상세 모달 연동 */}
+            {showEventModal && selectedEvent && (
+                <EventDetailModal
+                    event={selectedEvent}
+                    onClose={() => setShowEventModal(false)}
+                />
+            )}
+            {showEventModal && !selectedEvent && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="bg-[#1a1412] p-6 rounded-xl border border-white/10 text-white">데이터를 불러오는 중...</div>
+                </div>
+            )}
+
+            {/* 원본 갤러리 상세 모달 연동 */}
+            {showGalleryModal && selectedGalleryItem && (
+                <GalleryDetailModal
+                    item={selectedGalleryItem}
+                    onClose={() => setShowGalleryModal(false)}
+                />
+            )}
+            {showGalleryModal && !selectedGalleryItem && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="bg-[#1a1412] p-6 rounded-xl border border-white/10 text-white">데이터를 불러오는 중...</div>
+                </div>
+            )}
         </div>
     );
 }

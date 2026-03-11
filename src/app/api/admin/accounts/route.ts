@@ -15,11 +15,11 @@ export async function GET() {
     try {
         const [admins, staffs] = await Promise.all([
             (prisma as any).admin.findMany({
-                select: { id: true, username: true, createdAt: true, birthday: true },
+                select: { id: true, username: true, nickname: true, phone: true, createdAt: true, birthday: true },
                 orderBy: { createdAt: "desc" },
             }),
             (prisma as any).staff.findMany({
-                select: { id: true, username: true, createdAt: true, birthday: true },
+                select: { id: true, username: true, nickname: true, phone: true, createdAt: true, birthday: true },
                 orderBy: { createdAt: "desc" },
             }),
         ]);
@@ -35,7 +35,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { username, password, role } = body;
+        const { username, password, role, nickname } = body;
 
         if (!username || !password || !role) {
             return NextResponse.json(
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
         }
 
         const newAccount = await model.create({
-            data: { username, password: hashedPassword },
+            data: { username, password: hashedPassword, nickname: nickname || null },
         });
 
         return NextResponse.json(
@@ -105,7 +105,7 @@ export async function DELETE(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
     try {
         const body = await req.json();
-        const { id, role, username, password, birthday, currentPassword } = body;
+        const { id, role, username, password, birthday, currentPassword, nickname, phone } = body;
 
         if (!id || !role) {
             return NextResponse.json({ error: "필수 정보가 누락되었습니다." }, { status: 400 });
@@ -153,6 +153,16 @@ export async function PATCH(req: NextRequest) {
         // 3. 생일 업데이트
         if (birthday !== undefined) {
             updateData.birthday = birthday;
+        }
+
+        // 4. 닉네임 업데이트
+        if (nickname !== undefined) {
+            updateData.nickname = nickname;
+        }
+
+        // 5. 전화번호 업데이트
+        if (phone !== undefined) {
+            updateData.phone = phone;
         }
 
         if (Object.keys(updateData).length === 0) {

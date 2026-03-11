@@ -23,6 +23,7 @@ interface ContactOverlayProps {
     initialPart?: string | null;
     initialImage?: string | null;
     initialSource?: string | null;
+    initialSourceId?: string | null;
 }
 
 // 달력 UI 출력용 요일 배열 (0: 일요일 ~ 6: 토요일)
@@ -41,7 +42,8 @@ export default function ContactOverlay({
     initialGenre = null,
     initialPart = null,
     initialImage = null,
-    initialSource = null
+    initialSource = null,
+    initialSourceId = null
 }: ContactOverlayProps) {
     // Form State
     // 입력값을 관리하는 상태 변수들 (이름, 전화번호, 선택한 부위/장르, 추가 레퍼런스 텍스트, 예약일 및 예약시간, 첨부 파일)
@@ -173,8 +175,9 @@ export default function ContactOverlay({
                 referenceText,
                 referenceReviewId,
                 source: initialSource, // 출처 정보 추가 (event, gallery, null)
+                sourceId: initialSourceId,
                 files: base64Files, // 파일명 대신 데이터 URL 전송
-                date: selectedDate!.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+                date: `${selectedDate!.getFullYear()}-${String(selectedDate!.getMonth() + 1).padStart(2, '0')}-${String(selectedDate!.getDate()).padStart(2, '0')}`,
                 time: selectedTime
             };
 

@@ -46,7 +46,8 @@ export default function EventDetailModal({ event, onClose }: EventDetailModalPro
             detail: {
                 genre: event.genre,
                 imageUrl: event.imageUrl,
-                source: "event"
+                source: "event",
+                id: event.id
             }
         }));
         onClose();

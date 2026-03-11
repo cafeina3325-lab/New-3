@@ -16,6 +16,7 @@ interface Message {
     id: string;
     senderId: string;
     username: string;
+    displayName?: string;
     role: string;
     content: string;
     createdAt: string;
@@ -30,6 +31,27 @@ export default function ChatInterface() {
     const scrollRef = useRef<HTMLDivElement>(null);
 
     const currentUser = session?.user as any;
+    const [myDisplayName, setMyDisplayName] = useState<string>("");
+
+    // 내 닉네임 조회
+    useEffect(() => {
+        const fetchNickname = async () => {
+            try {
+                const res = await fetch("/api/admin/accounts");
+                if (res.ok) {
+                    const data = await res.json();
+                    const allAccounts = [...(data.admins || []), ...(data.staffs || [])];
+                    const me = allAccounts.find((a: any) => a.username === currentUser?.name);
+                    setMyDisplayName(me?.nickname || currentUser?.name || "");
+                } else {
+                    setMyDisplayName(currentUser?.name || "");
+                }
+            } catch {
+                setMyDisplayName(currentUser?.name || "");
+            }
+        };
+        if (currentUser?.name) fetchNickname();
+    }, [currentUser?.name]);
 
     const fetchMessages = async () => {
         if (isFetching) return;
@@ -127,7 +149,7 @@ export default function ChatInterface() {
                     </div>
                 </div>
                 <div className="hidden sm:flex flex-col items-end">
-                    <span className="text-xs text-white/70 font-medium">{currentUser?.name}</span>
+                    <span className="text-xs text-white/70 font-medium">{myDisplayName || currentUser?.name}</span>
                     <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase ${currentUser?.role === 'admin' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
                         }`}>
                         {currentUser?.role || 'Guest'}
@@ -153,7 +175,7 @@ export default function ChatInterface() {
                                             }`}>
                                             {msg.role}
                                         </span>
-                                        <span className="text-xs text-gray-400 font-semibold">{msg.username}</span>
+                                        <span className="text-xs text-gray-400 font-semibold">{msg.displayName || msg.username}</span>
                                     </div>
                                 )}
                                 <div className={`flex items-end space-x-2 transition-all ${isMe ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}>

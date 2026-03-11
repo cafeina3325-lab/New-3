@@ -23,6 +23,7 @@ model Appointment {
   referenceText     String   @default("")
   referenceReviewId String   @default("")
   source            String?
+  sourceId          String?
   files             Json     @default("[]")
   date              String
   time              String
@@ -91,7 +92,9 @@ model Review {
 model Admin {
   id        String   @id @default(cuid())
   username  String   @unique
+  nickname  String?  // 닉네임 (표시용)
   password  String   // 해시화된 비밀번호
+  phone     String?  // 전화번호
   birthday  String?  // 생일 (YYYY-MM-DD)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -101,8 +104,10 @@ model Admin {
 model Staff {
   id        String   @id @default(cuid())
   username  String   @unique
+  nickname  String?  // 닉네임 (표시용)
   password  String   // 해시화된 비밀번호
   birthday  String?  // 생일 (YYYY-MM-DD)
+  phone     String?  // 전화번호
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

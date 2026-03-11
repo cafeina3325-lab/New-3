@@ -29,7 +29,7 @@ export async function GET() {
 export async function POST(request: Request) {
     try {
         const requestBody = await request.json();
-        const { name, gender, phone, part, genre, referenceText, referenceReviewId, source, files, date, time } = requestBody;
+        const { name, gender, phone, part, genre, referenceText, referenceReviewId, source, sourceId, files, date, time, status, assignedTo } = requestBody;
 
         if (!name || !phone || !part || !genre || !date || !time) {
             return NextResponse.json({ error: "필수 항목이 누락되었습니다." }, { status: 400 });
@@ -59,10 +59,12 @@ export async function POST(request: Request) {
                 referenceText: referenceText || "",
                 referenceReviewId: referenceReviewId || "",
                 source: source || null,
+                sourceId: sourceId || null,
                 files: files || [],
                 date,
                 time,
-                status: "pending",
+                status: status || "pending",
+                assignedTo: assignedTo || null,
             },
         });
 

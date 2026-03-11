@@ -46,7 +46,8 @@ export default function GalleryDetailModal({ item, onClose }: GalleryDetailModal
                 genre: item.genre,
                 part: item.part,
                 imageUrl: item.imageUrl,
-                source: "gallery"
+                source: "gallery",
+                id: item.id
             }
         }));
         onClose();

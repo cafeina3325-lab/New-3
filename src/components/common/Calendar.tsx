@@ -9,7 +9,8 @@ interface Appointment {
     date: string;
     time: string;
     status: string;
-    service: string;
+    genre: string;
+    part: string;
     assignedTo?: string | null;
 }
 
@@ -23,18 +24,25 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [currentUser, setCurrentUser] = useState<string | null>(null);
+    const [nicknameMap, setNicknameMap] = useState<Record<string, string>>({});
 
     // 일정 등록 모달 상태
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [formData, setFormData] = useState({
-        title: "",
+        type: "상담",
         genre: GENRES[0],
         part: PARTS[0],
         date: "",
         timeStart: "10:00",
         timeEnd: "11:00",
     });
+
+    // 다중 휴무 지정 모드 
+    const [isHolidayMode, setIsHolidayMode] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragSelection, setDragSelection] = useState<string[]>([]);
+    const [dragAction, setDragAction] = useState<"set" | "remove" | null>(null);
 
     // 시간 슬롯 생성 (10:00 ~ 18:30, 30분 단위)
     const timeSlots = useMemo(() => {
@@ -66,20 +74,34 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
     };
 
     useEffect(() => {
-        const fetchSession = async () => {
+        const fetchSessionAndAccounts = async () => {
             try {
-                const res = await fetch("/api/auth/session");
-                if (res.ok) {
-                    const session = await res.json();
+                const [sessionRes, accountsRes] = await Promise.all([
+                    fetch("/api/auth/session"),
+                    fetch("/api/admin/accounts")
+                ]);
+
+                if (sessionRes.ok) {
+                    const session = await sessionRes.json();
                     if (session?.user?.name) {
                         setCurrentUser(session.user.name);
                     }
                 }
+
+                if (accountsRes.ok) {
+                    const data = await accountsRes.json();
+                    const allAccounts = [...(data.admins || []), ...(data.staffs || [])];
+                    const map: Record<string, string> = {};
+                    allAccounts.forEach((acc: any) => {
+                        if (acc.nickname) map[acc.username] = acc.nickname;
+                    });
+                    setNicknameMap(map);
+                }
             } catch (error) {
-                console.error("Failed to fetch session:", error);
+                console.error("Failed to fetch session or accounts:", error);
             }
         };
-        fetchSession();
+        fetchSessionAndAccounts();
         fetchAppointments();
     }, []);
 
@@ -95,20 +117,20 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
     // 날짜별 예약 그룹화
     const appointmentsByDate = useMemo(() => {
         const group: Record<string, Appointment[]> = {};
-        const isAdmin = theme === "admin";
 
         appointments.forEach((apt) => {
-            // 필터링: 상태가 'confirmed'이고 (어드민이면 전체, 스태프면 내 것만)
-            const isConfirmed = apt.status === 'confirmed';
-            const isMyApp = !isAdmin ? apt.assignedTo === currentUser : true;
+            // 필터링: 관리자/스태프 구분 없이 'confirmed' 상태이거나 'holiday' 상태면 표출
+            const isVisible = apt.status === 'confirmed' || apt.status === 'holiday';
 
-            if (isConfirmed && isMyApp) {
-                if (!group[apt.date]) group[apt.date] = [];
-                group[apt.date].push(apt);
+            if (isVisible) {
+                // "2026. 03. 23." 등의 포맷을 "2026-03-23" 통일된 키로 정규화
+                const normalizedDate = apt.date.replace(/[\.\/]/g, '-').replace(/\s/g, '').replace(/-$/, '');
+                if (!group[normalizedDate]) group[normalizedDate] = [];
+                group[normalizedDate].push(apt);
             }
         });
         return group;
-    }, [appointments, theme, currentUser]);
+    }, [appointments, theme]);
 
     const handlePrevMonth = () => {
         setCurrentDate(new Date(year, month - 1, 1));
@@ -132,7 +154,7 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
     // 일정 등록 모달 열기
     const handleOpenModal = () => {
         setFormData({
-            title: "",
+            type: "상담",
             genre: GENRES[0],
             part: PARTS[0],
             date: selectedDate || new Date().toISOString().split("T")[0],
@@ -152,12 +174,14 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    name: formData.title || "일정",
+                    name: formData.type || "상담",
                     phone: "-",
                     genre: formData.genre,
                     part: formData.part,
                     date: formData.date,
                     time: `${formData.timeStart}~${formData.timeEnd}`,
+                    status: "confirmed",
+                    assignedTo: currentUser || null,
                 }),
             });
 
@@ -175,6 +199,103 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
             alert("서버 연결에 실패했습니다.");
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!window.confirm("이 일정을 삭제하시겠습니까? (복구할 수 없습니다)")) return;
+        
+        try {
+            const res = await fetch(`/api/appointments?id=${id}&hardDelete=true`, {
+                method: "DELETE",
+            });
+            if (res.ok) {
+                alert("일정이 삭제되었습니다.");
+                fetchAppointments(); // 목록 갱신
+            } else {
+                const err = await res.json();
+                alert(`삭제 실패: ${err.error}`);
+            }
+        } catch (error) {
+            console.error("Delete Error:", error);
+            alert("서버 연결에 실패했습니다.");
+        }
+    };
+
+    // 일괄 휴무 처리(드래그)
+    const processHolidayBatch = async (dates: string[], action: "set" | "remove") => {
+        try {
+            if (action === "remove") {
+                const idsToDelete = dates.flatMap(date => 
+                    (appointmentsByDate[date] || []).filter(a => a.status === "holiday").map(a => a.id)
+                );
+                if (idsToDelete.length > 0) {
+                    await Promise.all(idsToDelete.map(id => 
+                        fetch(`/api/appointments?id=${id}&hardDelete=true`, { method: "DELETE" })
+                    ));
+                }
+            } else {
+                const datesToSet = dates.filter(date => {
+                    const existing = appointmentsByDate[date]?.find(a => a.status === "holiday");
+                    return !existing;
+                });
+                if (datesToSet.length > 0) {
+                    await Promise.all(datesToSet.map(date => 
+                        fetch("/api/appointments", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                name: "휴무",
+                                phone: "-",
+                                genre: "ETC",
+                                part: "ETC",
+                                date: date,
+                                time: "00:00~23:59",
+                                status: "holiday",
+                                assignedTo: currentUser || "admin",
+                            }),
+                        })
+                    ));
+                }
+            }
+            fetchAppointments();
+        } catch (error) {
+            console.error("Batch processing error", error);
+            alert("휴무 일괄 처리에 실패했습니다.");
+        }
+    };
+
+    useEffect(() => {
+        const handleWindowMouseUp = async () => {
+            if (isDragging) {
+                setIsDragging(false);
+                if (dragSelection.length > 0 && dragAction) {
+                    await processHolidayBatch(dragSelection, dragAction);
+                }
+                setDragSelection([]);
+                setDragAction(null);
+            }
+        };
+        window.addEventListener("mouseup", handleWindowMouseUp);
+        return () => window.removeEventListener("mouseup", handleWindowMouseUp);
+    }, [isDragging, dragSelection, dragAction, appointmentsByDate, currentUser]);
+
+    const handleMouseDownOnDate = (date: string, isCurrentlyHoliday: boolean) => {
+        if (!isHolidayMode || !isAdmin) {
+            setSelectedDate(date);
+            return;
+        }
+        setIsDragging(true);
+        setDragAction(isCurrentlyHoliday ? "remove" : "set");
+        setDragSelection([date]);
+    };
+
+    const handleMouseEnterOnDate = (date: string) => {
+        if (isDragging && isHolidayMode && isAdmin) {
+            setDragSelection(prev => {
+                if (!prev.includes(date)) return [...prev, date];
+                return prev;
+            });
         }
     };
 
@@ -218,20 +339,27 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
                             const fullDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
                             const hasAppointments = appointmentsByDate[fullDate];
                             const isSelected = selectedDate === fullDate;
+                            const isHoliday = hasAppointments?.some(a => a.status === 'holiday');
+                            const isBeingDragged = dragSelection.includes(fullDate);
 
                             return (
                                 <button
                                     key={day}
-                                    onClick={() => setSelectedDate(fullDate)}
+                                    onMouseDown={() => handleMouseDownOnDate(fullDate, !!isHoliday)}
+                                    onMouseEnter={() => handleMouseEnterOnDate(fullDate)}
                                     className={`relative aspect-square rounded-xl border flex flex-col items-center justify-center transition-all group group-hover:bg-white/5
                                         ${borderColor} 
                                         ${isSelected ? "bg-white/10 border-white/30" : "hover:border-white/20"}
+                                        ${isHoliday ? "bg-red-500/10 border-red-500/20" : ""}
+                                        ${isBeingDragged ? "ring-2 ring-red-400 bg-red-500/20" : ""}
                                     `}
                                 >
-                                    <span className={`text-sm md:text-base font-medium ${isToday(day) ? "text-orange-400 font-bold" : ""}`}>
+                                    <span className={`text-sm md:text-base font-medium 
+                                        ${isHoliday ? "text-red-400 font-bold" : isToday(day) ? "text-orange-400 font-bold" : ""}
+                                    `}>
                                         {day}
                                     </span>
-                                    {hasAppointments && (
+                                    {hasAppointments && !isHoliday && (
                                         <div className={`mt-1 flex gap-0.5 justify-center flex-wrap px-1`}>
                                             {hasAppointments.slice(0, 3).map((_, idx) => (
                                                 <div key={idx} className={`w-1 h-1 rounded-full ${accentColor}`} />
@@ -239,41 +367,99 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
                                             {hasAppointments.length > 3 && <div className="w-1 h-1 rounded-full bg-gray-400" />}
                                         </div>
                                     )}
+                                    {isHoliday && (
+                                        <div className="flex items-center justify-center mt-1 w-full px-1">
+                                            <span className="w-full text-center text-[10px] md:text-[11px] text-white font-bold bg-red-500/60 rounded-sm py-0.5">휴무</span>
+                                        </div>
+                                    )}
                                 </button>
                             );
                         })}
                     </div>
+                    
+                    {/* 하단 휴무 지정 모드 뱃지/버튼 */}
+                    {isAdmin && (
+                        <div className="mt-8 flex justify-end">
+                            <button
+                                onClick={() => setIsHolidayMode(!isHolidayMode)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all ${
+                                    isHolidayMode 
+                                    ? "bg-red-500/20 border-red-500/50 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.2)]" 
+                                    : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                                }`}
+                            >
+                                <span className="text-lg">{isHolidayMode ? "🔴" : "⚪"}</span>
+                                <span className="font-bold text-sm">다중 휴무 지정 모드 {isHolidayMode ? "ON" : "OFF"}</span>
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* 상세 내역 필드 */}
                 <div className="w-full lg:w-80 flex flex-col">
                     <div className="p-6 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 h-full flex flex-col min-h-[400px]">
-                        <h4 className="text-lg font-bold mb-4 flex items-center gap-2">
-                            <span>📅</span>
-                            <span>{selectedDate || "날짜를 선택하세요"}</span>
-                        </h4>
+                        <div className="flex justify-between items-center mb-4">
+                            <h4 className="text-lg font-bold flex items-center gap-2">
+                                <span>📅</span>
+                                <span>{selectedDate || "날짜를 선택하세요"}</span>
+                            </h4>
+                        </div>
 
                         <div className="flex-1 overflow-y-auto space-y-4 pr-2">
                             {selectedDate && appointmentsByDate[selectedDate] ? (
                                 appointmentsByDate[selectedDate]
                                     .sort((a, b) => a.time.localeCompare(b.time))
-                                    .map((apt) => (
-                                        <div key={apt.id} className="p-4 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-all border-l-4 border-l-orange-400/50">
-                                            <div className="flex justify-between items-start mb-2">
-                                                <span className="text-xs font-bold text-orange-400 uppercase tracking-tighter">{apt.time}</span>
-                                                <div className="flex flex-col items-end">
-                                                    <span className={`text-[10px] px-2 py-0.5 rounded-full mb-1 ${apt.status === "confirmed" ? "bg-green-500/20 text-green-400" : "bg-yellow-500/20 text-yellow-400"}`}>
-                                                        {apt.status === 'confirmed' ? '확정' : '대기'}
+                                    .map((apt) => {
+                                        if (apt.status === 'holiday') {
+                                            return (
+                                                <div key={apt.id} className="p-4 bg-red-500/5 text-center border border-red-500/10 rounded-xl flex flex-col justify-center min-h-[100px]">
+                                                    <span className="text-3xl mb-2">🚫</span>
+                                                    <h5 className="font-bold text-red-400 mb-1">예약 마감</h5>
+                                                    <p className="text-xs text-gray-400">해당 날짜는 휴무(예약 불가)로 지정되었습니다.</p>
+                                                </div>
+                                            );
+                                        }
+                                        return (
+                                            <div key={apt.id} className="p-4 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-all border-l-4 border-l-orange-400/50 flex flex-col justify-between min-h-[100px]">
+                                                {/* 상단: 좌(타입) 우(닉네임) */}
+                                                <div className="flex justify-between items-start mb-3">
+                                                    <span className="text-sm font-bold text-white px-2 py-1 bg-white/10 rounded-md">
+                                                        {['상담', '시술'].includes(apt.clientName) ? apt.clientName : '예약상담'}
                                                     </span>
-                                                    {apt.assignedTo && (
-                                                        <span className="text-[10px] text-blue-400 font-bold">👤 {apt.assignedTo}</span>
-                                                    )}
+                                                    <span className="text-sm text-blue-400 font-bold">
+                                                        {apt.assignedTo ? (nicknameMap[apt.assignedTo] || apt.assignedTo) : "미배정"}
+                                                    </span>
+                                                </div>
+
+                                                {/* 중앙: 좌(장르-부위) */}
+                                                <div className="flex-1">
+                                                    <p className="text-sm font-bold text-gray-300 mb-1">
+                                                        장르: <span className="text-white">{apt.genre}</span>
+                                                    </p>
+                                                    <p className="text-sm font-bold text-gray-300">
+                                                        부위: <span className="text-white">{apt.part}</span>
+                                                    </p>
+                                                </div>
+
+                                                {/* 하단: 우(시간) 및 삭제 버튼 */}
+                                                <div className="flex justify-between items-center mt-2 pt-2 border-t border-white/5">
+                                                    <div>
+                                                        {(isAdmin || apt.assignedTo === currentUser) && (
+                                                            <button 
+                                                                onClick={() => handleDelete(apt.id)}
+                                                                className="text-[10px] text-red-400 hover:text-red-300 px-2 py-1 bg-red-400/10 hover:bg-red-400/20 rounded transition-colors"
+                                                            >
+                                                                삭제
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                    <span className="text-xs font-bold text-orange-400 uppercase tracking-tighter">
+                                                        {apt.time}
+                                                    </span>
                                                 </div>
                                             </div>
-                                            <h5 className="font-bold text-sm mb-1">{apt.clientName}</h5>
-                                            <p className="text-[11px] opacity-60 leading-tight">{apt.service}</p>
-                                        </div>
-                                    ))
+                                        );
+                                    })
                             ) : (
                                 <div className="h-full flex flex-col items-center justify-center text-gray-500 animate-pulse">
                                     <div className="text-4xl mb-4 opacity-20">🍃</div>
@@ -302,16 +488,17 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
                         </h2>
 
                         <form onSubmit={handleSubmit} className="space-y-5">
-                            {/* 타이틀 */}
+                            {/* 타입 */}
                             <div className="space-y-2">
-                                <label className="text-sm text-gray-400">타이틀</label>
-                                <input
-                                    type="text"
-                                    value={formData.title}
-                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                    placeholder="일정 제목을 입력하세요"
-                                    className={`w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white ${accentFocus} outline-none`}
-                                />
+                                <label className="text-sm text-gray-400">타입</label>
+                                <select
+                                    value={formData.type}
+                                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                                    className={`w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white outline-none appearance-none`}
+                                >
+                                    <option value="상담" className={`${selectBg} text-white`}>상담</option>
+                                    <option value="시술" className={`${selectBg} text-white`}>시술</option>
+                                </select>
                             </div>
 
                             {/* 장르 · 부위 */}
@@ -338,37 +525,39 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
                                 </div>
                             </div>
 
-                            {/* 날짜 */}
-                            <div className="space-y-2">
-                                <label className="text-sm text-gray-400">날짜</label>
-                                <input
-                                    type="date"
-                                    required
-                                    value={formData.date}
-                                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                                    className={`w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white ${accentFocus} outline-none`}
-                                />
-                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                {/* 날짜 */}
+                                <div className="space-y-2">
+                                    <label className="text-sm text-gray-400">날짜</label>
+                                    <input
+                                        type="date"
+                                        required
+                                        value={formData.date}
+                                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                        className={`w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white ${accentFocus} outline-none`}
+                                    />
+                                </div>
 
-                            {/* 시간 범위 (시작 ~ 종료) */}
-                            <div className="space-y-2">
-                                <label className="text-sm text-gray-400">시간</label>
-                                <div className="flex items-center gap-3">
-                                    <select
-                                        value={formData.timeStart}
-                                        onChange={(e) => setFormData({ ...formData, timeStart: e.target.value })}
-                                        className={`flex-1 px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white outline-none appearance-none text-center`}
-                                    >
-                                        {timeSlots.map((t) => <option key={t} value={t} className={`${selectBg} text-white`}>{t}</option>)}
-                                    </select>
-                                    <span className="text-gray-400 font-medium text-lg">~</span>
-                                    <select
-                                        value={formData.timeEnd}
-                                        onChange={(e) => setFormData({ ...formData, timeEnd: e.target.value })}
-                                        className={`flex-1 px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white outline-none appearance-none text-center`}
-                                    >
-                                        {timeSlots.map((t) => <option key={t} value={t} className={`${selectBg} text-white`}>{t}</option>)}
-                                    </select>
+                                {/* 시간 범위 (시작 ~ 종료) */}
+                                <div className="space-y-2">
+                                    <label className="text-sm text-gray-400">시간</label>
+                                    <div className="flex items-center gap-2">
+                                        <select
+                                            value={formData.timeStart}
+                                            onChange={(e) => setFormData({ ...formData, timeStart: e.target.value })}
+                                            className={`flex-1 px-2 py-3 bg-black/40 border border-white/10 rounded-lg text-white outline-none appearance-none text-center`}
+                                        >
+                                            {timeSlots.map((t) => <option key={t} value={t} className={`${selectBg} text-white`}>{t}</option>)}
+                                        </select>
+                                        <span className="text-gray-400 font-medium">~</span>
+                                        <select
+                                            value={formData.timeEnd}
+                                            onChange={(e) => setFormData({ ...formData, timeEnd: e.target.value })}
+                                            className={`flex-1 px-2 py-3 bg-black/40 border border-white/10 rounded-lg text-white outline-none appearance-none text-center`}
+                                        >
+                                            {timeSlots.map((t) => <option key={t} value={t} className={`${selectBg} text-white`}>{t}</option>)}
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
 
@@ -396,15 +585,13 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
             {/* 일정 등록 플로팅 버튼 */}
             <button
                 onClick={handleOpenModal}
-                className={`fixed bottom-8 right-8 z-50 p-4 ${accentBtnBg} text-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center gap-2 group`}
+                className={`fixed bottom-8 right-8 z-50 px-6 py-4 ${accentBtnBg} text-white rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-2 font-bold`}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
                     <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
-                <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 font-bold whitespace-nowrap">
-                    일정 등록
-                </span>
+                <span>일정 등록</span>
             </button>
         </div>
     );

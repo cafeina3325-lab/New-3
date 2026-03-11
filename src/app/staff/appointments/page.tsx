@@ -24,7 +24,7 @@ interface Appointment {
     referenceText?: string;
     source?: string | null;
     files?: string[];
-    status: 'pending' | 'confirmed' | 'cancelled';
+    status: 'pending' | 'confirmed' | 'cancelled' | 'holiday';
     assignedTo?: string | null;
     createdAt?: string;
     isDeleted?: boolean;
@@ -38,6 +38,7 @@ export default function StaffAppointmentsPage() {
     const [filter, setFilter] = useState<'all' | 'pending' | 'confirmed' | 'cancelled'>('all');
     const [search, setSearch] = useState("");
     const [currentUser, setCurrentUser] = useState<string>("");
+    const [displayName, setDisplayName] = useState<string>("");
 
     // 현재 로그인한 사용자 정보 가져오기
     useEffect(() => {
@@ -48,6 +49,19 @@ export default function StaffAppointmentsPage() {
                     const session = await res.json();
                     if (session?.user?.name) {
                         setCurrentUser(session.user.name);
+                        // 닉네임 조회
+                        try {
+                            const profileRes = await fetch("/api/admin/accounts");
+                            if (profileRes.ok) {
+                                const data = await profileRes.json();
+                                const staff = data.staffs?.find((s: any) => s.username === session.user.name);
+                                setDisplayName(staff?.nickname || session.user.name);
+                            } else {
+                                setDisplayName(session.user.name);
+                            }
+                        } catch {
+                            setDisplayName(session.user.name);
+                        }
                     }
                 }
             } catch (error) {
@@ -75,7 +89,7 @@ export default function StaffAppointmentsPage() {
         }
     };
 
-    const handleStatusChange = async (id: string, status: 'pending' | 'confirmed' | 'cancelled', assignedTo?: string | null) => {
+    const handleStatusChange = async (id: string, status: 'pending' | 'confirmed' | 'cancelled' | 'holiday', assignedTo?: string | null) => {
         try {
             const body: any = { id, status };
             if (assignedTo !== undefined) body.assignedTo = assignedTo;
@@ -147,8 +161,8 @@ export default function StaffAppointmentsPage() {
 
     // 핵심: 자신에게 배정된 예약만 필터링
     const myAppointments = appointments.filter(apt => {
-        // isDeleted(어드민 삭제) 또는 staffHidden(스태프 비우기) 또는 isArchived인 경우 제외
-        if (apt.isDeleted || apt.staffHidden || apt.isArchived) return false;
+        // isDeleted(어드민 삭제) 또는 staffHidden(스태프 비우기) 또는 isArchived 또는 holiday 또는 직접 등록(-)인 경우 제외
+        if (apt.isDeleted || apt.staffHidden || apt.isArchived || apt.status === 'holiday' || apt.contact === '-') return false;
         // assignedTo가 현재 로그인한 사용자와 일치하는 항목만 표시
         if (!apt.assignedTo || apt.assignedTo !== currentUser) return false;
         return true;
@@ -193,7 +207,7 @@ export default function StaffAppointmentsPage() {
                 <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">내 예약 관리</h1>
                 <p className="text-sm sm:text-base text-gray-400 mt-2">
                     {currentUser ? (
-                        <><span className="text-blue-400 font-bold">{currentUser}</span>님에게 배정된 예약 목록입니다.</>
+                        <><span className="text-blue-400 font-bold">{displayName}</span>님에게 배정된 예약 목록입니다.</>
                     ) : (
                         "배정된 예약 내역을 확인하고 관리할 수 있습니다."
                     )}

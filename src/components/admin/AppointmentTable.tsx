@@ -27,7 +27,7 @@ interface Appointment {
     referenceText?: string;     // 참조 사항 텍스트
     source?: string | null;     // 유입 경로 (이벤트 등)
     files?: string[];           // 첨부 도안 이미지
-    status: 'pending' | 'confirmed' | 'cancelled';
+    status: 'pending' | 'confirmed' | 'cancelled' | 'holiday';
     assignedTo?: string | null;  // 배정된 스태프 이름
     createdAt?: string;         // 데이터 생성/업데이트 타임스탬프
 }
@@ -43,6 +43,7 @@ const STATUS_LABELS = {
     pending: { text: '대기 중', class: 'bg-yellow-500/10 text-yellow-500' },
     confirmed: { text: '확정됨', class: 'bg-green-500/10 text-green-500' },
     cancelled: { text: '취소됨', class: 'bg-red-500/10 text-red-500' },
+    holiday: { text: '정기 휴무', class: 'bg-purple-500/10 text-purple-500' },
 };
 
 // 유입 소스(예: 특별 체험단(event), 갤러리 구경 등)별 렌더링 UI 라벨 정의 
@@ -55,7 +56,7 @@ const SOURCE_LABELS: Record<string, { text: string, class: string }> = {
 
 export default function AppointmentTable({ appointments, onStatusChange, onDelete, onAssign, isStaffView = false }: {
     appointments: Appointment[];
-    onStatusChange?: (id: string, status: 'pending' | 'confirmed' | 'cancelled', assignedTo?: string | null) => void;
+    onStatusChange?: (id: string, status: 'pending' | 'confirmed' | 'cancelled' | 'holiday', assignedTo?: string | null) => void;
     onDelete?: (id: string) => void;
     onAssign?: (id: string, staffName: string) => void;
     isStaffView?: boolean;

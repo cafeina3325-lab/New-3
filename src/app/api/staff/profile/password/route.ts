@@ -12,7 +12,7 @@ export async function PATCH(req: NextRequest) {
         }
 
         const body = await req.json();
-        const { newPassword } = body;
+        const { currentPassword, newPassword } = body;
 
         if (!newPassword || newPassword.trim().length < 4) {
             return NextResponse.json(
@@ -22,6 +22,21 @@ export async function PATCH(req: NextRequest) {
         }
 
         const username = session.user.name as string;
+
+        // 현재 비밀번호 검증
+        if (currentPassword) {
+            const staff = await prisma.staff.findUnique({
+                where: { username },
+            });
+            if (!staff) {
+                return NextResponse.json({ error: "계정을 찾을 수 없습니다." }, { status: 404 });
+            }
+            const isValid = await bcrypt.compare(currentPassword, staff.password);
+            if (!isValid) {
+                return NextResponse.json({ error: "현재 비밀번호가 일치하지 않습니다." }, { status: 400 });
+            }
+        }
+
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
         await (prisma as any).staff.update({
