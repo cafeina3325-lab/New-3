@@ -1,37 +1,83 @@
 /* 파일 요약: 전체 애플리케이션에 적용되는 테일윈드(Tailwind) 루트 CSS 및 전역 애니메이션 정의 파일입니다. */
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
 @import "tailwindcss";
 
 .luxury-title {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-playfair), serif;
   text-transform: uppercase;
   letter-spacing: 0.25em;
-  color: #F5F5F7; /* 오프 화이트 */
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  transition: color 0.3s ease;
-  position: relative;
-  display: inline-block;
+  /* 텍스트 투명화하여 배경 질감 표시 */
+  color: transparent !important;
+  /* 텍스트 밝기 최대화 및 정밀한 그림자로 시인성 확보 */
+  text-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.5),
+    0 4px 20px rgba(0, 0, 0, 0.4);
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
+  
+  /* 전면 광택 레이어, 가독성 보완 레이어, Carbon 텍스처 레이어링 */
+  background-image: 
+    linear-gradient(
+      120deg, 
+      transparent 0%, 
+      transparent 40%, 
+      rgba(255, 255, 255, 0.9) 50%, 
+      transparent 60%, 
+      transparent 100%
+    ),
+    /* 화이트 오버레이 농도를 75%로 조절하여 하단의 Carbon 문양 노출 */
+    linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
+    url('/Carbon.png');
+  
+  background-size: 200% 100%, 100% 100%, cover;
+  background-position: 150% 0, 0 0, center;
+  background-repeat: no-repeat, no-repeat, repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  
+  /* 상시 광택 애니메이션 적용 */
+  animation: text-shine 3s infinite linear;
 }
 
 .luxury-title::after {
   content: '';
   position: absolute;
-  bottom: -4px;
+  bottom: -6px;
   left: 50%;
   width: 0;
-  height: 1px;
-  background-color: #D4AF37; /* 골드 */
-  transition: width 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), left 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  height: 2px;
+  /* 단색 대신 프리미엄 골드 그라데이션 적용 */
+  background: linear-gradient(90deg, #8A6E2F, #D4AF37, #F9E498, #D4AF37, #8A6E2F);
+  background-size: 200% 100%;
+  transition: width 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), 
+              left 0.6s cubic-bezier(0.165, 0.84, 0.44, 1),
+              box-shadow 0.6s ease;
+  border-radius: 2px;
+}
+
+.luxury-title-container:hover .luxury-title {
+  /* 호버 시 금색 빛이 감돌도록 함 (질감 유지) */
+  filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.4));
+  background-position: -50% 0, center;
 }
 
 .luxury-title-container:hover .luxury-title::after {
   width: 100%;
   left: 0;
+  /* 강력한 골드 글로우 효과 추가 */
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.6), 0 0 5px rgba(255, 255, 255, 0.4);
+  animation: line-flow 2s infinite linear;
 }
 
-.luxury-title-container:hover .luxury-title {
-  color: #D4AF37;
+/* 텍스트 광택 애니메이션 */
+@keyframes text-shine {
+  0% { background-position: 150% 0; }
+  100% { background-position: -50% 0; }
+}
+
+/* 라인 그라데이션 흐름 애니메이션 */
+@keyframes line-flow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
 /* 전역 색상 변수 설정: 기본 테마(주로 Dark 계열) */
@@ -103,4 +149,119 @@ nextjs-portal {
   /* 전역 버튼 스타일 가독성 최적화: 최소한의 줄바꿈 방지만 적용 */
   button {
     white-space: nowrap !important;
+  }
+
+  /* 버튼 투명도 그라데이션: 사이드바 전용 스타일 (데스크탑 상단바 오버라이드 가능하도록 !important 제외) */
+  .luxury-button-bg {
+    background: linear-gradient(180deg, 
+      rgba(255, 255, 255, 0) 0%, 
+      rgba(255, 255, 255, 0) 50%, 
+      rgba(255, 255, 255, 0.27) 100%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    box-shadow: none;
+  }
+
+  /* 샴페인 골드 호버 글로우 효과 */
+  .champagne-glow-hover {
+    border: 1px solid transparent !important;
+    /* 호버 해제 시: 부드럽지만 깔끔하게(0.45s) 사라짐 */
+    transition: background 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.3s ease-out, 
+                border-color 0.3s ease-out,
+                color 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .champagne-glow-hover:hover {
+    background: rgba(247, 231, 206, 0.2) !important;
+    box-shadow: 0 0 20px rgba(247, 231, 206, 0.4), 
+                0 0 10px rgba(247, 231, 206, 0.2) inset !important;
+    border: 1px solid rgba(247, 231, 206, 0.5) !important;
+    /* 호버 시: 우아하고 풍부하게(0.6s) 차오름 */
+    transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                color 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .champagne-glow-hover:hover * {
+    color: #F7E7CE !important;
+    transition: color 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .champagne-glow-hover * {
+    transition: color 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  /* 매트 골드 호버 글로우 효과 (예약하기 버튼 전용) */
+  .matte-gold-glow-hover {
+    border: 1px solid transparent !important;
+    /* 호버 해제 시 */
+    transition: background 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.3s ease-out, 
+                border-color 0.3s ease-out,
+                color 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .matte-gold-glow-hover:hover {
+    background: rgba(166, 137, 66, 0.25) !important;
+    box-shadow: 0 0 15px rgba(166, 137, 66, 0.3), 
+                0 0 8px rgba(166, 137, 66, 0.15) inset !important;
+    border: 1px solid rgba(166, 137, 66, 0.45) !important;
+    /* 호버 시 */
+    transition: background 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+                border-color 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                color 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .matte-gold-glow-hover:hover * {
+    color: #A68942 !important;
+    transition: color 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .matte-gold-glow-hover * {
+    transition: color 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  /* 통일된 고시인성 프리미엄 CTA 버튼 스타일 (명품관 에디션 - Midnight Navy & Gold) */
+  .luxury-cta-button {
+    width: 150px !important;
+    height: 48px !important;
+    background: rgba(10, 17, 40, 0.45) !important; /* 미드나잇 네이비 기반 반투명 */
+    border: 1px solid rgba(247, 231, 206, 0.3) !important; /* 샴페인 골드 테두리 */
+    color: #E5E4E2 !important; /* 플래티넘 실버 텍스트 */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+    letter-spacing: 0.12em !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 500 !important;
+    border-radius: 4px !important;
+    backdrop-filter: blur(12px) !important;
+    text-transform: uppercase !important;
+    transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .luxury-cta-button:hover {
+    background: rgba(247, 231, 206, 0.95) !important; /* 호버 시 골드로 반전 */
+    color: #0A1128 !important; /* 네이비 텍스트로 가독성 확보 */
+    border-color: #D4AF37 !important;
+    box-shadow: 0 0 20px rgba(247, 231, 206, 0.4) !important;
+  }
+
+  /* 명품관 스타일 프리미엄 텍스트 클래스 */
+  .luxury-text-platinum {
+    color: #E5E4E2 !important;
+    letter-spacing: 0.08em !important;
+    transition: color 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
+  .luxury-text-platinum:hover {
+    color: #F7E7CE !important; /* 샴페인 골드 하이라이트 */
+    text-shadow: 0 0 10px rgba(247, 231, 206, 0.3) !important;
   }

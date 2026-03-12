@@ -97,10 +97,10 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
     const navContainerClasses = `
         transition-all duration-500 ease-in-out pointer-events-auto 
         lg:flex-1 lg:flex lg:items-center lg:justify-end lg:px-8
-        fixed lg:relative top-[100px] md:top-[120px] lg:top-0 left-0 
-        h-[calc(100vh-100px)] md:h-[calc(100vh-120px)] lg:h-[100px] 
-        w-[170px] md:w-[325px] lg:w-auto 
-        z-40 flex flex-col lg:flex-row pt-8 lg:pt-0
+        fixed lg:relative top-0 left-0 
+        h-screen lg:h-[100px] 
+        w-[190px] md:w-[320px] lg:w-auto 
+        z-40 flex flex-col lg:flex-row pt-[160px] md:pt-[200px] lg:pt-0
         overflow-y-auto lg:overflow-y-visible
         ${navVisibilityClasses}
     `;
@@ -108,25 +108,47 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
     return (
         <>
             <nav ref={navRef} className={navContainerClasses}>
-                {/* Independent Background Layer with Fade Mask */}
-                {/* 배경 블러 처리 및 데스크탑용 투명 마스크 레이어 */}
-                <div className={`
-                    absolute inset-0 z-0 pointer-events-none
-                    bg-transparent backdrop-blur-md 
-                    lg:border-r-0 lg:bg-transparent
-                    lg:[mask-image:linear-gradient(to_right,transparent_0px,transparent_100px,black_30%,black_100%)]
-                `} />
+                <div className="absolute inset-0 z-0 pointer-events-none">
+                    {/* 데스크탑 가로바: 블러 없이 #0A1128 컬러 6단계 투명도 그라데이션 적용 (0% -> 95%) */}
+                    <div
+                        className="absolute inset-0 bg-[#0A1128] lg:block hidden"
+                        style={{
+                            maskImage: 'linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0.37) 40%, rgba(0,0,0,0.73) 60%, rgba(0,0,0,0.80) 80%, rgba(0,0,0,0.95) 100%)',
+                            WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0.37) 40%, rgba(0,0,0,0.73) 60%, rgba(0,0,0,0.80) 80%, rgba(0,0,0,0.95) 100%)'
+                        }}
+                    />
+
+                    {/* 모바일/태블릿용 사이드바 배경 (변경 사항 없음) */}
+                    <div className="absolute inset-0 lg:hidden overflow-hidden">
+                        <div
+                            className="absolute inset-0"
+                            style={{
+                                maskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.53) 100%)',
+                                WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.53) 100%)'
+                            }}
+                        >
+                            <div className="absolute inset-0 bg-[#0A1128]/82 backdrop-blur-xl" />
+                        </div>
+                        <div className="absolute top-0 left-0 w-full h-[120px] md:h-[180px] bg-gradient-to-b from-black/80 to-transparent" />
+                        <div className="absolute top-0 left-0 w-full h-[110px] md:h-[150px] bg-black/45 border-b border-white/5 shadow-[0_8px_25px_rgba(0,0,0,0.7)]" />
+                    </div>
+                </div>
 
                 {/* Navigation Items - Content Layer */}
                 {/* 실제 링크들이 렌더링되는 레이어 */}
-                <div className={`relative z-10 flex flex-col lg:flex-row items-start lg:items-center w-full lg:w-auto ${showNavBar ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}>
-                    <ul className="flex flex-col lg:flex-row space-y-3 lg:space-y-0 lg:space-x-8 lg:mr-12 w-full lg:w-auto pb-20 lg:pb-0">
+                <div className={`relative z-10 flex flex-col lg:flex-row items-start lg:items-center w-full lg:w-auto ${showNavBar ? 'opacity-100' : 'opacity-0'} transition-opacity duration-700`}>
+                    <ul className="flex flex-col lg:flex-row space-y-3 lg:space-y-0 lg:space-x-4 lg:mr-12 w-full lg:w-auto pb-20 lg:pb-0">
                         {MENU_ITEMS.map((item) => (
                             <li key={item.name} className="relative group lg:h-full flex flex-col lg:flex-row lg:items-center item-start w-full lg:w-auto px-6 md:px-10 lg:px-0 mb-4 lg:mb-0">
-                                <div className="flex items-center justify-between w-full lg:w-auto bg-white/5 border border-white/10 rounded-xl backdrop-blur-md px-6 py-1 lg:px-5 lg:py-0 hover:bg-white/15 hover:border-white/20 transition-all duration-300 w-full group">
+                                <div className={`
+                                    flex items-center group rounded-xl champagne-glow-hover
+                                    ${isHamburgerMode
+                                        ? 'luxury-button-bg justify-start px-6 py-1 w-[110px] md:w-[130px] lg:w-fit lg:!bg-none lg:px-5 lg:py-0 lg:hover:bg-transparent hover:bg-white/10'
+                                        : 'justify-between px-6 py-1 lg:px-5 lg:py-0 hover:bg-white/15 lg:hover:bg-transparent lg:!bg-none w-fit lg:w-auto'}
+                                `}>
                                     <Link
                                         href={item.path}
-                                        className="text-lg lg:text-base font-bold text-gray-200 group-hover:text-white transition-colors py-3 lg:py-2 block w-full lg:w-auto"
+                                        className="text-xs md:text-base lg:text-lg luxury-text-platinum py-2 lg:py-2 block w-full lg:w-auto text-left"
                                         onClick={(e) => {
                                             if (!isHamburgerMode) return;
 
@@ -153,7 +175,7 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                                             }}
                                         >
                                             <svg
-                                                className={`w-5 h-5 transition-transform duration-300 ${openSubMenu === item.name ? 'rotate-180' : ''}`}
+                                                className={`w-5 h-5 transition-transform duration-700 ${openSubMenu === item.name ? 'rotate-180' : ''}`}
                                                 fill="none"
                                                 stroke="currentColor"
                                                 viewBox="0 0 24 24"
@@ -171,7 +193,7 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                                         lg:absolute lg:top-full lg:left-1/2 lg:-translate-x-1/2 lg:pt-4 
                                         static w-full pl-4 lg:pl-0
                                         lg:opacity-0 lg:invisible lg:group-hover:opacity-100 lg:group-hover:visible 
-                                        transition-all duration-300 ease-out z-50
+                                        transition-all duration-700 ease-out z-50
                                         ${openSubMenu === item.name ? 'block' : 'hidden'} lg:block
                                     `}>
                                         <div className="bg-black/5 backdrop-blur-xl rounded-xl lg:border border-white/10 overflow-hidden min-w-[200px] shadow-2xl">
@@ -180,7 +202,7 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                                                     <li key={subItem.name}>
                                                         <Link
                                                             href={subItem.path}
-                                                            className="block px-4 lg:px-6 py-2 lg:py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors whitespace-nowrap"
+                                                            className="block px-4 lg:px-6 py-2 lg:py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-[#F7E7CE] transition-colors whitespace-nowrap"
                                                             onClick={() => isHamburgerMode && setIsMenuOpen(false)}
                                                         >
                                                             {subItem.name}
@@ -196,20 +218,26 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                     </ul>
 
                     {/* Nav 우측 끝: 독립된 디자인의 Contact 예약 버튼 (로그인 시 관리자/스태프 페이지로 전환) */}
-                    <div className="mt-8 lg:mt-0 w-full lg:w-auto flex justify-center lg:block">
+                    <div className="mt-8 lg:mt-0 w-full lg:w-auto flex justify-start lg:block px-6 md:px-10 lg:px-0">
                         {session?.user ? (
                             <Link
                                 href={(session.user as any).role === "admin" ? "/admin" : "/staff"}
-                                className="px-5 py-3.5 lg:px-3 lg:py-2 bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/50 text-white font-bold rounded-lg transition-all w-auto lg:w-auto lg:mr-4 backdrop-blur-sm flex items-center gap-2"
+                                className={`
+                                    luxury-cta-button matte-gold-glow-hover
+                                    ${isHamburgerMode ? 'justify-start px-6' : 'lg:mr-4 justify-center'}
+                                `}
                                 onClick={() => isHamburgerMode && setIsMenuOpen(false)}
                             >
-                                <span>⚙️</span>
+                                <span className="mr-2">⚙️</span>
                                 {(session.user as any).role === "admin" ? "관리자 페이지" : "스태프 페이지"}
                             </Link>
                         ) : (
                             <button
                                 onClick={handleContactClick}
-                                className="px-9 py-3.5 lg:px-6 lg:py-2 bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold rounded-lg transition-all w-auto lg:w-auto lg:mr-4 backdrop-blur-sm"
+                                className={`
+                                    luxury-cta-button matte-gold-glow-hover
+                                    ${isHamburgerMode ? 'justify-start px-6' : 'lg:mr-4 justify-center'}
+                                `}
                             >
                                 예약하기
                             </button>
@@ -230,7 +258,7 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
             {/* Hamburger Button (Glass Style) */}
             {/* 스크롤 다운 혹은 모바일 모드 시 플로팅 아이콘 형태로 나오는 '메뉴 열기' 버튼 */}
             {isHamburgerMode && !isMenuOpen && (
-                <div className="fixed top-[100px] md:top-[120px] left-[80px] md:left-[130px] -translate-x-1/2 lg:fixed lg:top-8 lg:right-8 lg:left-auto lg:translate-x-0 z-50 pointer-events-auto flex items-center justify-center">
+                <div className="fixed top-[110px] md:top-[150px] left-[87px] md:left-[143px] -translate-x-1/2 lg:fixed lg:top-8 lg:right-8 lg:left-auto lg:translate-x-0 z-50 pointer-events-auto flex items-center justify-center">
                     {/* SVG V-Line Glow Layer */}
                     <div className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${isBtnHovered ? 'opacity-100' : 'opacity-0'}`}>
                         <svg
@@ -265,10 +293,10 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                             backgroundColor: 'transparent',
                             border: 'none'
                         }}
-                        className={`relative z-10 w-[120px] md:w-[180px] h-9 lg:w-14 lg:h-14 text-white transition-all duration-300 animate-fade-in flex items-center justify-center [clip-path:polygon(0%_0%,_100%_0%,_100%_70%,_50%_100%,_0%_70%)] lg:rounded-full lg:[clip-path:none] ${isBtnHovered ? 'scale-105' : ''}`}
+                        className={`relative z-10 w-[140px] md:w-[210px] h-9 lg:w-14 lg:h-14 text-white transition-all duration-700 animate-fade-in flex items-center justify-center [clip-path:polygon(0%_0%,_100%_0%,_100%_70%,_50%_100%,_0%_70%)] lg:rounded-full lg:[clip-path:none] ${isBtnHovered ? 'scale-105' : ''}`}
                         aria-label="Open Menu"
                     >
-                        <svg className={`w-4 h-4 lg:w-6 lg:h-6 transition-transform duration-300 ${isBtnHovered ? 'scale-110' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className={`w-4 h-4 lg:w-6 lg:h-6 transition-transform duration-700 ${isBtnHovered ? 'scale-110' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>

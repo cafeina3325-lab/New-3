@@ -11,11 +11,11 @@ export default function TitleBar() {
     return (
         <Link
             href="/"
-            className="relative z-[60] pt-6 pl-6 md:pt-10 md:pl-12 shrink-0 pointer-events-auto flex flex-col items-start justify-start luxury-title-container cursor-pointer bg-transparent transition-all duration-300"
+            className="relative z-[60] h-[110px] md:h-[150px] pl-6 md:pl-12 shrink-0 pointer-events-auto flex flex-col items-start justify-center luxury-title-container cursor-pointer bg-transparent transition-all duration-300"
         >
-            <div className="luxury-title flex flex-col items-start">
-                <span className="text-2xl md:text-4xl font-black leading-none">Flying</span><br />
-                <span className="text-2xl md:text-4xl font-black leading-none">Studio</span>
+            <div className="luxury-title flex flex-col">
+                <span className="text-3xl md:text-5xl lg:text-6xl font-black leading-none">Flying</span>
+                <span className="text-2xl md:text-4xl lg:text-5xl font-black leading-none self-end">Studio</span>
             </div>
         </Link>
     );

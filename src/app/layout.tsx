@@ -7,11 +7,16 @@
  */
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
 // --- Font Configuration ---
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+});
+
 // 가독성을 위한 기본 산세리프(San-serif) 영문 폰트
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,7 +48,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       {/* 폰트 CSS 변수 선언 및 텍스트 렌더링 품질을 높이는 안티앨리어싱(antialiased) 적용 */}
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>
