@@ -207,12 +207,19 @@ export default function AppointmentsPage() {
         if (apt.isDeleted || apt.isArchived || apt.status === 'holiday' || apt.contact === '-') return false;
 
         let matchesFilter = true;
-        if (filter === 'unassigned') {
-            matchesFilter = apt.status === 'pending' && !apt.assignedTo;
-        } else if (filter === 'assigned') {
-            matchesFilter = apt.status === 'pending' && !!apt.assignedTo;
-        } else if (filter !== 'all') {
-            matchesFilter = apt.status === filter;
+        switch (filter) {
+            case 'unassigned':
+                matchesFilter = apt.status === 'pending' && !apt.assignedTo;
+                break;
+            case 'assigned':
+                matchesFilter = apt.status === 'pending' && !!apt.assignedTo;
+                break;
+            case 'all':
+                matchesFilter = true;
+                break;
+            default:
+                matchesFilter = apt.status === filter;
+                break;
         }
 
         const matchesSearch = !search ||

@@ -28,13 +28,11 @@ export async function GET() {
             (prisma as any).staff.findMany({ select: { username: true, nickname: true } }),
         ]);
 
-        const nicknameMap: Record<string, string> = {};
-        for (const a of admins) {
-            if (a.nickname) nicknameMap[a.username] = a.nickname;
-        }
-        for (const s of staffs) {
-            if (s.nickname) nicknameMap[s.username] = s.nickname;
-        }
+        const nicknameMap: Record<string, string> = Object.fromEntries(
+            [...admins, ...staffs]
+                .filter(u => u.nickname)
+                .map(u => [u.username, u.nickname])
+        );
 
         const messagesWithNickname = messages.map((msg: any) => ({
             ...msg,

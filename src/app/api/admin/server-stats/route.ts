@@ -35,18 +35,16 @@ export async function GET() {
 
         let totalSizeBytes = 0;
 
+        const keys = Object.keys(breakdown).filter(key => key !== "others");
         blobs.forEach(blob => {
             totalSizeBytes += blob.size;
 
-            let matched = false;
-            for (const key in breakdown) {
-                if (blob.pathname.startsWith(key)) {
-                    breakdown[key] += blob.size;
-                    matched = true;
-                    break;
-                }
+            const matchedKey = keys.find(key => blob.pathname.startsWith(key));
+            if (matchedKey) {
+                breakdown[matchedKey] += blob.size;
+            } else {
+                breakdown["others"] += blob.size;
             }
-            if (!matched) breakdown["others"] += blob.size;
         });
 
         // 3. 페이지당 예상 전송량 계산 (모든 활성 에셋 크기의 합 / 추정치)

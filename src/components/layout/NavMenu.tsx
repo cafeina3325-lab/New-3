@@ -42,54 +42,21 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
     // 모달 또는 햄버거 메뉴 바깥의 영역을 클릭했을 때 메뉴를 닫는 이펙트 처리
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (navRef.current && !navRef.current.contains(event.target as Node)) {
-                if (isMenuOpen && isHamburgerMode) {
-                    setIsMenuOpen(false);
-                }
+            if (isMenuOpen && isHamburgerMode && navRef.current && !navRef.current.contains(event.target as Node)) {
+                setIsMenuOpen(false);
             }
         };
 
         document.addEventListener("mousedown", handleClickOutside);
 
         const handleOpenContactOverlay = (e: Event) => {
-            const customEvent = e as CustomEvent;
-            if (customEvent.detail) {
-                if (customEvent.detail.reviewId) {
-                    setContactInitialReviewId(customEvent.detail.reviewId);
-                } else {
-                    setContactInitialReviewId("");
-                }
-
-                if (customEvent.detail.genre) {
-                    setContactInitialGenre(customEvent.detail.genre);
-                } else {
-                    setContactInitialGenre("");
-                }
-
-                if (customEvent.detail.part) {
-                    setContactInitialPart(customEvent.detail.part);
-                } else {
-                    setContactInitialPart("");
-                }
-
-                if (customEvent.detail.imageUrl) {
-                    setContactInitialImage(customEvent.detail.imageUrl);
-                } else {
-                    setContactInitialImage("");
-                }
-
-                if (customEvent.detail.source) {
-                    setContactInitialSource(customEvent.detail.source);
-                } else {
-                    setContactInitialSource(null);
-                }
-            } else {
-                setContactInitialReviewId("");
-                setContactInitialGenre("");
-                setContactInitialPart("");
-                setContactInitialImage("");
-                setContactInitialSource(null);
-            }
+            const detail = (e as CustomEvent).detail;
+            setContactInitialReviewId(detail?.reviewId || "");
+            setContactInitialGenre(detail?.genre || "");
+            setContactInitialPart(detail?.part || "");
+            setContactInitialImage(detail?.imageUrl || "");
+            setContactInitialSource(detail?.source || null);
+            
             setIsMenuOpen(false);
             setIsContactOpen(true);
         };
@@ -159,11 +126,13 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                                         href={item.path}
                                         className="text-base lg:text-lg font-medium text-gray-400 hover:text-white transition-colors py-2 lg:py-4 block w-full lg:w-auto"
                                         onClick={(e) => {
+                                            if (!isHamburgerMode) return;
+
                                             // 햄버거 모드에서 서브메뉴가 있는 아이템을 누르면 아코디언처럼 하위항목 토글
-                                            if (isHamburgerMode && item.subItems) {
+                                            if (item.subItems) {
                                                 e.preventDefault();
                                                 setOpenSubMenu(openSubMenu === item.name ? null : item.name);
-                                            } else if (isHamburgerMode) {
+                                            } else {
                                                 // 일반 링크라면 모바일/햄버거 메뉴를 닫음
                                                 setIsMenuOpen(false);
                                             }

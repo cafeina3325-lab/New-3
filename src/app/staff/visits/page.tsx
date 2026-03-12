@@ -53,22 +53,37 @@ export default function StaffVisitsPage() {
     useEffect(() => { fetchData(); }, []);
 
     const handleDrillDown = (index: number, label: string) => {
-        if (drillLevel === "year") {
-            setSelectedYear(parseInt(label));
-            setDrillLevel("month");
-        } else if (drillLevel === "month") {
-            setSelectedMonth(parseInt(label.replace("월", "")) - 1);
-            setDrillLevel("day");
-        } else if (drillLevel === "day") {
-            setSelectedDay(parseInt(label.replace("일", "")));
-            setDrillLevel("hour");
+        switch (drillLevel) {
+            case "year":
+                setSelectedYear(parseInt(label));
+                setDrillLevel("month");
+                break;
+            case "month":
+                setSelectedMonth(parseInt(label.replace("월", "")) - 1);
+                setDrillLevel("day");
+                break;
+            case "day":
+                setSelectedDay(parseInt(label.replace("일", "")));
+                setDrillLevel("hour");
+                break;
         }
     };
 
     const goBack = () => {
-        if (drillLevel === "hour") { setDrillLevel("day"); setSelectedDay(null); }
-        else if (drillLevel === "day") { setDrillLevel("month"); setSelectedMonth(null); }
-        else if (drillLevel === "month") { setDrillLevel("year"); setSelectedYear(null); }
+        switch (drillLevel) {
+            case "hour":
+                setDrillLevel("day");
+                setSelectedDay(null);
+                break;
+            case "day":
+                setDrillLevel("month");
+                setSelectedMonth(null);
+                break;
+            case "month":
+                setDrillLevel("year");
+                setSelectedYear(null);
+                break;
+        }
     };
 
     const filterData = (source: any[]) => {
@@ -94,31 +109,36 @@ export default function StaffVisitsPage() {
 
         const aggregate = (key: string) => { counts[key] = (counts[key] || 0) + 1; };
 
-        if (drillLevel === "year") {
-            sourceData.forEach(item => {
-                const y = new Date(item.timestamp || item.createdAt || item.date).getFullYear().toString();
-                aggregate(y);
-            });
-            labels = Object.keys(counts).sort();
-        } else if (drillLevel === "month") {
-            labels = Array.from({ length: 12 }, (_, i) => `${i + 1}월`);
-            sourceData.forEach(item => {
-                const m = new Date(item.timestamp || item.createdAt || item.date).getMonth();
-                aggregate(`${m + 1}월`);
-            });
-        } else if (drillLevel === "day") {
-            const lastDay = new Date(selectedYear!, selectedMonth! + 1, 0).getDate();
-            labels = Array.from({ length: lastDay }, (_, i) => `${i + 1}일`);
-            sourceData.forEach(item => {
-                const d = new Date(item.timestamp || item.createdAt || item.date).getDate();
-                aggregate(`${d}일`);
-            });
-        } else if (drillLevel === "hour") {
-            labels = Array.from({ length: 24 }, (_, i) => `${i}시`);
-            sourceData.forEach(item => {
-                const h = new Date(item.timestamp || item.createdAt || item.date).getHours();
-                aggregate(`${h}시`);
-            });
+        switch (drillLevel) {
+            case "year":
+                sourceData.forEach(item => {
+                    const y = new Date(item.timestamp || item.createdAt || item.date).getFullYear().toString();
+                    aggregate(y);
+                });
+                labels = Object.keys(counts).sort();
+                break;
+            case "month":
+                labels = Array.from({ length: 12 }, (_, i) => `${i + 1}월`);
+                sourceData.forEach(item => {
+                    const m = new Date(item.timestamp || item.createdAt || item.date).getMonth();
+                    aggregate(`${m + 1}월`);
+                });
+                break;
+            case "day":
+                const lastDay = new Date(selectedYear!, selectedMonth! + 1, 0).getDate();
+                labels = Array.from({ length: lastDay }, (_, i) => `${i + 1}일`);
+                sourceData.forEach(item => {
+                    const d = new Date(item.timestamp || item.createdAt || item.date).getDate();
+                    aggregate(`${d}일`);
+                });
+                break;
+            case "hour":
+                labels = Array.from({ length: 24 }, (_, i) => `${i}시`);
+                sourceData.forEach(item => {
+                    const h = new Date(item.timestamp || item.createdAt || item.date).getHours();
+                    aggregate(`${h}시`);
+                });
+                break;
         }
 
         return {

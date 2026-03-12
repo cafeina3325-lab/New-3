@@ -31,7 +31,7 @@ export default function StaffDashboard() {
             .then(res => res.json())
             .then((data: any[]) => {
                 const activeApts = data.filter(a => !a.isDeleted);
-                
+
                 // 통계용 (전체 기준)
                 setPendingCount(activeApts.filter(a => a.status === "pending").length);
                 setTodayCount(activeApts.filter(a => normalizeDate(a.date) === todayStr).length);
@@ -50,9 +50,9 @@ export default function StaffDashboard() {
                     const dateB = normalizeDate(b.date);
                     const isFutureA = dateA >= todayStr;
                     const isFutureB = dateB >= todayStr;
-                    
+
                     if (isFutureA !== isFutureB) return isFutureA ? -1 : 1;
-                    
+
                     const dateDiff = dateA.localeCompare(dateB);
                     if (dateDiff !== 0) return dateDiff;
                     const timeA = (a.time || "00:00").split('~')[0].trim();
@@ -90,7 +90,7 @@ export default function StaffDashboard() {
         <div className="space-y-8 md:space-y-12 pt-6 md:pt-8">
             {/* Header */}
             <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">스태프 대시보드</h1>
+                <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight">STUDIO DASHBOARD</h1>
                 <p className="text-sm md:text-base text-gray-400 mt-2">스튜디오 전체 일정을 한눈에 확인하고 관리하세요.</p>
             </div>
 
@@ -130,7 +130,7 @@ export default function StaffDashboard() {
                         recentAppointments.map((apt) => {
                             const isHoliday = apt.status === 'holiday';
                             const staffName = apt.assignedTo ? (nicknameMap[apt.assignedTo] || apt.assignedTo) : "미지정";
-                            
+
                             return (
                                 <div key={apt.id} className={`flex items-center justify-between p-3 md:p-4 rounded-xl md:rounded-2xl transition-colors group ${isHoliday ? 'bg-red-500/5 hover:bg-red-500/10 border border-red-500/10' : 'bg-white/5 hover:bg-white/10'}`}>
                                     <div className="flex items-center space-x-3 md:space-x-4">
@@ -139,7 +139,7 @@ export default function StaffDashboard() {
                                         </div>
                                         <div>
                                             <h4 className="font-bold text-white text-base flex w-full items-center gap-2">
-                                                {isHoliday ? "정기 휴무/마감" : staffName} 
+                                                {isHoliday ? "정기 휴무/마감" : staffName}
                                             </h4>
                                             <p className="text-xs md:text-sm text-gray-500 mt-1">
                                                 <span className="text-white font-medium mr-2">

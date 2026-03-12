@@ -36,6 +36,7 @@ interface Appointment {
 interface StaffAccount {
     id: string;
     username: string;
+    nickname?: string | null;
 }
 
 // 뱃지(Badge) 형태의 UI를 구성하기 위한 예약 상태별 색상 테마 및 한글 라벨링 정의
@@ -370,9 +371,18 @@ export default function AppointmentTable({ appointments, onStatusChange, onDelet
                                             ${selectedStaff === staff.id ? "bg-red-900/60 text-white" : "bg-white/10 text-gray-400"}`}>
                                             {staff.username.charAt(0).toUpperCase()}
                                         </div>
-                                        <div>
-                                            <div className="font-bold text-sm">{staff.username}</div>
-                                            <div className="text-xs text-gray-500">Staff</div>
+                                        <div className="flex-1">
+                                            <div className="flex items-baseline justify-between gap-2">
+                                                <div className="font-bold text-sm text-white">
+                                                    {staff.nickname || staff.username}
+                                                </div>
+                                                {staff.nickname && (
+                                                    <div className="text-[10px] font-mono text-gray-500 uppercase tracking-tighter">
+                                                        ID: {staff.username}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="text-[10px] text-gray-600 mt-0.5">Staff</div>
                                         </div>
                                         {selectedStaff === staff.id && (
                                             <div className="ml-auto text-red-400">

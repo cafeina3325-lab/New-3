@@ -16,7 +16,6 @@ interface MenuItem {
 // 계층화된 메뉴 데이터
 const MENU_ITEMS: MenuItem[] = [
     { name: "계정관리", path: "/admin/accounts", icon: "👤" },
-    { name: "방문관리", path: "/admin/visits", icon: "🚶" },
     { name: "메신저", path: "/admin/messenger", icon: "💬" },
     { name: "캘린더", path: "/admin/calendar", icon: "📅" },
     { name: "예약관리", path: "/admin/appointments", icon: "📅" },

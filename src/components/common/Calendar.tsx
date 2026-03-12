@@ -12,13 +12,16 @@ interface Appointment {
     genre: string;
     part: string;
     assignedTo?: string | null;
+    isDeleted?: boolean;
 }
 
 interface CalendarProps {
     theme?: "admin" | "staff";
+    compact?: boolean; // 대시보드 등 좁은 공간용 모드
+    onSelectDate?: (date: string | null) => void; // 날짜 선택 시 콜백
 }
 
-export default function Calendar({ theme = "admin" }: CalendarProps) {
+export default function Calendar({ theme = "admin", compact = false, onSelectDate }: CalendarProps) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -119,8 +122,8 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
         const group: Record<string, Appointment[]> = {};
 
         appointments.forEach((apt) => {
-            // 필터링: 관리자/스태프 구분 없이 'confirmed' 상태이거나 'holiday' 상태면 표출
-            const isVisible = apt.status === 'confirmed' || apt.status === 'holiday';
+            // 필터링: 삭제되지 않았고 'confirmed' 또는 'holiday' 상태인 경우만 표출
+            const isVisible = !apt.isDeleted && (apt.status === 'confirmed' || apt.status === 'holiday');
 
             if (isVisible) {
                 // "2026. 03. 23." 등의 포맷을 "2026-03-23" 통일된 키로 정규화
@@ -142,8 +145,10 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
 
     const handleToday = () => {
         const today = new Date();
+        const dateStr = today.toISOString().split("T")[0];
         setCurrentDate(today);
-        setSelectedDate(today.toISOString().split("T")[0]);
+        setSelectedDate(dateStr);
+        if (onSelectDate) onSelectDate(dateStr);
     };
 
     const isToday = (day: number) => {
@@ -204,7 +209,7 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
 
     const handleDelete = async (id: string) => {
         if (!window.confirm("이 일정을 삭제하시겠습니까? (복구할 수 없습니다)")) return;
-        
+
         try {
             const res = await fetch(`/api/appointments?id=${id}&hardDelete=true`, {
                 method: "DELETE",
@@ -226,11 +231,11 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
     const processHolidayBatch = async (dates: string[], action: "set" | "remove") => {
         try {
             if (action === "remove") {
-                const idsToDelete = dates.flatMap(date => 
+                const idsToDelete = dates.flatMap(date =>
                     (appointmentsByDate[date] || []).filter(a => a.status === "holiday").map(a => a.id)
                 );
                 if (idsToDelete.length > 0) {
-                    await Promise.all(idsToDelete.map(id => 
+                    await Promise.all(idsToDelete.map(id =>
                         fetch(`/api/appointments?id=${id}&hardDelete=true`, { method: "DELETE" })
                     ));
                 }
@@ -240,7 +245,7 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
                     return !existing;
                 });
                 if (datesToSet.length > 0) {
-                    await Promise.all(datesToSet.map(date => 
+                    await Promise.all(datesToSet.map(date =>
                         fetch("/api/appointments", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -282,7 +287,11 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
 
     const handleMouseDownOnDate = (date: string, isCurrentlyHoliday: boolean) => {
         if (!isHolidayMode || !isAdmin) {
-            setSelectedDate(date);
+            setSelectedDate(prev => {
+                const nextDate = prev === date ? null : date;
+                if (onSelectDate) onSelectDate(nextDate);
+                return nextDate;
+            });
             return;
         }
         setIsDragging(true);
@@ -309,167 +318,88 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
     const selectBg = isAdmin ? "bg-[#1a1412]" : "bg-[#0F1218]";
 
     return (
-        <div className={`w-full max-w-5xl mx-auto p-4 md:p-8 ${textColor}`}>
-            <div className="flex flex-col lg:flex-row gap-8">
-                {/* 캘린더 본체 */}
-                <div className="flex-1">
-                    <div className="flex items-center justify-between mb-8">
-                        <div>
-                            <h2 className="text-3xl font-bold tracking-tighter">{year}</h2>
-                            <h3 className="text-xl font-medium opacity-60 uppercase">{monthName}</h3>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <button onClick={handleToday} className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm hover:bg-white/10 transition-all">Today</button>
-                            <button onClick={handlePrevMonth} className="p-2 hover:bg-white/5 rounded-full transition-all">◀</button>
-                            <button onClick={handleNextMonth} className="p-2 hover:bg-white/5 rounded-full transition-all">▶</button>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-7 gap-1 md:gap-2">
-                        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
-                            <div key={day} className="h-10 flex items-center justify-center text-xs font-bold opacity-40 uppercase tracking-widest">{day}</div>
-                        ))}
-
-                        {Array.from({ length: firstDayOfMonth }).map((_, i) => (
-                            <div key={`empty-${i}`} className="aspect-square opacity-0" />
-                        ))}
-
-                        {Array.from({ length: daysInMonth }).map((_, i) => {
-                            const day = i + 1;
-                            const fullDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-                            const hasAppointments = appointmentsByDate[fullDate];
-                            const isSelected = selectedDate === fullDate;
-                            const isHoliday = hasAppointments?.some(a => a.status === 'holiday');
-                            const isBeingDragged = dragSelection.includes(fullDate);
-
-                            return (
-                                <button
-                                    key={day}
-                                    onMouseDown={() => handleMouseDownOnDate(fullDate, !!isHoliday)}
-                                    onMouseEnter={() => handleMouseEnterOnDate(fullDate)}
-                                    className={`relative aspect-square rounded-xl border flex flex-col items-center justify-center transition-all group group-hover:bg-white/5
-                                        ${borderColor} 
-                                        ${isSelected ? "bg-white/10 border-white/30" : "hover:border-white/20"}
-                                        ${isHoliday ? "bg-red-500/10 border-red-500/20" : ""}
-                                        ${isBeingDragged ? "ring-2 ring-red-400 bg-red-500/20" : ""}
-                                    `}
-                                >
-                                    <span className={`text-sm md:text-base font-medium 
-                                        ${isHoliday ? "text-red-400 font-bold" : isToday(day) ? "text-orange-400 font-bold" : ""}
-                                    `}>
-                                        {day}
-                                    </span>
-                                    {hasAppointments && !isHoliday && (
-                                        <div className={`mt-1 flex gap-0.5 justify-center flex-wrap px-1`}>
-                                            {hasAppointments.slice(0, 3).map((_, idx) => (
-                                                <div key={idx} className={`w-1 h-1 rounded-full ${accentColor}`} />
-                                            ))}
-                                            {hasAppointments.length > 3 && <div className="w-1 h-1 rounded-full bg-gray-400" />}
-                                        </div>
-                                    )}
-                                    {isHoliday && (
-                                        <div className="flex items-center justify-center mt-1 w-full px-1">
-                                            <span className="w-full text-center text-[10px] md:text-[11px] text-white font-bold bg-red-500/60 rounded-sm py-0.5">휴무</span>
-                                        </div>
-                                    )}
-                                </button>
-                            );
-                        })}
-                    </div>
-                    
-                    {/* 하단 휴무 지정 모드 뱃지/버튼 */}
-                    {isAdmin && (
-                        <div className="mt-8 flex justify-end">
-                            <button
-                                onClick={() => setIsHolidayMode(!isHolidayMode)}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all ${
-                                    isHolidayMode 
-                                    ? "bg-red-500/20 border-red-500/50 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.2)]" 
-                                    : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
-                                }`}
-                            >
-                                <span className="text-lg">{isHolidayMode ? "🔴" : "⚪"}</span>
-                                <span className="font-bold text-sm">다중 휴무 지정 모드 {isHolidayMode ? "ON" : "OFF"}</span>
-                            </button>
-                        </div>
-                    )}
+        <div className={`w-full ${compact ? "max-w-none p-0" : "max-w-5xl mx-auto p-4 md:p-8"} ${textColor}`}>
+            {/* 캘린더 상단 헤더 */}
+            <div className={`flex items-center justify-between ${compact ? "mb-4" : "mb-8"}`}>
+                <div>
+                    <h2 className={`${compact ? "text-xl" : "text-3xl"} font-bold tracking-tighter`}>{year}</h2>
+                    <h3 className={`${compact ? "text-sm" : "text-xl"} font-medium opacity-60 uppercase`}>{monthName}</h3>
                 </div>
-
-                {/* 상세 내역 필드 */}
-                <div className="w-full lg:w-80 flex flex-col">
-                    <div className="p-6 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 h-full flex flex-col min-h-[400px]">
-                        <div className="flex justify-between items-center mb-4">
-                            <h4 className="text-lg font-bold flex items-center gap-2">
-                                <span>📅</span>
-                                <span>{selectedDate || "날짜를 선택하세요"}</span>
-                            </h4>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-                            {selectedDate && appointmentsByDate[selectedDate] ? (
-                                appointmentsByDate[selectedDate]
-                                    .sort((a, b) => a.time.localeCompare(b.time))
-                                    .map((apt) => {
-                                        if (apt.status === 'holiday') {
-                                            return (
-                                                <div key={apt.id} className="p-4 bg-red-500/5 text-center border border-red-500/10 rounded-xl flex flex-col justify-center min-h-[100px]">
-                                                    <span className="text-3xl mb-2">🚫</span>
-                                                    <h5 className="font-bold text-red-400 mb-1">예약 마감</h5>
-                                                    <p className="text-xs text-gray-400">해당 날짜는 휴무(예약 불가)로 지정되었습니다.</p>
-                                                </div>
-                                            );
-                                        }
-                                        return (
-                                            <div key={apt.id} className="p-4 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-all border-l-4 border-l-orange-400/50 flex flex-col justify-between min-h-[100px]">
-                                                {/* 상단: 좌(타입) 우(닉네임) */}
-                                                <div className="flex justify-between items-start mb-3">
-                                                    <span className="text-sm font-bold text-white px-2 py-1 bg-white/10 rounded-md">
-                                                        {['상담', '시술'].includes(apt.clientName) ? apt.clientName : '예약상담'}
-                                                    </span>
-                                                    <span className="text-sm text-blue-400 font-bold">
-                                                        {apt.assignedTo ? (nicknameMap[apt.assignedTo] || apt.assignedTo) : "미배정"}
-                                                    </span>
-                                                </div>
-
-                                                {/* 중앙: 좌(장르-부위) */}
-                                                <div className="flex-1">
-                                                    <p className="text-sm font-bold text-gray-300 mb-1">
-                                                        장르: <span className="text-white">{apt.genre}</span>
-                                                    </p>
-                                                    <p className="text-sm font-bold text-gray-300">
-                                                        부위: <span className="text-white">{apt.part}</span>
-                                                    </p>
-                                                </div>
-
-                                                {/* 하단: 우(시간) 및 삭제 버튼 */}
-                                                <div className="flex justify-between items-center mt-2 pt-2 border-t border-white/5">
-                                                    <div>
-                                                        {(isAdmin || apt.assignedTo === currentUser) && (
-                                                            <button 
-                                                                onClick={() => handleDelete(apt.id)}
-                                                                className="text-[10px] text-red-400 hover:text-red-300 px-2 py-1 bg-red-400/10 hover:bg-red-400/20 rounded transition-colors"
-                                                            >
-                                                                삭제
-                                                            </button>
-                                                        )}
-                                                    </div>
-                                                    <span className="text-xs font-bold text-orange-400 uppercase tracking-tighter">
-                                                        {apt.time}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        );
-                                    })
-                            ) : (
-                                <div className="h-full flex flex-col items-center justify-center text-gray-500 animate-pulse">
-                                    <div className="text-4xl mb-4 opacity-20">🍃</div>
-                                    <p className="text-sm">예약이 없습니다.</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                <div className="flex items-center gap-2">
+                    <button onClick={handleToday} className={`${compact ? "px-2 py-1 text-xs" : "px-4 py-2 text-sm"} bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all`}>Today</button>
+                    <button onClick={handlePrevMonth} className={`${compact ? "p-1 text-sm" : "p-2"} hover:bg-white/5 rounded-full transition-all`}>◀</button>
+                    <button onClick={handleNextMonth} className={`${compact ? "p-1 text-sm" : "p-2"} hover:bg-white/5 rounded-full transition-all`}>▶</button>
                 </div>
             </div>
+
+            {/* 요일 및 날짜 그리드 */}
+            <div className={`grid grid-cols-7 ${compact ? "gap-0.5 md:gap-1" : "gap-1 md:gap-2"}`}>
+                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+                    <div key={day} className={`${compact ? "h-6 text-[10px]" : "h-10 text-xs"} flex items-center justify-center font-bold opacity-40 uppercase tracking-widest`}>{day}</div>
+                ))}
+
+                {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+                    <div key={`empty-${i}`} className="aspect-square opacity-0" />
+                ))}
+
+                {Array.from({ length: daysInMonth }).map((_, i) => {
+                    const day = i + 1;
+                    const fullDate = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+                    const hasAppointments = appointmentsByDate[fullDate];
+                    const isSelected = selectedDate === fullDate;
+                    const isHoliday = hasAppointments?.some(a => a.status === 'holiday');
+                    const isBeingDragged = dragSelection.includes(fullDate);
+
+                    return (
+                        <button
+                            key={day}
+                            onMouseDown={() => handleMouseDownOnDate(fullDate, !!isHoliday)}
+                            onMouseEnter={() => handleMouseEnterOnDate(fullDate)}
+                            className={`relative aspect-square rounded-lg border flex flex-col items-center justify-center transition-all group group-hover:bg-white/5
+                                ${borderColor} 
+                                ${isSelected ? "bg-white/10 border-white/30" : "hover:border-white/20"}
+                                ${isHoliday ? "bg-red-500/10 border-red-500/20" : ""}
+                                ${isBeingDragged ? "ring-2 ring-red-400 bg-red-500/20" : ""}
+                            `}
+                        >
+                            <span className={`${compact ? "text-xs md:text-sm" : "text-sm md:text-base"} font-medium 
+                                ${isHoliday ? "text-red-400 font-bold" : isToday(day) ? "text-orange-400 font-bold" : ""}
+                            `}>
+                                {day}
+                            </span>
+                            {hasAppointments && !isHoliday && (
+                                <div className={`mt-1 flex gap-0.5 justify-center flex-wrap px-1`}>
+                                    {hasAppointments.slice(0, 3).map((_, idx) => (
+                                        <div key={idx} className={`w-0.5 h-0.5 md:w-1 md:h-1 rounded-full ${accentColor}`} />
+                                    ))}
+                                    {hasAppointments.length > 3 && <div className="w-0.5 h-0.5 md:w-1 md:h-1 rounded-full bg-gray-400" />}
+                                </div>
+                            )}
+                            {isHoliday && (
+                                <div className="flex items-center justify-center mt-0.5 w-full px-0.5">
+                                    <span className={`w-full text-center ${compact ? "text-[8px] md:text-[9px]" : "text-[10px] md:text-[11px]"} text-white font-bold bg-red-500/60 rounded-sm py-0.5`}>휴무</span>
+                                </div>
+                            )}
+                        </button>
+                    );
+                })}
+            </div>
+
+            {/* 하단 휴무 지정 모드 뱃지/버튼 */}
+            {isAdmin && (
+                <div className={`${compact ? "mt-4" : "mt-8"} flex justify-end`}>
+                    <button
+                        onClick={() => setIsHolidayMode(!isHolidayMode)}
+                        className={`flex items-center gap-2 ${compact ? "px-3 py-1.5" : "px-4 py-2"} rounded-xl border transition-all ${isHolidayMode
+                                ? "bg-red-500/20 border-red-500/50 text-red-400 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
+                                : "bg-white/5 border-white/10 text-gray-400 hover:bg-white/10"
+                            }`}
+                    >
+                        <span className={compact ? "text-sm" : "text-lg"}>{isHolidayMode ? "🔴" : "⚪"}</span>
+                        <span className={`font-bold ${compact ? "text-[10px]" : "text-sm"}`}>휴무</span>
+                    </button>
+                </div>
+            )}
 
             {/* 일정 등록 모달 */}
             {isModalOpen && (
@@ -488,7 +418,6 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
                         </h2>
 
                         <form onSubmit={handleSubmit} className="space-y-5">
-                            {/* 타입 */}
                             <div className="space-y-2">
                                 <label className="text-sm text-gray-400">타입</label>
                                 <select
@@ -501,7 +430,6 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
                                 </select>
                             </div>
 
-                            {/* 장르 · 부위 */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <label className="text-sm text-gray-400">장르</label>
@@ -526,7 +454,6 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                {/* 날짜 */}
                                 <div className="space-y-2">
                                     <label className="text-sm text-gray-400">날짜</label>
                                     <input
@@ -538,14 +465,13 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
                                     />
                                 </div>
 
-                                {/* 시간 범위 (시작 ~ 종료) */}
                                 <div className="space-y-2">
                                     <label className="text-sm text-gray-400">시간</label>
                                     <div className="flex items-center gap-2">
                                         <select
                                             value={formData.timeStart}
                                             onChange={(e) => setFormData({ ...formData, timeStart: e.target.value })}
-                                            className={`flex-1 px-2 py-3 bg-black/40 border border-white/10 rounded-lg text-white outline-none appearance-none text-center`}
+                                            className={`flex-1 px-2 py-3 bg-black/40 border border-white/10 rounded-lg text-white outline-none appearance-none text-center text-xs`}
                                         >
                                             {timeSlots.map((t) => <option key={t} value={t} className={`${selectBg} text-white`}>{t}</option>)}
                                         </select>
@@ -553,7 +479,7 @@ export default function Calendar({ theme = "admin" }: CalendarProps) {
                                         <select
                                             value={formData.timeEnd}
                                             onChange={(e) => setFormData({ ...formData, timeEnd: e.target.value })}
-                                            className={`flex-1 px-2 py-3 bg-black/40 border border-white/10 rounded-lg text-white outline-none appearance-none text-center`}
+                                            className={`flex-1 px-2 py-3 bg-black/40 border border-white/10 rounded-lg text-white outline-none appearance-none text-center text-xs`}
                                         >
                                             {timeSlots.map((t) => <option key={t} value={t} className={`${selectBg} text-white`}>{t}</option>)}
                                         </select>

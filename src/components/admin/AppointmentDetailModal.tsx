@@ -76,40 +76,21 @@ export default function AppointmentDetailModal({ isOpen, appointment, isStaffVie
 
         const fetchData = async () => {
             try {
+                const fetchSourceData = async (apiPath: string, setter: (item: any) => void) => {
+                    const res = await fetch(apiPath);
+                    if (!res.ok) return;
+                    const data = await res.json();
+                    
+                    const item = data.items?.find((i: any) => i.id === appointment.sourceId) 
+                              || data.items?.find((i: any) => appointment.files?.includes(i.imageUrl));
+                              
+                    if (item) setter(item);
+                };
+
                 if (appointment.source === 'event') {
-                    const res = await fetch(`/api/event`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        let event = null;
-                        // 1순위: sourceId로 매칭
-                        if (appointment.sourceId) {
-                            event = data.items?.find((item: any) => item.id === appointment.sourceId);
-                        }
-                        // 2순위: 이미지 URL로 매칭 (sourceId가 없는 이전 예약 데이터 대응)
-                        if (!event && appointment.files && appointment.files.length > 0) {
-                            event = data.items?.find((item: any) => 
-                                appointment.files?.some((file: string) => file === item.imageUrl)
-                            );
-                        }
-                        if (event) setSelectedEvent(event);
-                    }
+                    await fetchSourceData('/api/event', setSelectedEvent);
                 } else if (appointment.source === 'gallery') {
-                    const res = await fetch(`/api/gallery`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        let galleryItem = null;
-                        // 1순위: sourceId로 매칭
-                        if (appointment.sourceId) {
-                            galleryItem = data.items?.find((item: any) => item.id === appointment.sourceId);
-                        }
-                        // 2순위: 이미지 URL로 매칭
-                        if (!galleryItem && appointment.files && appointment.files.length > 0) {
-                            galleryItem = data.items?.find((item: any) => 
-                                appointment.files?.some((file: string) => file === item.imageUrl)
-                            );
-                        }
-                        if (galleryItem) setSelectedGalleryItem(galleryItem);
-                    }
+                    await fetchSourceData('/api/gallery', setSelectedGalleryItem);
                 }
             } catch (error) {
                 console.error("Failed to fetch source data", error);
@@ -240,11 +221,8 @@ export default function AppointmentDetailModal({ isOpen, appointment, isStaffVie
                                             key={index} 
                                             className={`relative aspect-square rounded-xl overflow-hidden border border-white/10 bg-black/50 group ${hasSourcePost ? 'cursor-pointer' : ''}`}
                                             onClick={() => {
-                                                if (appointment.source === 'event') {
-                                                    setShowEventModal(true);
-                                                } else if (appointment.source === 'gallery') {
-                                                    setShowGalleryModal(true);
-                                                }
+                                                appointment.source === 'event' && setShowEventModal(true);
+                                                appointment.source === 'gallery' && setShowGalleryModal(true);
                                             }}
                                         >
                                             <img

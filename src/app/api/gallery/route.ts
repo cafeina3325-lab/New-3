@@ -37,7 +37,12 @@ export async function POST(req: Request) {
 
         let imageUrl: string | null = null;
 
-        if (image.startsWith("data:image")) {
+        if (image.startsWith("data:")) {
+            if (!image.startsWith("data:image")) {
+                // data:video/... 등 이미지가 아닌 형식 처리
+                console.error("[Gallery POST] 지원하지 않는 미디어 형식:", image.substring(0, 50));
+                return NextResponse.json({ error: "이미지 파일만 업로드할 수 있습니다." }, { status: 400 });
+            }
             try {
                 imageUrl = await uploadBase64ToBlob(image, "gallery/");
             } catch (uploadError: any) {
@@ -47,10 +52,6 @@ export async function POST(req: Request) {
                     { status: 500 }
                 );
             }
-        } else if (image.startsWith("data:")) {
-            // data:video/... 등 이미지가 아닌 형식 처리
-            console.error("[Gallery POST] 지원하지 않는 미디어 형식:", image.substring(0, 50));
-            return NextResponse.json({ error: "이미지 파일만 업로드할 수 있습니다." }, { status: 400 });
         }
 
         console.log("[Gallery POST] DB 저장 시작:", { title, genre, part, imageUrl });

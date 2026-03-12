@@ -32,27 +32,22 @@ export function useScheduleOptions() {
         // 17시(오후 5시) 기준 마감: 이 시간이 넘으면 당일의 어떤 슬롯도 열리지 않게 막음
         if (now.getHours() < 17) {
             const cutoff = new Date(now.getTime() + (1 * 60 + 45) * 60000);
-
-            for (const time of timeSlots) {
+            hasAvailableTimeToday = timeSlots.some(time => {
                 const [hours, minutes] = time.split(':').map(Number);
                 const slotTime = new Date(today);
                 slotTime.setHours(hours, minutes, 0, 0);
-                if (slotTime > cutoff) {
-                    hasAvailableTimeToday = true;
-                    break;
-                }
-            }
+                return slotTime > cutoff;
+            });
         }
 
         // 예약 가능한 시간이 없으면 당일 표기를 건너뛰고 시작점을 1일(내일)로 설정
         const startDateOffset = hasAvailableTimeToday ? 0 : 1;
 
-        for (let i = 0; i < 14; i++) {
+        return Array.from({ length: 14 }, (_, i) => {
             const d = new Date(today);
             d.setDate(today.getDate() + startDateOffset + i);
-            result.push(d);
-        }
-        return result;
+            return d;
+        });
     }, [timeSlots]);
 
     return { dates, timeSlots };
