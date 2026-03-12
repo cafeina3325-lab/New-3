@@ -32,6 +32,8 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
     // --- State: 모바일 햄버거 메뉴 패널 전용 ---
     // 모바일 햄버거 아이콘 클릭으로 우측 사이드 패널 단위 메뉴가 열렸는지 여부
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    // 햄버거 버튼 호버 상태 추적
+    const [isBtnHovered, setIsBtnHovered] = useState(false);
     // (현재는 1depth 구조이나) 드롭다운 하위 메뉴가 있을 경우 열림 상태 추적
     const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
 
@@ -56,7 +58,7 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
             setContactInitialPart(detail?.part || "");
             setContactInitialImage(detail?.imageUrl || "");
             setContactInitialSource(detail?.source || null);
-            
+
             setIsMenuOpen(false);
             setIsContactOpen(true);
         };
@@ -110,21 +112,21 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                 {/* 배경 블러 처리 및 데스크탑용 투명 마스크 레이어 */}
                 <div className={`
                     absolute inset-0 z-0 pointer-events-none
-                    bg-[#1C1310]/90 backdrop-blur-md border-r border-white/5 
-                    lg:border-r-0 lg:bg-[#1C1310]/[0.38] 
+                    bg-transparent backdrop-blur-md 
+                    lg:border-r-0 lg:bg-transparent
                     lg:[mask-image:linear-gradient(to_right,transparent_0px,transparent_100px,black_30%,black_100%)]
                 `} />
 
                 {/* Navigation Items - Content Layer */}
                 {/* 실제 링크들이 렌더링되는 레이어 */}
                 <div className={`relative z-10 flex flex-col lg:flex-row items-start lg:items-center w-full lg:w-auto ${showNavBar ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}>
-                    <ul className="flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-8 lg:mr-12 w-full lg:w-auto pb-20 lg:pb-0 pl-8 lg:pl-0">
+                    <ul className="flex flex-col lg:flex-row space-y-3 lg:space-y-0 lg:space-x-8 lg:mr-12 w-full lg:w-auto pb-20 lg:pb-0">
                         {MENU_ITEMS.map((item) => (
-                            <li key={item.name} className="relative group lg:h-full flex flex-col lg:flex-row lg:items-center item-start w-full lg:w-auto">
-                                <div className="flex items-center justify-between w-full lg:w-auto">
+                            <li key={item.name} className="relative group lg:h-full flex flex-col lg:flex-row lg:items-center item-start w-full lg:w-auto px-6 md:px-10 lg:px-0 mb-4 lg:mb-0">
+                                <div className="flex items-center justify-between w-full lg:w-auto bg-white/5 border border-white/10 rounded-xl backdrop-blur-md px-6 py-1 lg:px-5 lg:py-0 hover:bg-white/15 hover:border-white/20 transition-all duration-300 w-full group">
                                     <Link
                                         href={item.path}
-                                        className="text-base lg:text-lg font-medium text-gray-400 hover:text-white transition-colors py-2 lg:py-4 block w-full lg:w-auto"
+                                        className="text-lg lg:text-base font-bold text-gray-200 group-hover:text-white transition-colors py-3 lg:py-2 block w-full lg:w-auto"
                                         onClick={(e) => {
                                             if (!isHamburgerMode) return;
 
@@ -172,13 +174,13 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                                         transition-all duration-300 ease-out z-50
                                         ${openSubMenu === item.name ? 'block' : 'hidden'} lg:block
                                     `}>
-                                        <div className="bg-[#1C1310]/95 backdrop-blur-xl rounded-xl lg:border border-white/10 overflow-hidden min-w-[200px] shadow-2xl">
+                                        <div className="bg-black/5 backdrop-blur-xl rounded-xl lg:border border-white/10 overflow-hidden min-w-[200px] shadow-2xl">
                                             <ul className="py-2">
                                                 {item.subItems.map((subItem) => (
                                                     <li key={subItem.name}>
                                                         <Link
                                                             href={subItem.path}
-                                                            className="block px-4 lg:px-6 py-2 lg:py-3 text-sm text-gray-400 hover:bg-white/10 hover:text-white transition-colors whitespace-nowrap"
+                                                            className="block px-4 lg:px-6 py-2 lg:py-3 text-sm text-gray-300 hover:bg-white/10 hover:text-white transition-colors whitespace-nowrap"
                                                             onClick={() => isHamburgerMode && setIsMenuOpen(false)}
                                                         >
                                                             {subItem.name}
@@ -198,7 +200,7 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                         {session?.user ? (
                             <Link
                                 href={(session.user as any).role === "admin" ? "/admin" : "/staff"}
-                                className="px-9 py-3.5 lg:px-6 lg:py-2 bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/50 text-white font-bold rounded-lg transition-all w-auto lg:w-auto lg:mr-4 backdrop-blur-sm flex items-center gap-2"
+                                className="px-5 py-3.5 lg:px-3 lg:py-2 bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/50 text-white font-bold rounded-lg transition-all w-auto lg:w-auto lg:mr-4 backdrop-blur-sm flex items-center gap-2"
                                 onClick={() => isHamburgerMode && setIsMenuOpen(false)}
                             >
                                 <span>⚙️</span>
@@ -228,18 +230,49 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
             {/* Hamburger Button (Glass Style) */}
             {/* 스크롤 다운 혹은 모바일 모드 시 플로팅 아이콘 형태로 나오는 '메뉴 열기' 버튼 */}
             {isHamburgerMode && !isMenuOpen && (
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setIsMenuOpen(true);
-                    }}
-                    className="fixed top-[100px] md:top-[120px] left-[85px] md:left-[162.5px] -translate-x-1/2 lg:fixed lg:top-8 lg:right-8 lg:left-auto lg:translate-x-0 z-50 pointer-events-auto w-[170px] md:w-[325px] h-9 lg:w-14 lg:h-14 bg-white/10 backdrop-blur-md border-b border-l border-r border-white/10 text-white drop-shadow-md hover:bg-white/20 transition-all animate-fade-in flex items-center justify-center [clip-path:polygon(0%_0%,_100%_0%,_100%_70%,_50%_100%,_0%_70%)] lg:rounded-full lg:[clip-path:none]"
-                    aria-label="Open Menu"
-                >
-                    <svg className="w-4 h-4 lg:w-6 lg:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
+                <div className="fixed top-[100px] md:top-[120px] left-[80px] md:left-[130px] -translate-x-1/2 lg:fixed lg:top-8 lg:right-8 lg:left-auto lg:translate-x-0 z-50 pointer-events-auto flex items-center justify-center">
+                    {/* SVG V-Line Glow Layer */}
+                    <div className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${isBtnHovered ? 'opacity-100' : 'opacity-0'}`}>
+                        <svg
+                            className="w-full h-full scale-[1.1]"
+                            viewBox="0 0 100 100"
+                            preserveAspectRatio="none"
+                            style={{ filter: 'blur(6px)' }}
+                        >
+                            <path
+                                d="M 0 70 L 50 100 L 100 70"
+                                fill="none"
+                                stroke="rgba(255,255,255,0.95)"
+                                strokeWidth="6"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+                        </svg>
+                    </div>
+
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setIsMenuOpen(true);
+                            setIsBtnHovered(false);
+                        }}
+                        onMouseEnter={() => setIsBtnHovered(true)}
+                        onMouseLeave={() => setIsBtnHovered(false)}
+                        style={{
+                            background: isBtnHovered
+                                ? 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 100%)'
+                                : 'linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(3,3,3,0.57) 100%)',
+                            backgroundColor: 'transparent',
+                            border: 'none'
+                        }}
+                        className={`relative z-10 w-[120px] md:w-[180px] h-9 lg:w-14 lg:h-14 text-white transition-all duration-300 animate-fade-in flex items-center justify-center [clip-path:polygon(0%_0%,_100%_0%,_100%_70%,_50%_100%,_0%_70%)] lg:rounded-full lg:[clip-path:none] ${isBtnHovered ? 'scale-105' : ''}`}
+                        aria-label="Open Menu"
+                    >
+                        <svg className={`w-4 h-4 lg:w-6 lg:h-6 transition-transform duration-300 ${isBtnHovered ? 'scale-110' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
             )}
 
             {/* Contact Overlay */}

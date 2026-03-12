@@ -14,8 +14,8 @@ export default function TitleBar() {
             className="relative z-[60] pt-6 pl-6 md:pt-10 md:pl-12 shrink-0 pointer-events-auto flex flex-col items-start justify-start luxury-title-container cursor-pointer bg-transparent transition-all duration-300"
         >
             <div className="luxury-title flex flex-col items-start">
-                <span className="text-2xl md:text-3xl font-medium leading-none">Flying</span>
-                <span className="text-2xl md:text-3xl font-medium leading-none"> Studio</span>
+                <span className="text-2xl md:text-4xl font-black leading-none">Flying</span><br />
+                <span className="text-2xl md:text-4xl font-black leading-none">Studio</span>
             </div>
         </Link>
     );
