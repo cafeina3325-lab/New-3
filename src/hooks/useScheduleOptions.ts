@@ -1,9 +1,29 @@
-// 파일 요약: 예약 폼에서 사용되는 날짜 옵션(향후 14일) 및 시간대 슬롯(30분 단위)을 생성하는 커스텀 훅입니다.
-
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 // 커스텀 훅: 상담 예약이 가능한 향후 날짜(14일)와 시간대 슬롯을 생성합니다.
 export function useScheduleOptions() {
+    const [holidays, setHolidays] = useState<string[]>([]);
+
+    // 서버에서 휴무 데이터 가져오기
+    useEffect(() => {
+        const fetchHolidays = async () => {
+            try {
+                const res = await fetch("/api/appointments");
+                if (res.ok) {
+                    const data = await res.json();
+                    // status가 'holiday'이고 삭제되지 않은 날짜들만 추출
+                    const holidayDates = data
+                        .filter((apt: any) => apt.status === 'holiday' && !apt.isDeleted)
+                        .map((apt: any) => apt.date.replace(/[\.\/]/g, '-').replace(/\s/g, '').replace(/-$/, ''));
+                    setHolidays(holidayDates);
+                }
+            } catch (error) {
+                console.error("Failed to fetch holidays:", error);
+            }
+        };
+        fetchHolidays();
+    }, []);
+
     // 시간대 슬롯 생성: 오전 10시부터 오후 6시 30분까지 30분 단위의 문자열 배열을 생성합니다.
     const timeSlots = useMemo(() => {
         const slots = [];
@@ -50,5 +70,5 @@ export function useScheduleOptions() {
         });
     }, [timeSlots]);
 
-    return { dates, timeSlots };
+    return { dates, timeSlots, holidays };
 }

@@ -106,22 +106,6 @@ export default function AdminDashboard() {
     }, []);
 
     const stats = [
-        { title: "예약", value: String(pendingCount), icon: "⏳", onClick: () => router.push("/admin/appointments") },
-        { 
-            title: "누적예약", 
-            value: String(monthlyAppointments), 
-            icon: "📅", 
-            active: chartTab === "apt", 
-            onClick: () => setChartTab(chartTab === "apt" ? null : "apt"),
-            onReset: async () => {
-                if (window.confirm("모든 예약 데이터를 초기화하시겠습니까?\n이 작업은 취소할 수 없습니다.")) {
-                    try {
-                        const res = await fetch("/api/appointments?resetAll=true", { method: 'DELETE' });
-                        if (res.ok) fetchData();
-                    } catch (e) { alert("초기화 중 오류가 발생했습니다."); }
-                }
-            }
-        },
         { 
             title: "페이지 조회수", 
             value: monthlyPageViews.toLocaleString(), 
@@ -137,6 +121,22 @@ export default function AdminDashboard() {
                 }
             }
         },
+        { 
+            title: "누적예약", 
+            value: String(monthlyAppointments), 
+            icon: "📅", 
+            active: chartTab === "apt", 
+            onClick: () => setChartTab(chartTab === "apt" ? null : "apt"),
+            onReset: async () => {
+                if (window.confirm("모든 예약 데이터를 초기화하시겠습니까?\n이 작업은 취소할 수 없습니다.")) {
+                    try {
+                        const res = await fetch("/api/appointments?resetAll=true", { method: 'DELETE' });
+                        if (res.ok) fetchData();
+                    } catch (e) { alert("초기화 중 오류가 발생했습니다."); }
+                }
+            }
+        },
+        { title: "예약", value: String(pendingCount), icon: "⏳", onClick: () => router.push("/admin/appointments") },
         { title: "평점", value: `${avgRating} / 5.0`, icon: "⭐", onClick: () => router.push("/admin/reviews") },
     ];
 
@@ -223,42 +223,77 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="space-y-4 md:space-y-6">
-                        {(selectedDate ? selectedDateAppointments : recentAppointments).length > 0 ? (
-                            (selectedDate ? selectedDateAppointments : recentAppointments).map((apt) => {
-                                const displayName = apt.assignedTo ? (nicknameMap[apt.assignedTo] || apt.assignedTo) : "미지정";
+                        {(() => {
+                            const apts = selectedDate ? selectedDateAppointments : recentAppointments;
+                            if (apts.length === 0) {
+                                return (
+                                    <div className="text-center text-gray-500 py-8 text-sm md:text-base">
+                                        {selectedDate ? "해당 날짜에 일정이 없습니다." : "이번 달 예정된 일정이 없습니다."}
+                                    </div>
+                                );
+                            }
+
+                            // 휴무일 그룹화 로직
+                            const holidays = apts.filter(a => a.status === 'holiday');
+                            const others = apts.filter(a => a.status !== 'holiday');
+                            
+                            const groupedHolidays: any[] = [];
+                            if (holidays.length > 0) {
+                                const sortedHolidays = [...holidays].sort((a, b) => normalizeDate(a.date).localeCompare(normalizeDate(b.date)));
+                                let current = { ...sortedHolidays[0], startDate: sortedHolidays[0].date, endDate: sortedHolidays[0].date };
+                                
+                                for (let i = 1; i < sortedHolidays.length; i++) {
+                                    const next = sortedHolidays[i];
+                                    const d1 = new Date(normalizeDate(current.endDate));
+                                    const d2 = new Date(normalizeDate(next.date));
+                                    const diff = (d2.getTime() - d1.getTime()) / (1000 * 3600 * 24);
+                                    
+                                    if (Math.round(diff) === 1) {
+                                        current.endDate = next.date;
+                                    } else {
+                                        groupedHolidays.push(current);
+                                        current = { ...next, startDate: next.date, endDate: next.date };
+                                    }
+                                }
+                                groupedHolidays.push(current);
+                            }
+
+                            const combined = [...groupedHolidays, ...others].sort((a, b) => {
+                                const dateA = normalizeDate(a.startDate || a.date);
+                                const dateB = normalizeDate(b.startDate || b.date);
+                                const now = new Date();
+                                const todayFormatted = normalizeDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`);
+                                const isFutureA = dateA >= todayFormatted;
+                                const isFutureB = dateB >= todayFormatted;
+                                if (isFutureA !== isFutureB) return isFutureA ? -1 : 1;
+                                const dDiff = dateA.localeCompare(dateB);
+                                if (dDiff !== 0) return dDiff;
+                                return (a.time || "00:00").localeCompare(b.time || "00:00");
+                            });
+
+                            return combined.map((apt) => {
                                 const isHoliday = apt.status === 'holiday';
+                                const dayText = isHoliday && apt.startDate !== apt.endDate
+                                    ? `${normalizeDate(apt.startDate).split('-')[2]}일~${normalizeDate(apt.endDate).split('-')[2]}일`
+                                    : `${normalizeDate(apt.date).split('-')[2]}일`;
                                 
                                 return (
-                                    <div key={apt.id} className={`flex items-center justify-between p-3 md:p-4 rounded-xl md:rounded-2xl transition-colors group ${isHoliday ? 'bg-red-500/5 hover:bg-red-500/10 border border-red-500/10' : 'bg-white/5 hover:bg-white/10'}`}>
-                                        <div className="flex items-center space-x-3 md:space-x-4">
-                                            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-bold border shrink-0 text-sm md:text-base uppercase ${isHoliday ? 'bg-red-500/20 text-red-400 border-red-500/30' : 'bg-[#a855f7]/20 text-[#d8b4fe] border-[#a855f7]/30'}`}>
-                                                {isHoliday ? "H" : displayName[0]}
-                                            </div>
-                                            <div className="min-w-0">
-                                                <h4 className="font-bold text-white text-sm md:text-base flex items-center gap-2 truncate">
-                                                    {isHoliday ? "정기 휴무/마감" : displayName} 
-                                                </h4>
-                                                <p className="text-[10px] md:text-xs text-gray-500 mt-1 truncate">
-                                                    <span className="text-white font-medium mr-1 md:mr-2">
-                                                        {normalizeDate(apt.date).split('-')[2]}일 {isHoliday ? "종일" : apt.time}
-                                                    </span>
-                                                    {!isHoliday && apt.service && <span>· {apt.service} </span>}
-                                                </p>
-                                            </div>
+                                    <div key={apt.id} className={`flex items-center justify-between p-2 md:p-3 rounded-xl transition-colors group ${isHoliday ? 'bg-red-500/5 hover:bg-red-500/10 border border-red-500/10' : 'bg-white/5 hover:bg-white/10'}`}>
+                                        <div className="flex items-center">
+                                            <span className={`font-mono text-base md:text-lg font-black tracking-tighter ${isHoliday ? 'text-red-400' : 'text-[#d8b4fe]'}`}>
+                                                {dayText}
+                                            </span>
+                                            {isHoliday && <span className="ml-2 text-[10px] text-red-500/60 font-medium">종일</span>}
                                         </div>
-                                        <div className="text-right shrink-0 ml-2">
-                                            <span className={`text-[9px] md:text-[10px] px-1.5 py-0.5 md:px-2 md:py-1 rounded-full font-bold whitespace-nowrap border ${isHoliday ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-[#a855f7]/10 text-[#a855f7] border border-[#a855f7]/20'}`}>
+                                        <div className="shrink-0">
+                                            <span className={`text-[10px] md:text-xs px-2 py-0.5 md:py-1 rounded-full font-black whitespace-nowrap border tracking-tight ${isHoliday ? 'bg-red-500/10 text-red-500 border-red-500/20' : 'bg-[#a855f7]/10 text-white border-[#a855f7]/40 shadow-[0_0_10px_rgba(168,85,247,0.2)]'}`}>
                                                 {isHoliday ? "휴무" : (apt.contact !== '-' ? "예약상담" : (apt.clientName || "상담"))}
                                             </span>
                                         </div>
                                     </div>
                                 );
-                            })
-                        ) : (
-                            <div className="text-center text-gray-500 py-8 text-sm md:text-base">
-                                {selectedDate ? "해당 날짜에 일정이 없습니다." : "이번 달 예정된 일정이 없습니다."}
-                            </div>
-                        )}
+                            });
+                        })()}
                     </div>
                 </div>
             </div>

@@ -15,9 +15,7 @@ interface MenuItem {
 
 // 스태프 대시보드 메뉴 목록 (계층형)
 const MENU_ITEMS: MenuItem[] = [
-    { name: "방문관리", path: "/staff/visits", icon: "🚶" },
     { name: "메신저", path: "/staff/messenger", icon: "💬" },
-    { name: "캘린더", path: "/staff/calendar", icon: "📅" },
     { name: "예약관리", path: "/staff/appointments", icon: "📅" },
     {
         name: "페이지관리",

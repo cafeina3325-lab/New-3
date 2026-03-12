@@ -58,8 +58,8 @@ export default function ContactOverlay({
     const [selectedTime, setSelectedTime] = useState<string | null>(null);
     const [files, setFiles] = useState<File[]>([]);
 
-    // 훅 호출을 통해 예약 가능한 요일 및 시간 배열을 가져옵니다.
-    const { dates, timeSlots } = useScheduleOptions();
+    // 훅 호출을 통해 예약 가능한 요일 및 시간 배열과 휴무일 목록을 가져옵니다.
+    const { dates, timeSlots, holidays } = useScheduleOptions();
 
     // Derived State
     // 조건 필터링: 현재 시간 기준, 당일 예약은 최소 1시간 45분 이후의 시간대 슬롯만 활성화되도록 필터링합니다.
@@ -432,22 +432,31 @@ export default function ContactOverlay({
                             {/* Date Items (실제 생성된 날짜 버튼들 매핑) */}
                             {dates.map((date, i) => {
                                 const isSelected = selectedDate?.toDateString() === date.toDateString();
+                                const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                                const isHoliday = holidays.includes(dateStr);
+
                                 return (
                                     <button
                                         key={i}
-                                        onClick={() => handleDateSelect(date)}
+                                        onClick={() => !isHoliday && handleDateSelect(date)}
+                                        disabled={isHoliday}
                                         className={`
                                             flex flex-col items-center justify-center p-3 rounded-lg transition-all border
                                             ${isSelected
                                                 ? "bg-[#E5D9D2] text-[#1C1310] border-[#E5D9D2] shadow-md transform scale-[1.05]"
-                                                : "bg-[#1C1310] text-[#D4C4BD] border-white/5 hover:bg-[#2A1D18]"
+                                                : isHoliday
+                                                    ? "bg-red-500/10 text-red-500 border-red-500/20 cursor-not-allowed"
+                                                    : "bg-[#1C1310] text-[#D4C4BD] border-white/5 hover:bg-[#2A1D18]"
                                             }
                                         `}
                                     >
-                                        <span className="text-xs md:text-sm mb-1 opacity-60">{date.getMonth() + 1}.</span>
-                                        <span className={`text-base md:text-lg lg:text-xl font-bold ${dayOfWeekColor(date.getDay())}`}>
+                                        <span className={`text-[9px] md:text-[10px] mb-0.5 opacity-60 ${isHoliday ? "text-red-400" : ""}`}>
+                                            {isHoliday ? "CLOSED" : `${date.getMonth() + 1}.`}
+                                        </span>
+                                        <span className={`text-base md:text-lg lg:text-xl font-bold ${isHoliday ? "text-red-500" : dayOfWeekColor(date.getDay())}`}>
                                             {date.getDate()}
                                         </span>
+                                        {isHoliday && <span className="text-[8px] font-black mt-0.5">휴무</span>}
                                     </button>
                                 );
                             })}

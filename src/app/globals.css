@@ -99,3 +99,8 @@ nextjs-portal {
   .animate-marquee-right {
     animation: marquee-right linear infinite;
   }
+
+  /* 전역 버튼 스타일 가독성 최적화: 최소한의 줄바꿈 방지만 적용 */
+  button {
+    white-space: nowrap !important;
+  }
