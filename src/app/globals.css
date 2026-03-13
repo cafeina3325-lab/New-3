@@ -289,3 +289,37 @@ nextjs-portal {
     color: #F7E7CE !important; /* 샴페인 골드 하이라이트 */
     text-shadow: 0 0 10px rgba(247, 231, 206, 0.3) !important;
   }
+
+/* --- Custom Scrollbar Design (Premium Dark & Gold) --- */
+/* 브라우저 기본 스크롤바를 사이트 테마에 맞게 럭셔리하게 커스텀합니다. */
+
+/* 1. 스크롤바 전체 너비/높이 (슬림하게 조절) */
+::-webkit-scrollbar {
+  width: 10px;  /* 세로 스크롤바 너비 */
+  height: 10px; /* 가로 스크롤바 높이 */
+}
+
+/* 2. 스크롤바 트랙(바탕) */
+::-webkit-scrollbar-track {
+  background: #1C1310; /* 메인 배경색과 통일 */
+  border-left: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 3. 스크롤 핸들(움직이는 부분) */
+::-webkit-scrollbar-thumb {
+  background: rgba(166, 137, 66, 0.3); /* 매트한 골드 톤 브라운 */
+  border: 2px solid #1C1310; /* 테두리를 주어 트랙과 분리된 느낌 부여 */
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+/* 4. 스크롤 핸들 호버/활성화 상태 */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(247, 231, 206, 0.5); /* 호버 시 밝은 샴페인 골드 톤으로 하이라이트 */
+}
+
+/* Firefox용 표준 속성 대응 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(166, 137, 66, 0.3) #1C1310;
+}
