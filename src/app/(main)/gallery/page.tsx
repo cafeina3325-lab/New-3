@@ -114,7 +114,7 @@ function GalleryContent() {
 
     return (
         <main className="pt-[120px] xs:pt-[140px] sm:pt-[160px] md:pt-[200px] lg:pt-[220px] xl:pt-[240px] pb-10 xs:pb-12 sm:pb-16 md:pb-20 lg:pb-24 min-h-screen bg-[#1C1310] text-[#F3EBE1]">
-            <div className="container mx-auto px-4 xs:px-6 sm:px-8 md:px-10">
+            <div className="max-w-[1800px] mx-auto px-2 xs:px-4 sm:px-6 md:px-8">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-16 text-center text-white font-serif tracking-tight">Gallery</h1>
 
                 <div className="animate-fade-in space-y-8 xs:space-y-10 sm:space-y-12 md:space-y-16">
@@ -140,7 +140,7 @@ function GalleryContent() {
 
                         {/* Filter List */}
                         {/* 배열을 순회하며 개별 필터 선택 버튼들을 생성 */}
-                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2 xs:gap-3 md:gap-4 lg:gap-5 w-full max-w-7xl px-2 xs:px-4">
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 xs:gap-3 md:gap-4 lg:gap-5 w-full max-w-7xl px-2 xs:px-4">
                             {filterItems.map((item) => (
                                 <button
                                     key={item}
@@ -158,7 +158,7 @@ function GalleryContent() {
 
                     {/* Grid */}
                     {/* 요약: 실제 서버로부터 fetch해온 갤러리 아이템들을 필터 조건에 맞춰 렌더링하는 컨테이너 */}
-                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 xs:gap-4 sm:gap-6 lg:gap-8 xl:gap-10">
+                    <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-3 lg:gap-5">
                         {filteredItems.length > 0 ? filteredItems.map((item) => (
                             <div
                                 key={item.id}
