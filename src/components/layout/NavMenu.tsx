@@ -111,7 +111,7 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                 <div className="absolute inset-0 z-0 pointer-events-none">
                     {/* 데스크탑 가로바: 블러 없이 #0A1128 컬러 6단계 투명도 그라데이션 적용 (0% -> 95%) */}
                     <div
-                        className="absolute inset-0 bg-[#0A1128] lg:block hidden"
+                        className="absolute inset-0 bg-[#1C1310] lg:block hidden"
                         style={{
                             maskImage: 'linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0.37) 40%, rgba(0,0,0,0.73) 60%, rgba(0,0,0,0.80) 80%, rgba(0,0,0,0.95) 100%)',
                             WebkitMaskImage: 'linear-gradient(to right, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0.37) 40%, rgba(0,0,0,0.73) 60%, rgba(0,0,0,0.80) 80%, rgba(0,0,0,0.95) 100%)'
@@ -127,7 +127,7 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                                 WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.53) 100%)'
                             }}
                         >
-                            <div className="absolute inset-0 bg-[#0A1128]/82 backdrop-blur-xl" />
+                            <div className="absolute inset-0 bg-[#1C1310]/82 backdrop-blur-xl" />
                         </div>
                         <div className="absolute top-0 left-0 w-full h-[120px] md:h-[180px] bg-gradient-to-b from-black/80 to-transparent" />
                         <div className="absolute top-0 left-0 w-full h-[110px] md:h-[150px] bg-black/45 border-b border-white/5 shadow-[0_8px_25px_rgba(0,0,0,0.7)]" />
@@ -258,7 +258,7 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
             {/* Hamburger Button (Glass Style) */}
             {/* 스크롤 다운 혹은 모바일 모드 시 플로팅 아이콘 형태로 나오는 '메뉴 열기' 버튼 */}
             {isHamburgerMode && !isMenuOpen && (
-                <div className="fixed top-[110px] md:top-[150px] left-[87px] md:left-[143px] -translate-x-1/2 lg:fixed lg:top-8 lg:right-8 lg:left-auto lg:translate-x-0 z-50 pointer-events-auto flex items-center justify-center">
+                <div className="fixed top-[110px] md:top-[150px] left-[80px] md:left-[130px] -translate-x-1/2 lg:fixed lg:top-8 lg:right-8 lg:left-auto lg:translate-x-0 z-50 pointer-events-auto flex items-center justify-center">
                     {/* SVG V-Line Glow Layer */}
                     <div className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${isBtnHovered ? 'opacity-100' : 'opacity-0'}`}>
                         <svg
@@ -293,7 +293,7 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                             backgroundColor: 'transparent',
                             border: 'none'
                         }}
-                        className={`relative z-10 w-[140px] md:w-[210px] h-9 lg:w-14 lg:h-14 text-white transition-all duration-700 animate-fade-in flex items-center justify-center [clip-path:polygon(0%_0%,_100%_0%,_100%_70%,_50%_100%,_0%_70%)] lg:rounded-full lg:[clip-path:none] ${isBtnHovered ? 'scale-105' : ''}`}
+                        className={`relative z-10 w-[120px] md:w-[180px] h-9 lg:w-14 lg:h-14 text-white transition-all duration-700 animate-fade-in flex items-center justify-center [clip-path:polygon(0%_0%,_100%_0%,_100%_70%,_50%_100%,_0%_70%)] lg:rounded-full lg:[clip-path:none] ${isBtnHovered ? 'scale-105' : ''}`}
                         aria-label="Open Menu"
                     >
                         <svg className={`w-4 h-4 lg:w-6 lg:h-6 transition-transform duration-700 ${isBtnHovered ? 'scale-110' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">

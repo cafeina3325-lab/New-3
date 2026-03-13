@@ -12,6 +12,36 @@ import { useState, useMemo } from "react";
 import { GENRES, PARTS } from "@/data/constants";
 import { useScheduleOptions } from "@/hooks/useScheduleOptions";
 
+// 부위 및 장르 한글 매핑 객체 (모달 내부 노출용)
+const PART_LABELS: Record<string, string> = {
+    "Head": "머리",
+    "Face": "얼굴",
+    "Neck": "목",
+    "Shoulder": "어깨",
+    "Chest": "가슴",
+    "Belly": "배",
+    "Back": "등",
+    "Arm": "팔",
+    "Leg": "다리",
+    "Hand": "손",
+    "Foot": "발"
+};
+
+const GENRE_LABELS: Record<string, string> = {
+    "Irezumi": "이레즈미",
+    "Old School": "올드스쿨",
+    "Tribal": "트라이벌",
+    "Black & Grey": "블랙앤그레이",
+    "Blackwork": "블랙워크",
+    "Oriental Art": "동양화",
+    "Watercolor": "수채화",
+    "Illustration": "일러스트",
+    "Mandala": "만다라",
+    "Sak Yant": "싹-얀",
+    "Lettering": "레터링",
+    "ETC.": "기타"
+};
+
 /**
  * 예약 모달에 전달되는 초기(Initial) Props 인터페이스
  * 이벤트나 갤러리 도안 상세보기에서 예약 버튼을 누를 때 특정 필드가 미리 채워지도록 지원합니다.
@@ -213,7 +243,7 @@ export default function ContactOverlay({
             >
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b border-white/10 bg-[#1C1310] sticky top-0 z-10">
-                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#F3EBE1]">Contact / Reservation</h2>
+                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-tight text-[#F3EBE1]">예약접수</h2>
                     <button
                         onClick={onClose}
                         className="p-2 rounded-full hover:bg-white/10 transition-colors"
@@ -233,11 +263,11 @@ export default function ContactOverlay({
                     {/* 안내문: 상담 예약 정책, 미성년자 불가 등 유의사항 블록 */}
                     <section className="bg-[#2A1D18] p-6 rounded-xl border border-white/5">
                         <h3 className="text-sm md:text-base lg:text-lg font-bold text-red-400 uppercase tracking-widest mb-3">Notice</h3>
-                        <ul className="space-y-2 text-sm md:text-base lg:text-lg text-[#D4C4BD] list-disc list-inside leading-relaxed word-keep-all">
-                            <li>본 접수는 <strong>대면상담 예약</strong>입니다. 시술 예약이 아닙니다.</li>
-                            <li>상담 결과에 따라 시술이 제한되거나 거절될 수 있습니다.</li>
-                            <li><strong>만 19세 미만</strong>은 시술이 불가하며, 대면 상담 시 신분증 확인이 필요합니다.</li>
-                            <li>피부상태, 건강상태, 시술 이력에 따라 상담 또는 시술이 제한 될 수 있습니다.</li>
+                        <ul className="space-y-2 text-xs md:text-sm lg:text-base text-[#D4C4BD] list-disc list-inside leading-relaxed word-keep-all">
+                            <li>본 접수는 <strong>대면상담 예약</strong>입니다. <br className="sm:hidden" /> 시술 예약이 아닙니다.</li>
+                            <li>상담 결과에 따라 시술이 제한되거나 <br className="sm:hidden" /> 거절될 수 있습니다.</li>
+                            <li><strong>만 19세 미만</strong>은 시술이 불가하며, <br className="sm:hidden" /> 대면 상담 시 신분증 확인이 필요합니다.</li>
+                            <li>피부상태, 건강상태, 시술 이력에 따라 <br className="sm:hidden" /> 상담 또는 시술이 제한 될 수 있습니다.</li>
                         </ul>
                     </section>
 
@@ -250,7 +280,7 @@ export default function ContactOverlay({
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm md:text-base lg:text-lg font-bold text-[#D4C4BD] mb-2 tracking-wide">Name <span className="text-red-400">*</span></label>
+                                    <label className="block text-sm md:text-base lg:text-lg font-bold text-[#D4C4BD] mb-2 tracking-wide">성명 <span className="text-red-400">*</span></label>
                                     <input
                                         type="text"
                                         value={name}
@@ -260,7 +290,7 @@ export default function ContactOverlay({
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm md:text-base lg:text-lg font-bold text-[#D4C4BD] mb-2 tracking-wide">Gender <span className="text-red-400">*</span></label>
+                                    <label className="block text-sm md:text-base lg:text-lg font-bold text-[#D4C4BD] mb-2 tracking-wide">성별 <span className="text-red-400">*</span></label>
                                     <div className="flex gap-2 h-[58px]">
                                         <button
                                             onClick={() => setGender('male')}
@@ -284,7 +314,7 @@ export default function ContactOverlay({
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm md:text-base lg:text-lg font-bold text-[#D4C4BD] mb-2 tracking-wide">Phone <span className="text-red-400">*</span></label>
+                                <label className="block text-sm md:text-base lg:text-lg font-bold text-[#D4C4BD] mb-2 tracking-wide">휴대폰번호 <span className="text-red-400">*</span></label>
                                 <input
                                     type="tel"
                                     value={phone}
@@ -303,7 +333,7 @@ export default function ContactOverlay({
                         <section>
                             <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-[#F3EBE1] tracking-wide mb-4 flex items-center gap-2">
                                 <span className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 rounded-full bg-[#E5D9D2] text-[#1C1310] text-xs md:text-sm lg:text-base font-black">2</span>
-                                Area <span className="text-gray-500 text-xs md:text-sm lg:text-base font-normal ml-auto">* Single choice</span>
+                                부위 <span className="text-gray-500 text-xs md:text-sm lg:text-base font-normal ml-auto">* Single choice</span>
                             </h3>
                             <div className="flex flex-wrap gap-2">
                                 {PARTS.map(part => (
@@ -315,7 +345,7 @@ export default function ContactOverlay({
                                             : "bg-[#1C1310] text-[#D4C4BD] border-white/10 hover:border-white/30 hover:text-[#F3EBE1]"
                                             }`}
                                     >
-                                        {part}
+                                        {PART_LABELS[part] || part}
                                     </button>
                                 ))}
                             </div>
@@ -326,7 +356,7 @@ export default function ContactOverlay({
                         <section>
                             <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-[#F3EBE1] tracking-wide mb-4 flex items-center gap-2">
                                 <span className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 rounded-full bg-[#E5D9D2] text-[#1C1310] text-xs md:text-sm lg:text-base font-black">3</span>
-                                Genres <span className="text-gray-500 text-xs md:text-sm lg:text-base font-normal ml-auto">* Single choice</span>
+                                장르 <span className="text-gray-500 text-xs md:text-sm lg:text-base font-normal ml-auto">* Single choice</span>
                             </h3>
                             <div className="flex flex-wrap gap-2">
                                 {GENRES.map(genre => (
@@ -338,7 +368,7 @@ export default function ContactOverlay({
                                             : "bg-[#1C1310] text-[#D4C4BD] border-white/10 hover:border-white/30 hover:text-[#F3EBE1]"
                                             }`}
                                     >
-                                        {genre}
+                                        {GENRE_LABELS[genre] || genre}
                                     </button>
                                 ))}
                             </div>
@@ -349,7 +379,7 @@ export default function ContactOverlay({
                     <section>
                         <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-[#F3EBE1] tracking-wide mb-4 flex items-center gap-2">
                             <span className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 rounded-full bg-[#E5D9D2] text-[#1C1310] text-xs md:text-sm lg:text-base font-black">4</span>
-                            Reference
+                            요구/참고사항
                         </h3>
                         <div className="space-y-4">
                             {/* 파일 업로드 폼(드래그 앤 드롭 유도 UI 포함) 영역 설정 */}
@@ -364,7 +394,7 @@ export default function ContactOverlay({
                                     <svg className="w-10 h-10 text-gray-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                     </svg>
-                                    <p className="text-gray-400 text-sm md:text-base lg:text-lg font-medium">Click or Drag images here</p>
+                                    <p className="text-gray-400 text-sm md:text-base lg:text-lg font-medium">이미지 첨부</p>
                                     {files.length > 0 && (
                                         <p className="text-[#F3EBE1] text-sm md:text-base mt-2">{files.length} filed(s) selected</p>
                                     )}
@@ -392,6 +422,8 @@ export default function ContactOverlay({
                                 onChange={(e) => setReferenceText(e.target.value)}
                                 className="w-full p-4 bg-[#1C1310] text-[#F3EBE1] text-sm md:text-base lg:text-lg border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E5D9D2] focus:border-transparent transition-all min-h-[120px] resize-y placeholder:text-gray-400"
                             />
+                            <p className="text-xs md:text-sm lg:text-base text-gray-500 text-right word-keep-all">* 레퍼런스는 참고용 이며, 피부 / 부위에 따라 조정 될 수 있습니다.</p>
+
                             <div className="relative">
                                 <label className="block text-xs md:text-sm lg:text-base font-bold text-gray-500 mb-2 uppercase tracking-tight">참고 리뷰 ID (선택사항)</label>
                                 <input
@@ -402,7 +434,6 @@ export default function ContactOverlay({
                                     className="w-full p-4 bg-[#1C1310] text-[#F3EBE1] border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#E5D9D2] placeholder:text-gray-500 transition-all font-mono text-sm md:text-base lg:text-lg uppercase"
                                 />
                             </div>
-                            <p className="text-xs md:text-sm lg:text-base text-gray-500 text-right word-keep-all">* 레퍼런스는 참고용 이며, 피부 / 부위에 따라 조정 될 수 있습니다.</p>
                         </div>
                     </section>
 
@@ -411,7 +442,7 @@ export default function ContactOverlay({
                     <section>
                         <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-[#F3EBE1] tracking-wide mb-6 flex items-center gap-2">
                             <span className="flex items-center justify-center w-6 h-6 md:w-8 md:h-8 lg:w-10 lg:h-10 rounded-full bg-[#E5D9D2] text-[#1C1310] text-xs md:text-sm lg:text-base font-black">5</span>
-                            Schedule <span className="text-gray-500 text-xs md:text-sm lg:text-base font-normal ml-auto">Date Selection (2 weeks)</span>
+                            상담 희망 날짜
                         </h3>
 
                         {/* Date Grid */}
@@ -496,7 +527,7 @@ export default function ContactOverlay({
                         onClick={onClose}
                         className="px-6 py-3 text-gray-500 text-sm md:text-base lg:text-lg font-bold hover:text-[#D4C4BD] transition-colors"
                     >
-                        Cancel
+                        취소
                     </button>
                     {/* isFormValid 여부에 따라 예약 버튼이 투명해지거나 클릭 거부(cursor-not-allowed) 처리됨 */}
                     <button

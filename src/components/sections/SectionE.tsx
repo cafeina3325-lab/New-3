@@ -44,11 +44,11 @@ export default function SectionE() {
     return (
         <section className="py-12 sm:py-16 md:py-20 lg:py-28 bg-[#0A0706] w-full overflow-hidden border-t border-white/5">
             <div className="container mx-auto px-4 sm:px-8 lg:px-12 mb-8 sm:mb-12">
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-center text-[#F3EBE1]">Testimonials</h2>
+                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold luxury-title relative inline-block left-1/2 -translate-x-1/2">Testimonials</h2>
             </div>
 
             {/* 가로 스크롤 리뷰 카드 리스트 */}
-            <div className="flex overflow-x-auto pb-8 sm:pb-10 px-4 sm:px-8 lg:px-12 gap-4 sm:gap-6 lg:gap-10 snap-x snap-mandatory scrollbar-hide min-h-[260px]">
+            <div className="flex overflow-x-auto py-10 sm:py-16 px-4 sm:px-8 lg:px-12 gap-4 sm:gap-6 lg:gap-10 snap-x snap-mandatory scrollbar-hide min-h-[260px]">
                 {reviews.length > 0 ? reviews.map((item) => (
                     <div
                         key={item.id}
@@ -79,7 +79,7 @@ export default function SectionE() {
 
                         {/* 3. 본문 내용 */}
                         <div className="mb-3 md:mb-4 flex-1">
-                            <p className="text-[#F3EBE1] font-handwriting text-base md:text-lg lg:text-xl xl:text-2xl italic line-clamp-3 word-keep-all leading-relaxed">
+                            <p className="text-[#F3EBE1] font-handwriting text-base md:text-lg lg:text-xl xl:text-2xl italic line-clamp-3 break-keep leading-relaxed">
                                 &ldquo;{item.content}&rdquo;
                             </p>
                         </div>

@@ -30,8 +30,8 @@ export const MENU_ITEMS: MenuItem[] = [
  * 갤러리/리뷰 필터링 및 관리자 페이지에서의 선택 리스트로 쓰입니다.
  */
 export const GENRES = [
-    "Irezumi", "Old School", "Tribal", "Black & Grey", "Blackwork",
-    "Oriental Art", "Watercolor", "Illustration", "Mandala", "Sak Yant", "Lettering", "ETC."
+    "Irezumi", "Old School", "Tribal", "Illustration", "Black & Grey", "Blackwork",
+    "Oriental Art", "Watercolor", "Mandala", "Sak Yant", "Lettering", "ETC."
 ];
 
 /**

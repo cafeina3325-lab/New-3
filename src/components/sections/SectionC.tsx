@@ -48,8 +48,8 @@ export default function SectionC() {
         <section id="section-c" className="py-12 sm:py-16 md:py-20 lg:py-28 bg-[#150E0C] w-full overflow-hidden border-t border-white/5">
             <div className="container mx-auto px-4 sm:px-6 md:px-8 lg:px-12">
                 <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#F3EBE1] mb-3 md:mb-4 lg:mb-5">Event</h2>
-                    <p className="text-sm md:text-base lg:text-lg text-gray-400 font-medium tracking-wide word-keep-all">이달의 이벤트 매월 새로운 소식을 전합니다</p>
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold luxury-title mb-3 md:mb-4 lg:mb-5 relative inline-block">Event</h2>
+                    <p className="text-sm md:text-xl lg:text-2xl text-gray-400 font-medium tracking-wide word-keep-all">이달의 이벤트 <br /> 매월 새로운 소식을 전합니다</p>
                 </div>
 
                 {/* 가로 스와이프 이벤트 카드 */}

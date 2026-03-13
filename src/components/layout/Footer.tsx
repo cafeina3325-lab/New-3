@@ -21,7 +21,7 @@ export default function Footer() {
         <footer className="bg-[#1C1310] text-[#D4C4BD] py-10 sm:py-14 lg:py-20 border-t border-[#3A2A24]">
             <div className="container mx-auto px-4 sm:px-8 lg:px-12">
                 {/* 푸터 그리드: 모바일/태블릿 1열 → 데스크탑(md 이상) 2열 → 대형 데스크탑(lg 이상) 4열 */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 sm:gap-16 lg:gap-16 mb-10 sm:mb-14 lg:mb-20">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-40 gap-y-12 sm:gap-16 lg:gap-16 mb-10 sm:mb-14 lg:mb-20">
                     {/* 1. 브랜드 & SNS & Contact */}
                     <div className="space-y-6 sm:space-y-8">
                         <h2 className="luxury-carbon-text flex flex-col font-playfair">
@@ -53,8 +53,7 @@ export default function Footer() {
                         </div>
                         <button
                             onClick={() => setIsContactOpen(true)}
-                            className="px-10 py-4 border border-gray-600 text-gray-300 text-xl font-bold tracking-wide rounded-xl hover:border-white hover:text-white transition w-full sm:w-auto"
-                        >
+                            className="py-4 border border-gray-600 text-gray-300 text-xl font-bold tracking-wide rounded-xl hover:border-white hover:text-white transition w-[140px] md:w-[160px]">
                             예약하기
                         </button>
                     </div>
@@ -75,14 +74,14 @@ export default function Footer() {
                     </div>
 
                     {/* 3. 사업자 정보 (대형 화면에서 2칸 점유) */}
-                    <div className="sm:col-span-2 lg:col-span-2 flex flex-col lg:items-end font-medium text-xs leading-relaxed word-keep-all">
+                    <div className="col-span-2 lg:col-span-2 flex flex-col lg:items-end font-medium text-xs leading-relaxed word-keep-all">
                         <div className="text-left">
                             <h3 className="text-gold font-black mb-3 sm:mb-5 text-xl tracking-wider font-playfair luxury-carbon-text">Information</h3>
                             <div className="flex flex-col space-y-1 md:space-y-2 text-gray-400">
                                 <p><span className="font-bold text-md text-gray-600 mr-2">OWNER</span> Kim Gwangpil</p>
                                 <p><span className="font-bold text-md text-gray-600 mr-2">LICENSE</span> 123-45-67890</p>
                                 <p><span className="font-bold text-md text-gray-600 mr-2">MANAGER</span> Park Boseung</p>
-                                <p className="flex flex-col sm:flex-row sm:items-start"><span className="font-bold text-md text-gray-600 mr-2 shrink-0">ADDRESS</span> <span>MoonHwah-ro 95, 2F, <br className="sm:hidden" /> Namdong-gu, Incheon</span></p>
+                                <p className="flex items-start"><span className="font-bold text-md text-gray-600 mr-2 shrink-0">ADDRESS</span> MoonHwah-ro 95, 2F, <br className="sm:hidden" /> Namdong-gu, Incheon</p>
                                 <p><span className="font-bold text-md text-gray-600 mr-2">HOURS</span> 09:00 - 20:00 (Mon - Sat)</p>
                             </div>
                         </div>

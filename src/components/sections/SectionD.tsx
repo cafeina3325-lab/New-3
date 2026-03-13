@@ -11,11 +11,11 @@ import Link from "next/link";
 const CARDS = [
     {
         title: "Precision",
-        desc: "1mm 단위의 섬세한 작업",
+        desc: <>1mm 단위의 <br /> 섬세한 작업</>,
     },
     {
         title: "Creativity",
-        desc: "다양한 장르의 전문성",
+        desc: <>다양한 장르의 <br /> 전문성</>,
     },
     {
         title: "Trust",
@@ -31,7 +31,7 @@ export default function SectionD() {
                 <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-14 lg:gap-20 mb-10 sm:mb-14 lg:mb-20">
                     {/* 좌측 텍스트 영역 */}
                     <div className="w-full md:w-3/5">
-                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#F3EBE1] mb-4 lg:mb-6">Our Philosophy</h2>
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold luxury-title mb-4 lg:mb-6 relative inline-block">Our Philosophy</h2>
                         <h3 className="text-xl md:text-2xl lg:text-4xl font-medium text-[#D4C4BD]/80 tracking-wide mb-4 lg:mb-6">우리는 피부위에 예술을 새깁니다.</h3>
                         <p className="text-sm md:text-base lg:text-lg text-gray-400 leading-relaxed break-keep max-w-[95%] mb-6 lg:mb-8">
                             각 작품은 단순한 그림이 아닌, <br className="sm:hidden" /> 당신의 이야기를 담은 영원한 캔버스입니다. <br className="sm:hidden" /> 정밀함과 창의성의 균형, <br className="sm:hidden" /> 그리고 고객과의 깊은 소통을 통해 <br className="sm:hidden" /> 세상에 단 하나뿐인 작품을 만듭니다.
