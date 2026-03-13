@@ -28,14 +28,13 @@ export default function SectionD() {
         <section className="py-12 sm:py-16 md:py-20 lg:py-28 bg-[#1C1310] w-full border-t border-white/5">
             <div className="container mx-auto px-4 sm:px-8 lg:px-12">
                 {/* 좌우 나눠 배열 (모바일에서는 세로 스택) */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-10 md:gap-14 lg:gap-20 mb-10 sm:mb-14 lg:mb-20">
+                <div className="flex flex-col md:flex-row items-center justify-center gap-10 md:gap-14 lg:gap-20 mb-10 sm:mb-14 lg:mb-20">
                     {/* 좌측 텍스트 영역 */}
-                    <div className="w-full md:w-1/2">
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#F3EBE1] mb-4 lg:mb-6">Our Philosophy</h2>
-                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-medium text-[#D4C4BD]/80 tracking-wide mb-4 lg:mb-6">우리는 피부위에 예술을 새깁니다.</h3>
-                        <p className="text-sm md:text-base lg:text-lg text-gray-400 leading-relaxed word-keep-all max-w-[95%] mb-6 lg:mb-8 whitespace-pre-line">
-                            각 작품은 단순한 그림이 아닌, 당신의 이야기를 담은 영원한 캔버스입니다.
-                            정밀함과 창의성의 균형, 그리고 고객과의 깊은 소통을 통해 세상에 단 하나뿐인 작품을 만듭니다.
+                    <div className="w-full md:w-3/5">
+                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#F3EBE1] mb-4 lg:mb-6">Our Philosophy</h2>
+                        <h3 className="text-xl md:text-2xl lg:text-4xl font-medium text-[#D4C4BD]/80 tracking-wide mb-4 lg:mb-6">우리는 피부위에 예술을 새깁니다.</h3>
+                        <p className="text-sm md:text-base lg:text-lg text-gray-400 leading-relaxed break-keep max-w-[95%] mb-6 lg:mb-8">
+                            각 작품은 단순한 그림이 아닌, <br className="sm:hidden" /> 당신의 이야기를 담은 영원한 캔버스입니다. <br className="sm:hidden" /> 정밀함과 창의성의 균형, <br className="sm:hidden" /> 그리고 고객과의 깊은 소통을 통해 <br className="sm:hidden" /> 세상에 단 하나뿐인 작품을 만듭니다.
                         </p>
                         {/* About 페이지 내비게이션 링크 */}
                         <Link href="/about">
@@ -48,14 +47,14 @@ export default function SectionD() {
                     {/* Cards Grid */}
                     {/* 우측(혹은 모바일 하단) 특징 카드 3개를 그리드 레이아웃으로 정렬 */}
                     {/* 특징 카드 3종 그리드 */}
-                    <div className="w-full md:w-1/2 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                    <div className="w-full md:w-[230px] xl:w-[380px] grid grid-cols-1 gap-4 sm:gap-6 lg:gap-8">
                         {CARDS.map((card, index) => (
                             <div
                                 key={index}
                                 className="bg-[#150E0C] p-4 sm:p-6 lg:p-8 rounded-lg shadow-sm border border-white/5 hover:border-white/20 hover:shadow-md hover:-translate-y-1 transition-all duration-300 text-center flex flex-col items-center justify-center"
                             >
                                 <h4 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#F3EBE1] tracking-wide mb-2 lg:mb-3">{card.title}</h4>
-                                <p className="text-sm md:text-base lg:text-lg text-gray-400 leading-relaxed word-keep-all">{card.desc}</p>
+                                <p className="text-sm md:text-base lg:text-lg text-gray-400 leading-relaxed break-keep">{card.desc}</p>
                             </div>
                         ))}
                     </div>

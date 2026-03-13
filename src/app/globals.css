@@ -4,9 +4,8 @@
 
 .luxury-title {
   font-family: var(--font-playfair), serif;
-  text-transform: uppercase;
   letter-spacing: 0.25em;
-  /* 텍스트 투명화하여 배경 질감 표시 */
+  /* 텍스트 투  명화하여 배경 질감 표시 */
   color: transparent !important;
   /* 텍스트 밝기 최대화 및 정밀한 그림자로 시인성 확보 */
   text-shadow: 
@@ -24,9 +23,9 @@
       transparent 60%, 
       transparent 100%
     ),
-    /* 화이트 오버레이 농도를 75%로 조절하여 하단의 Carbon 문양 노출 */
-    linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),
-    url('/Carbon.png');
+    /* 샴페인 골드 오버레이 농도를 55%로 조절하여 럭셔리한 금빛 감물 */
+    linear-gradient(rgba(247, 231, 206, 0.55), rgba(247, 231, 206, 0.55)),
+    url('/Forged Carbon.png');
   
   background-size: 200% 100%, 100% 100%, cover;
   background-position: 150% 0, 0 0, center;
@@ -36,6 +35,29 @@
   
   /* 상시 광택 애니메이션 적용 */
   animation: text-shine 3s infinite linear;
+}
+
+/* Carbon 텍스처와 광택 효과를 범용적으로 사용할 수 있는 클래스 */
+.luxury-carbon-text {
+  color: transparent !important;
+  background-image: 
+    linear-gradient(
+      120deg, 
+      transparent 0%, 
+      transparent 40%, 
+      rgba(255, 255, 255, 0.9) 50%, 
+      transparent 60%, 
+      transparent 100%
+    ),
+    linear-gradient(rgba(247, 231, 206, 0.55), rgba(247, 231, 206, 0.55)),
+    url('/Forged Carbon.png');
+  background-size: 200% 100%, 100% 100%, cover;
+  background-position: 150% 0, 0 0, center;
+  background-repeat: no-repeat, no-repeat, repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: text-shine 3s infinite linear;
+  display: inline-block; /* 배경 영역 확보 */
 }
 
 .luxury-title::after {
@@ -92,10 +114,12 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-playfair: var(--font-playfair);
+  --font-noto-serif-kr: var(--font-noto-serif-kr);
   
   /* 6단 반응형 브레이크포인트 재정의 (User Requirements) */
   --breakpoint-xs: 360px;
-  --breakpoint-sm: 390px;
+  --breakpoint-sm: 576px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
@@ -114,7 +138,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-noto-serif-kr), Arial, Helvetica, sans-serif;
 }
 
 /* Hide Next.js Dev Tools Indicator (N button) */

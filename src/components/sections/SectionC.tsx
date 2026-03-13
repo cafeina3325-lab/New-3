@@ -93,11 +93,11 @@ export default function SectionC() {
                 {/* 유의사항 카드 */}
                 <div className="max-w-md sm:max-w-xl md:max-w-2xl lg:max-w-4xl mx-auto bg-[#1C1310] border border-white/10 rounded-lg p-5 sm:p-7 lg:p-10">
                     <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#E5D9D2] tracking-wide mb-4 md:mb-6 border-b border-white/10 pb-2 inline-block">Notion</h3>
-                    <ul className="space-y-2 sm:space-y-3 lg:space-y-4 text-gray-400 list-disc list-inside text-sm md:text-base lg:text-lg leading-relaxed word-keep-all">
-                        <li>이달의 이벤트 도안은 한정기간 동안만 진행됩니다.</li>
+                    <ul className="space-y-2 sm:space-y-3 lg:space-y-4 text-gray-400 list-disc list-outside ml-6 text-sm md:text-base lg:text-lg leading-relaxed break-keep">
+                        <li>이달의 이벤트 도안은 <br className="sm:hidden" /> 한정기간 동안만 진행됩니다.</li>
                         <li>예약 마감 시 조기 종료 될 수 있습니다.</li>
-                        <li>갤러리 이미지는 참고용이며 동일한 결과를 보장하지 않습니다.</li>
-                        <li>피부상태·부위·에이징에 따라 표현이 달라질 수 있습니다.</li>
+                        <li>갤러리 이미지는 참고용이며 <br className="sm:hidden" /> 동일한 결과를 보장하지 않습니다.</li>
+                        <li>피부상태·부위·에이징에 따라 <br className="sm:hidden" /> 표현이 달라질 수 있습니다.</li>
                     </ul>
                 </div>
             </div>

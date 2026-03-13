@@ -7,11 +7,23 @@
  */
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display, Noto_Serif_KR, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
 // --- Font Configuration ---
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-cormorant-garamond",
+});
+
+const notoSerifKR = Noto_Serif_KR({
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "900"],
+  variable: "--font-noto-serif-kr",
+});
+
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
@@ -48,7 +60,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       {/* 폰트 CSS 변수 선언 및 텍스트 렌더링 품질을 높이는 안티앨리어싱(antialiased) 적용 */}
-      <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${notoSerifKR.variable} ${cormorant.variable} antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

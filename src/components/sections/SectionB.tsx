@@ -88,18 +88,18 @@ export default function SectionB() {
     // Row definitions based on requirements
     // 화면 크기별 줄 구성 및 각 줄별 노출 장르, 스크롤 속도, 스크롤 방향 설정 캐싱 (Mobile)
     const rowsMobile = useMemo(() => [
-        { genres: ["Illustration", "ETC."], speed: "20s", dir: "left" as const },
-        { genres: ["Irezumi", "Old School"], speed: "10s", dir: "right" as const },
-        { genres: ["Black & Grey", "Blackwork", "Tribal"], speed: "30s", dir: "left" as const },
-        { genres: ["Oriental Art", "Watercolor"], speed: "25s", dir: "right" as const },
-        { genres: ["Mandala", "Sak Yant", "Lettering"], speed: "15s", dir: "left" as const },
+        { genres: ["Illustration", "ETC."], speed: "80s", dir: "left" as const },
+        { genres: ["Irezumi", "Old School"], speed: "40s", dir: "right" as const },
+        { genres: ["Black & Grey", "Blackwork", "Tribal"], speed: "120s", dir: "left" as const },
+        { genres: ["Oriental Art", "Watercolor"], speed: "100s", dir: "right" as const },
+        { genres: ["Mandala", "Sak Yant", "Lettering"], speed: "60s", dir: "left" as const },
     ], []);
 
     // 화면 크기별 줄 구성 캐싱 (Tablet)
     const rowsTablet = useMemo(() => [
-        { genres: ["Irezumi", "Old School", "Sak Yant", "ETC."], speed: "15s", dir: "left" as const },
-        { genres: ["Black & Grey", "Blackwork", "Tribal", "Lettering"], speed: "20s", dir: "right" as const },
-        { genres: ["Oriental Art", "Watercolor", "Illustration", "Mandala"], speed: "10s", dir: "left" as const },
+        { genres: ["Irezumi", "Old School", "Sak Yant", "ETC."], speed: "120s", dir: "left" as const },
+        { genres: ["Black & Grey", "Blackwork", "Tribal", "Lettering"], speed: "160s", dir: "right" as const },
+        { genres: ["Oriental Art", "Watercolor", "Illustration", "Mandala"], speed: "80s", dir: "left" as const },
     ], []);
 
     // 화면 크기별 줄 구성 캐싱 (Desktop)
