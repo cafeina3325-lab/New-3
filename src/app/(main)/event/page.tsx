@@ -38,7 +38,7 @@ export default function EventPage() {
 
     return (
         <main className="pt-[120px] xs:pt-[140px] sm:pt-[160px] md:pt-[200px] lg:pt-[220px] xl:pt-[240px] pb-10 xs:pb-12 sm:pb-16 md:pb-20 lg:pb-24 min-h-screen bg-[#1C1310] text-[#F3EBE1]">
-            <div className="container mx-auto px-4 xs:px-6 sm:px-8 md:px-10">
+            <div className="max-w-[1600px] mx-auto px-2 xs:px-3 sm:px-4 md:px-6">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-12 md:mb-16 text-center text-white font-serif tracking-tight">Event</h1>
 
                 {!isLoading && (
@@ -61,7 +61,7 @@ export default function EventPage() {
                             </div>
                         ) : (
                             // 등록된 이벤트 카드 그리드 라인
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6 xs:gap-8 sm:gap-10 lg:gap-12 xl:gap-16 2xl:gap-20 animate-fade-in">
+                            <div className="grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-5 lg:gap-8 xl:gap-10 animate-fade-in">
                                 {events.map((event) => (
                                     <div
                                         key={event.id}
