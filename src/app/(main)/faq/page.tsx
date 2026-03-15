@@ -40,9 +40,9 @@ export default function FAQPage() {
             {/* 1. Hero */}
             {/* 요약: 상단 메시지를 포함하는 헤더 영역 */}
             <section className="container mx-auto px-4 sm:px-8 mb-10 sm:mb-14 lg:mb-20 text-center">
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">명확한 기준, 투명한 원칙 (Clear Protocol)</h1>
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight">명확한 기준, 투명한 원칙 <br className="lg:hidden" /> (Clear Protocol)</h1>
                 <p className="text-base md:text-lg lg:text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed word-keep-all">
-                    타협 없는 마스터피스를 피부 위에 안전하게 구현하기 위해, 당소가 엄격하게 준수하고 있는 운영 기준과 작업 과정을 투명하게 안내합니다.
+                    타협 없는 마스터피스를 피부 위에 <br className="sm:hidden" /> 안전하게 구현하기 위해, <br /> 당소가 엄격하게 준수하고 있는 <br className="md:hidden" />운영 기준과 작업 과정을 투명하게 안내합니다.
                 </p>
             </section>
 
@@ -108,7 +108,7 @@ export default function FAQPage() {
                                             <span className="text-xs md:text-sm font-bold text-gray-400 uppercase tracking-wider mb-2 block">
                                                 {item.category}
                                             </span>
-                                            <h3 className={`text-2xl md:text-3xl lg:text-4xl font-bold transition-colors ${isOpen ? 'text-[#F3EBE1]' : 'text-gray-400 group-hover:text-[#F3EBE1]'
+                                            <h3 className={`text-sm md:text-lg lg:text-xl font-bold transition-colors ${isOpen ? 'text-[#F3EBE1]' : 'text-gray-400 group-hover:text-[#F3EBE1]'
                                                 }`}>
                                                 <span className="text-gray-300 mr-2">Q.</span>
                                                 {item.q}
@@ -128,7 +128,7 @@ export default function FAQPage() {
                                             }`}
                                     >
                                         <div className="p-4 xs:p-5 sm:p-6 pt-0 border-t border-white/5 mx-4 xs:mx-5 sm:mx-6">
-                                            <div className="flex items-start gap-2 text-base md:text-lg mt-4">
+                                            <div className="flex items-start gap-2 text-xs md:text-sm mt-4">
                                                 <span className="text-gray-400 font-bold shrink-0 mt-1">A.</span>
                                                 <p className="text-gray-300 leading-relaxed whitespace-pre-line word-keep-all">
                                                     {item.a}
@@ -150,11 +150,11 @@ export default function FAQPage() {
             {/* 4. Private Concierge CTA */}
             {/* 요약: 하단에 1:1 상담 안내 문구 및 문의 연결 버튼을 포함하는 섹션 */}
             <section className="bg-[#2A1D18]/30 border-t border-white/10 py-12 sm:py-16 lg:py-24 mt-12 sm:mt-16 lg:mt-24">
-                <div className="container mx-auto px-4 sm:px-8 text-center max-w-3xl">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-[#F3EBE1]">당신만의 고유한 서사에 대해 더 깊은 논의가 필요하십니까?</h2>
-                    <p className="text-sm md:text-base text-[#D4C4BD] mb-8 md:mb-10 leading-relaxed word-keep-all">
-                        세부적인 도안 방향성이나 체질에 따른 특이사항 등, 남겨진 질문이 있다면 전담 디렉터에게 문의해 주십시오.
-                        프라이빗하고 심도 있는 상담을 도와드립니다.
+                <div className="container mx-auto px-4 sm:px-8 text-center max-w-4xl">
+                    <h2 className="text-3xl lg:text-4xl xl:text-5xl font-bold mb-6 text-[#F3EBE1]">당신만의 고유한 서사에 대해 <br /> 더 깊은 논의가 필요하십니까?</h2>
+                    <p className="text-sm lg:text-md xl:text-base text-[#D4C4BD] mb-8 lg:mb-10 leading-relaxed word-keep-all">
+                        세부적인 도안 방향성이나 체질에 따른 특이사항 등, <br className="md:hidden" /> 남겨진 질문이 있다면 전담 디렉터에게 문의해 주십시오.
+                        <br /> 프라이빗하고 심도 있는 상담을 도와드립니다.
                     </p>
                     <button
                         onClick={openContact}

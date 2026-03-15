@@ -7,7 +7,7 @@
 
 // 스튜디오의 핵심 업무 철학 구조체 배열
 export const LEGACY_PILLARS = [
-    { title: "Craft", desc: "디테일·선·명암·밀도에 대한 집요함" },
+    { title: "Craft", desc: "디테일, 선, 명암, 밀도에 대한 집요함" },
     { title: "Safety", desc: "위생과 프로세스의 표준화" },
     { title: "Respect", desc: "피부·취향·상황을 고려한 현실적인 디자인" },
     { title: "Continuity", desc: "사후 관리와 에이징까지 포함한 결과 설계" }

@@ -25,11 +25,11 @@ export default function Footer() {
                     {/* 1. 브랜드 & SNS & Contact */}
                     <div className="space-y-6 sm:space-y-8">
                         <h2 className="luxury-carbon-text flex flex-col font-playfair">
-                            <span className="text-4xl sm:text-5xl lg:text-6xl font-black leading-none">Flying</span> <br />
-                            <span className="text-4xl sm:text-5xl lg:text-6xl font-black leading-none">Studio</span>
+                            <span className="text-5xl font-black leading-none">Flying</span> <br />
+                            <span className="text-5xl font-black leading-none">Studio</span>
                         </h2>
                         {/* SNS 링크 아이콘 */}
-                        <div className="flex items-center space-x-3 sm:space-x-5">
+                        <div className="flex items-center space-x-5">
                             {/* Kakao Button */}
                             <button className="w-10 h-10 shrink-0 rounded-lg bg-[#FAE100] text-[#371D1E] flex items-center justify-center hover:opacity-80 transition transform hover:scale-105">
                                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -53,7 +53,7 @@ export default function Footer() {
                         </div>
                         <button
                             onClick={() => setIsContactOpen(true)}
-                            className="py-4 border border-gray-600 text-gray-300 text-xl font-bold tracking-wide rounded-xl hover:border-white hover:text-white transition w-[140px] md:w-[160px]">
+                            className="luxury-button-premium w-[160px] h-[50px]">
                             예약하기
                         </button>
                     </div>

@@ -149,7 +149,7 @@ export default function AboutPage() {
 
             {/* 1. Our Legacy Section */}
             {/* 요약: 스튜디오의 핵심 가치관과 철학을 소개하는 섹션 */}
-            <section className="container mx-auto px-4 xs:px-6 sm:px-8 md:px-10 py-12 xs:py-14 sm:py-16 md:py-20 lg:py-24 xl:py-28 2xl:py-32">
+            <section className="container mx-auto px-6 py-12 xs:py-14 sm:py-16 md:py-20 lg:py-24 xl:py-28 2xl:py-32">
                 <div className="text-center max-w-3xl mx-auto mb-10 xs:mb-12 sm:mb-14 md:mb-16 lg:mb-20">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 tracking-tight text-[#F3EBE1]">Our Legacy</h1>
                     <div className="text-base md:text-lg lg:text-xl text-gray-600 space-y-2 leading-relaxed font-light">
@@ -160,17 +160,21 @@ export default function AboutPage() {
 
                 {/* Key Pillars - Hexagonal/Glass Cards */}
                 {/* 정적 데이터 LEGACY_PILLARS 배열을 통해 육각형 디자인의 카드를 렌더링 */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 xs:gap-6 sm:gap-8 lg:gap-10 xl:gap-12 mb-10 xs:mb-12 sm:mb-14 md:mb-16 lg:mb-20">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 xs:gap-6 sm:gap-8 lg:gap-10 xl:gap-12 mb-10 xs:mb-12 sm:mb-14 md:mb-16 lg:mb-20">
                     {LEGACY_PILLARS.map((item, idx) => (
-                        <div key={idx} className="relative group h-[240px] xs:h-[260px] md:h-[280px] lg:h-[300px] flex items-center justify-center">
+                        <div key={idx} className="relative group aspect-square flex items-center justify-center">
                             {/* Hexagon Shape with Clip-path */}
-                            <div
-                                className="absolute inset-0 bg-white/5 backdrop-blur-sm border border-white/10 transition-all duration-300 group-hover:bg-white/10 group-hover:scale-105"
-                                style={{ clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }}
-                            />
-                            <div className="relative z-10 text-center p-6 max-w-[200px]">
-                                <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#F3EBE1] mb-3">{item.title}</h3>
-                                <p className="text-sm md:text-base text-gray-600">{item.desc}</p>
+                            <div className="absolute inset-0 bg-white/5 backdrop-blur-sm border border-white/10 transition-all duration-300 group-hover:bg-white/10 group-hover:scale-105"
+                                style={{ clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)" }} />
+                            <div className="relative z-10 text-center flex flex-col items-center justify-center w-full h-full p-6 xs:p-8">
+                                <div className="max-w-[140px] sm:max-w-[180px] lg:max-w-[220px]">
+                                    <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold text-[#F3EBE1] mb-2 sm:mb-4 h-[1.26em] sm:h-[1.5em] flex items-center justify-center">
+                                        {item.title}
+                                    </h3>
+                                    <p className="text-[10px] lg:text-base text-gray-300 line-clamp-2 leading-tight">
+                                        {item.desc}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -187,55 +191,58 @@ export default function AboutPage() {
             {/* 1.5. Reviews Section */}
             {/* 요약: 실제 고객들의 리뷰를 보여주는 섹션 */}
             <section className="bg-[#150E0C] py-12 xs:py-14 sm:py-16 md:py-20 lg:py-24 xl:py-28 2xl:py-32">
-                <div className="container mx-auto px-4 xs:px-6 sm:px-8 md:px-10">
+                <div className="container mx-auto px-6">
                     <div className="text-center mb-10 xs:mb-12 sm:mb-14 md:mb-16 lg:mb-20">
                         <span className="text-gray-400 font-medium tracking-widest uppercase mb-4 block text-sm md:text-base">Client Reviews</span>
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#F3EBE1]">고객 후기</h2>
+                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#F3EBE1]">방문 후기</h2>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 xs:gap-6 sm:gap-8 lg:gap-10 xl:gap-12 max-w-6xl mx-auto">
-                        {reviews.length > 0 ? reviews.map((review, idx) => (
+                    <div className="flex overflow-x-auto py-10 sm:py-16 px-4 sm:px-8 lg:px-12 gap-4 sm:gap-6 lg:gap-10 snap-x snap-mandatory scrollbar-hide min-h-[260px]">
+                        {reviews.length > 0 ? reviews.map((item) => (
                             <div
-                                key={idx}
-                                onClick={() => openDetailModal(review)}
-                                className="bg-[#1C1310] border border-white/10 p-4 xs:p-5 sm:p-6 md:p-8 rounded-xl hover:border-white/20 transition-all duration-300 group hover:shadow-lg hover:shadow-black/20 cursor-pointer flex flex-col"
+                                key={item.id}
+                                onClick={() => openDetailModal(item)}
+                                // 기본적으로 카드가 1도 돌아가있어("rotate-1") 폴라로이드처럼 보이며, 마우스 호버 시 똑바로 돌아옴("hover:rotate-0")
+                                className="flex-shrink-0 w-[240px] sm:w-[280px] md:w-[320px] lg:w-[400px] bg-[#150E0C] border border-white/10 p-3 sm:p-4 lg:p-6 shadow-xl transform rotate-1 hover:rotate-0 transition-all duration-300 snap-center rounded-lg cursor-pointer hover:shadow-2xl hover:border-white/20 flex flex-col"
                             >
-                                {/* 이미지 존재 시 최상단 표시 */}
-                                {review.imageUrl && (
-                                    <div className="mb-4 w-full h-[200px] overflow-hidden rounded-md border border-white/5 bg-white/5 flex-shrink-0">
-                                        <img src={review.imageUrl} alt="review detail" className="w-full h-full object-cover" />
+                                {/* 1. 이미지 (있을 경우에만 최상단) */}
+                                {item.imageUrl && (
+                                    <div className="w-full h-[160px] md:h-[200px] lg:h-[240px] mb-3 md:mb-4 bg-white/5 rounded overflow-hidden flex-shrink-0">
+                                        <img src={item.imageUrl} alt="review detail" className="w-full h-full object-cover" />
                                     </div>
                                 )}
 
-                                {/* 장르 (좌) / 별점 (우) 중앙 위 */}
-                                <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-3">
-                                    <span className="text-gray-400 font-medium text-sm">
-                                        {review.genre || "비지정 장르"}
+                                {/* 2. 장르 (좌) / 별점 (우) */}
+                                <div className="flex items-center justify-between mb-2 md:mb-3 border-b border-white/5 pb-1 md:pb-2">
+                                    <span className="text-gray-400 font-medium text-xs md:text-sm lg:text-base">
+                                        {item.genre || "비지정 장르"}
                                     </span>
                                     <div className="flex items-center gap-1">
                                         {Array.from({ length: 5 }).map((_, i) => (
-                                            <svg key={i} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill={i < review.rating ? "#eab308" : "none"} stroke={i < review.rating ? "#eab308" : "#4b5563"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mx-0.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                            <svg key={i} xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 xs:w-3.5 xs:h-3.5 md:w-4 md:h-4 lg:w-5 lg:h-5 mx-[1px]" viewBox="0 0 24 24" fill={i < item.rating ? "#eab308" : "none"} stroke={i < item.rating ? "#eab308" : "#4b5563"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                            </svg>
                                         ))}
                                     </div>
                                 </div>
 
-                                {/* 리뷰 본문 */}
-                                <p className="text-gray-300 text-sm md:text-base leading-relaxed mb-6 group-hover:text-white transition-colors word-keep-all line-clamp-4 flex-1">
-                                    &ldquo;{review.content}&rdquo;
-                                </p>
+                                {/* 3. 본문 내용 */}
+                                <div className="mb-3 md:mb-4 flex-1">
+                                    <p className="text-[#F3EBE1] font-handwriting text-base md:text-lg lg:text-xl xl:text-2xl italic line-clamp-3 break-keep leading-relaxed">
+                                        &ldquo;{item.content}&rdquo;
+                                    </p>
+                                </div>
 
-                                {/* 고객 정보 (좌측 이름, 우측 작성시간) */}
-                                <div className="flex items-center justify-between border-t border-white/5 pt-4 mt-auto">
-                                    <span className="text-[#F3EBE1] font-bold text-sm md:text-base">{review.name}</span>
-                                    <span className="text-gray-600 text-xs md:text-sm">
-                                        {new Date(review.createdAt).toLocaleDateString()}
+                                {/* 4. 고객명 (좌) / 작성시간 (우) */}
+                                <div className="flex items-center justify-between mt-auto pt-2 md:pt-3 border-t border-white/5">
+                                    <span className="text-[#D4C4BD] font-bold tracking-wide text-sm md:text-base lg:text-lg">{item.name}</span>
+                                    <span className="text-gray-500 font-medium tracking-widest uppercase text-[10px] md:text-xs lg:text-sm">
+                                        {new Date(item.createdAt).toLocaleDateString()}
                                     </span>
                                 </div>
                             </div>
                         )) : (
-                            <div className="col-span-1 md:col-span-3 text-center text-gray-500 py-10">
-                                아직 작성된 리뷰가 없습니다.
-                            </div>
+                            <div className="w-full text-center text-gray-500 font-medium tracking-wide py-10 md:py-16 text-sm md:text-base lg:text-lg">아직 작성된 리뷰가 없습니다. 첫 리뷰를 남겨주세요!</div>
                         )}
                     </div>
                 </div>
@@ -259,7 +266,7 @@ export default function AboutPage() {
             {/* 2. Custom Design */}
             {/* 요약: 맞춤 도안 프로세스와 정책을 제시하는 섹션 */}
             <section className="bg-[#150E0C] py-12 xs:py-14 sm:py-16 md:py-20 lg:py-24 xl:py-28 2xl:py-32">
-                <div className="container mx-auto px-4 xs:px-6 sm:px-8 md:px-10">
+                <div className="container mx-auto px-6">
                     <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-10 md:mb-16 text-center">맞춤 도안 디자인</h2>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xs:gap-8 sm:gap-10 lg:gap-12 xl:gap-16 max-w-6xl mx-auto">
@@ -297,7 +304,7 @@ export default function AboutPage() {
                                     <span>→</span>
                                     <span className="bg-[#2A1D18] px-3 py-1 rounded">수정 안내</span>
                                     <span>→</span>
-                                    <span className="bg-[#E5D9D2] text-[#1C1310] px-3 py-1 rounded">최종 승인</span>
+                                    <span className="bg-green-50 dark:bg-green-900/50 text-green-400 px-3 py-1 rounded">최종 승인</span>
                                 </div>
                             </div>
 
@@ -315,7 +322,7 @@ export default function AboutPage() {
                                     </ul>
                                     <button
                                         onClick={handleContactRequest}
-                                        className="w-full py-3 bg-[#E5D9D2] text-[#1C1310] font-bold text-sm md:text-base rounded hover:bg-white transition"
+                                        className="luxury-button-premium flex items-center justify-center w-[160px] h-[50px] mt-8"
                                     >
                                         예약하기
                                     </button>
@@ -328,35 +335,35 @@ export default function AboutPage() {
 
             {/* 3. Booking Operation */}
             {/* 요약: 실제 샵의 예약 및 환불 규정에 대한 정보를 안내하는 섹션 */}
-            <section className="container mx-auto px-4 xs:px-6 sm:px-8 md:px-10 py-12 xs:py-14 sm:py-16 md:py-20 lg:py-24 xl:py-28 2xl:py-32">
+            <section className="container mx-auto py-12 xs:py-14 sm:py-16 md:py-20 lg:py-24 xl:py-28 2xl:py-32">
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-10 lg:mb-16 text-center">예약 운영</h2>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 xs:gap-5 sm:gap-6 md:gap-8 lg:gap-10 max-w-6xl mx-auto">
+                <div className="grid grid-cols-2 gap-4 xs:gap-5 sm:gap-6 md:gap-8 lg:gap-10 max-w-6xl mx-auto">
                     <div className="p-6 border border-white/10 rounded-lg hover:border-[#E5D9D2] transition-colors">
-                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-red-400">Booking</h3>
-                        <p className="text-sm md:text-base text-[#D4C4BD] font-bold mb-2">상담 예약제</p>
-                        <p className="text-sm text-gray-500">
+                        <h3 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 text-yellow-400">Booking</h3>
+                        <p className="text-sm md:text-md text-[#D4C4BD] font-bold mb-2">상담 예약제</p>
+                        <p className="text-xs text-gray-500">
                             온라인 예약은 대면 상담 예약이며, 시술 예약이 아닙니다. 상담 결과에 따라 시술이 제한될 수 있습니다.
                         </p>
                     </div>
                     <div className="p-6 border border-white/10 rounded-lg hover:border-[#E5D9D2] transition-colors">
-                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-[#F3EBE1]">Deposit</h3>
-                        <p className="text-sm md:text-base text-[#D4C4BD] font-bold mb-2">예약금 제도</p>
-                        <p className="text-sm text-gray-500">
+                        <h3 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 text-[#F3EBE1]">Deposit</h3>
+                        <p className="text-sm md:text-md text-[#D4C4BD] font-bold mb-2">예약금 제도</p>
+                        <p className="text-xs text-gray-500">
                             일정 확보 및 노쇼 방지 목적. 단순 변심/무단 불참 시 환불 불가.
                         </p>
                     </div>
                     <div className="p-6 border border-white/10 rounded-lg hover:border-[#E5D9D2] transition-colors">
-                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-[#F3EBE1]">Policy</h3>
-                        <p className="text-sm md:text-base text-[#D4C4BD] font-bold mb-2">변경/취소</p>
-                        <p className="text-sm text-gray-500">
+                        <h3 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 text-[#F3EBE1]">Policy</h3>
+                        <p className="text-sm md:text-md text-[#D4C4BD] font-bold mb-2">변경/취소</p>
+                        <p className="text-xs text-gray-500">
                             사전 문의 시 변경 가능. 당일 취소/무단 불참 시 예약금 반환 불가.
                         </p>
                     </div>
                     <div className="p-6 border border-white/10 rounded-lg hover:border-[#E5D9D2] transition-colors">
-                        <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 text-[#F3EBE1]">Eligibility</h3>
-                        <p className="text-sm md:text-base text-[#D4C4BD] font-bold mb-2">시술 조건</p>
-                        <p className="text-sm text-gray-500">
+                        <h3 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 text-[#F3EBE1]">Eligibility</h3>
+                        <p className="text-sm md:text-md text-[#D4C4BD] font-bold mb-2">시술 조건</p>
+                        <p className="text-xs text-gray-500">
                             만 19세 미만 시술 불가 (신분증 필수). 피부/건강 상태에 따라 제한 가능.
                         </p>
                     </div>
@@ -371,14 +378,14 @@ export default function AboutPage() {
             {/* 4. Aftercare Info Overlay Trigger */}
             {/* 요약: 관리 지침 모달을 호출하는 상태 변경 버튼을 포함한 액션 섹션 */}
             <section className="bg-[#0A0706] text-[#F3EBE1] py-12 xs:py-14 sm:py-16 md:py-20 lg:py-24">
-                <div className="container mx-auto px-4 xs:px-6 sm:px-8 text-center">
+                <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-8 md:px-12 text-center">
                     <h2 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl font-bold mb-3 xs:mb-4 sm:mb-5">Aftercare Guide</h2>
-                    <p className="text-xs xs:text-sm sm:text-base md:text-lg text-gray-400 mb-6 xs:mb-8 sm:mb-10 max-w-2xl mx-auto">
-                        타투는 시술만큼 관리가 중요합니다. Flying Studio의 체계적인 관리 방법을 확인하세요.
+                    <p className="text-xs xs:text-sm sm:text-base md:text-lg text-gray-400 mb-6 xs:mb-8 sm:mb-10 max-w-4xl mx-auto">
+                        타투는 시술만큼 관리가 중요합니다. <br className="lg:hidden" /> Flying Studio의 체계적인 관리 방법을 확인하세요.
                     </p>
                     <button
                         onClick={openInfoOverlay}
-                        className="px-6 py-2.5 xs:px-8 xs:py-3 md:px-10 md:py-4 border border-white rounded-full hover:bg-white hover:text-gray-900 transition-all text-sm xs:text-base md:text-lg font-medium"
+                        className="luxury-button-premium w-[260px] h-[50px]"
                     >
                         관리 체크리스트 확인하기
                     </button>

@@ -84,11 +84,11 @@ export const ReviewDetailHeader: React.FC<ReviewDetailHeaderProps> = ({
                                     window.dispatchEvent(event);
                                     onClose();
                                 }}
-                                className="text-xs md:text-sm text-gray-500 font-mono hover:text-[#E5D9D2] hover:underline transition-colors flex items-center gap-1 group"
+                                className="mt-1 inline-flex items-center gap-1.5 px-2 py-0.5 bg-white/5 border border-white/10 rounded-md text-[10px] md:text-xs text-gray-500 font-mono hover:bg-white/10 hover:border-[#E5D9D2]/30 hover:text-[#E5D9D2] transition-all group"
                                 title="클릭 시 이 리뷰를 참고하여 예약 폼을 엽니다"
                             >
                                 <span>ID: {review.reviewId}</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-600 group-hover:text-[#E5D9D2] transition-colors">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                                 </svg>

@@ -4,16 +4,13 @@
 
 .luxury-title {
   font-family: var(--font-playfair), serif;
-  letter-spacing: 0.25em;
-  /* 텍스트 투  명화하여 배경 질감 표시 */
+  letter-spacing: 0.3em;
+  /* 텍스트 투명화하여 배경 질감 표시 */
   color: transparent !important;
-  /* 텍스트 밝기 최대화 및 정밀한 그림자로 시인성 확보 */
-  text-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.5),
-    0 4px 20px rgba(0, 0, 0, 0.4);
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
+  /* 텍스트 밝기 최적화를 위해 그림자 효과 제거 및 골드 글로우 추가 */
+  filter: drop-shadow(0 0 10px rgba(247, 231, 206, 0.3));
   
-  /* 전면 광택 레이어, 가독성 보완 레이어, Carbon 텍스처 레이어링 */
+  /* 전면 광택 레이어, 프리미엄 골드 그라데이션 레이어 */
   background-image: 
     linear-gradient(
       120deg, 
@@ -23,18 +20,16 @@
       transparent 60%, 
       transparent 100%
     ),
-    /* 샴페인 골드 오버레이 농도를 55%로 조절하여 럭셔리한 금빛 감물 */
-    linear-gradient(rgba(247, 231, 206, 0.55), rgba(247, 231, 206, 0.55)),
-    url('/Forged Carbon.png');
+    linear-gradient(rgba(247, 231, 206, 0.8), rgba(138, 110, 47, 0.8));
   
-  background-size: 200% 100%, 100% 100%, cover;
-  background-position: 150% 0, 0 0, center;
-  background-repeat: no-repeat, no-repeat, repeat;
+  background-size: 200% 100%, 100% 100%;
+  background-position: 150% 0, 0 0;
+  background-repeat: no-repeat, no-repeat;
   -webkit-background-clip: text;
   background-clip: text;
   
-  /* 상시 광택 애니메이션 적용 */
-  animation: text-shine 3s infinite linear;
+  /* 상시 광택 애니메이션 적용 (더 우아한 4초 주기로 변경) */
+  animation: text-shine 4s infinite linear;
 }
 
 /* Carbon 텍스처와 광택 효과를 범용적으로 사용할 수 있는 클래스 */
@@ -49,11 +44,10 @@
       transparent 60%, 
       transparent 100%
     ),
-    linear-gradient(rgba(247, 231, 206, 0.55), rgba(247, 231, 206, 0.55)),
-    url('/Forged Carbon.png');
-  background-size: 200% 100%, 100% 100%, cover;
-  background-position: 150% 0, 0 0, center;
-  background-repeat: no-repeat, no-repeat, repeat;
+    linear-gradient(rgba(247, 231, 206, 0.55), rgba(247, 231, 206, 0.55));
+  background-size: 200% 100%, 100% 100%;
+  background-position: 150% 0, 0 0;
+  background-repeat: no-repeat, no-repeat;
   -webkit-background-clip: text;
   background-clip: text;
   animation: text-shine 3s infinite linear;
@@ -106,6 +100,13 @@
 :root {
   --background: #1C1310; /* 메인 배경색 */
   --foreground: #F3EBE1; /* 기본 폰트/요소 전경색 */
+  
+  /* 프리미엄 컬러 세트 (Space Demo 기반) */
+  --gold: #F7E7CE;
+  --gold-dark: #8A6E2F;
+  --platinum: #E5E4E2;
+  --glass: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(247, 231, 206, 0.2);
 }
 
 /* 테일윈드 테마 확장 (커스텀 속성 매핑) */
@@ -150,15 +151,15 @@ nextjs-portal {
 }
 
   /* Marquee Animations (가로 마키 애니메이션 키프레임 및 클래스 정의) */
-  @keyframes marquee-left {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
+  @keyframes marquee-left{
+from{transform:translate3d(0,0,0);}
+to{transform:translate3d(-50%,0,0);}
+}
 
-  @keyframes marquee-right {
-    0% { transform: translateX(-50%); }
-    100% { transform: translateX(0); }
-  }
+@keyframes marquee-right{
+from{transform:translate3d(-50%,0,0);}
+to{transform:translate3d(0,0,0);}
+}
 
   /* 왼쪽으로 무한 스크롤되는 애니메이션 클래스 */
   .animate-marquee-left {
@@ -247,8 +248,40 @@ nextjs-portal {
     transition: color 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
   }
 
-  .matte-gold-glow-hover * {
-    transition: color 0.45s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  /* 프리미엄 공통 버튼 디자인 스킨 (Space Demo 테마 기반) */
+  .luxury-button-premium {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    backdrop-filter: blur(8px);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .luxury-button-premium:hover {
+    background: linear-gradient(
+      135deg,
+      #CDBE9A 0%,
+      #E5DBC1 25%,
+      #F7E7CE 50%,
+      #E5DBC1 75%,
+      #CDBE9A 100%
+    ) !important;
+    color: #1C1310 !important;
+    box-shadow: 
+      0 0 20px rgba(247, 231, 206, 0.4),
+      inset 0 1px 1px rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px);
+    border-color: #F9E498;
   }
 
   /* 통일된 고시인성 프리미엄 CTA 버튼 스타일 (명품관 에디션 - Midnight Navy & Gold) */

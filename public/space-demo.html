@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Experience | Premium Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Noto+Serif+KR:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: #0A0E14;
+            --gold: #F7E7CE;
+            --gold-dark: #8A6E2F;
+            --platinum: #E5E4E2;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(247, 231, 206, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--platinum);
+            font-family: 'Noto+Serif+KR', serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 우주 배경 애니메이션 */
+        .space-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #1C1310 0%, #0A0E14 100%);
+            z-index: -1;
+        }
+
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/123163/stars.png') repeat;
+            opacity: 0.5;
+            animation: move-stars 200s linear infinite;
+        }
+
+        @keyframes move-stars {
+            from { background-position: 0 0; }
+            to { background-position: -10000px 5000px; }
+        }
+
+        /* 메인 광택 텍스트 효과 */
+        .luxury-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            background-image: 
+                linear-gradient(
+                    120deg, 
+                    transparent 0%, 
+                    transparent 40%, 
+                    rgba(255, 255, 255, 0.9) 50%, 
+                    transparent 60%, 
+                    transparent 100%
+                ),
+                linear-gradient(rgba(247, 231, 206, 0.8), rgba(138, 110, 47, 0.8));
+            background-size: 200% 100%, 100% 100%;
+            background-position: 150% 0, 0 0;
+            background-repeat: no-repeat;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: text-shine 4s infinite linear;
+            text-align: center;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 10px rgba(247, 231, 206, 0.3));
+        }
+
+        @keyframes text-shine {
+            0% { background-position: 150% 0, 0 0; }
+            100% { background-position: -50% 0, 0 0; }
+        }
+
+        /* 유리 카드 디자인 */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 4rem;
+            max-width: 800px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(247, 231, 206, 0.5);
+            box-shadow: 0 35px 60px -12px rgba(247, 231, 206, 0.1);
+        }
+
+        .description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--platinum);
+            opacity: 0.8;
+            margin-bottom: 3rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* 프리미엄 버튼 */
+        .btn-luxury {
+            display: inline-block;
+            padding: 1rem 3rem;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 0.9rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .btn-luxury:hover {
+            background: var(--gold);
+            color: #1C1310;
+            box-shadow: 0 0 30px rgba(247, 231, 206, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* 하단 장식 선 */
+        .divider {
+            width: 100px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 2rem auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="space-bg">
+        <div class="stars"></div>
+    </div>
+
+    <div class="glass-card">
+        <h1 class="luxury-title">Deep Space</h1>
+        <div class="divider"></div>
+        <p class="description">
+            광활한 우주의 심연 속에서 발견하는 순수한 정적.<br>
+            가장 어두운 곳에서 비로소 가장 찬란한 빛이 완성됩니다.<br>
+            천상의 아름다움을 담은 프리미엄 익스피리언스를 경험해보세요.
+        </p>
+        <a href="#" class="btn-luxury">Explore Now</a>
+    </div>
+</body>
+</html>

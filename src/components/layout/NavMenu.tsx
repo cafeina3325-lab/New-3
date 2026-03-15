@@ -223,8 +223,10 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                             <Link
                                 href={(session.user as any).role === "admin" ? "/admin" : "/staff"}
                                 className={`
-                                    luxury-cta-button matte-gold-glow-hover
-                                    ${isHamburgerMode ? 'justify-start px-6' : 'lg:mr-4 justify-center'}
+                                    luxury-button-premium h-12 flex items-center justify-center
+                                    ${isHamburgerMode
+                                        ? 'w-[140px] md:w-[140px] px-6'
+                                        : 'min-w-[160px] px-8 lg:mr-4'}
                                 `}
                                 onClick={() => isHamburgerMode && setIsMenuOpen(false)}
                             >
@@ -235,8 +237,10 @@ export default function NavMenu({ isHamburgerMode }: NavMenuProps) {
                             <button
                                 onClick={handleContactClick}
                                 className={`
-                                    luxury-cta-button matte-gold-glow-hover
-                                    ${isHamburgerMode ? 'justify-start px-6' : 'lg:mr-4 justify-center'}
+                                    luxury-button-premium h-12 flex items-center justify-center
+                                    ${isHamburgerMode
+                                        ? 'w-[140px] md:w-[140px] px-6'
+                                        : 'min-w-[160px] px-8 lg:mr-4'}
                                 `}
                             >
                                 예약하기
